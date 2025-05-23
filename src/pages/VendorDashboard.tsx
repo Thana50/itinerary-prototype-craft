@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { DollarSign, Clock, Calendar, MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import NegotiationList from "@/components/NegotiationList";
+import ConversationalAgent from "@/components/ConversationalAgent";
 
 const VendorDashboard = () => {
   return (
@@ -49,17 +50,25 @@ const VendorDashboard = () => {
         </Card>
       </div>
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Pricing Negotiations</CardTitle>
-            <CardDescription>Review and respond to pricing requests</CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <NegotiationList />
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Pricing Negotiations</CardTitle>
+                <CardDescription>Review and respond to pricing requests</CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <NegotiationList />
+            </CardContent>
+          </Card>
+        </div>
+        
+        <div className="lg:col-span-1">
+          <ConversationalAgent role="vendor" />
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,10 +1,11 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle, Search, Share, MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ItineraryList from "@/components/ItineraryList";
+import ConversationalAgent from "@/components/ConversationalAgent";
 
 const AgentDashboard = () => {
   const navigate = useNavigate();
@@ -49,15 +50,23 @@ const AgentDashboard = () => {
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Itineraries</CardTitle>
-          <CardDescription>Manage and track your client itineraries</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ItineraryList role="agent" />
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Itineraries</CardTitle>
+              <CardDescription>Manage and track your client itineraries</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ItineraryList role="agent" />
+            </CardContent>
+          </Card>
+        </div>
+        
+        <div className="lg:col-span-1">
+          <ConversationalAgent role="agent" />
+        </div>
+      </div>
     </div>
   );
 };

@@ -3,6 +3,7 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Search, Edit, Share } from "lucide-react";
 import ItineraryList from "@/components/ItineraryList";
+import ConversationalAgent from "@/components/ConversationalAgent";
 
 const TravelerDashboard = () => {
   return (
@@ -35,15 +36,23 @@ const TravelerDashboard = () => {
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Your Itineraries</CardTitle>
-          <CardDescription>Review and modify your travel plans</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ItineraryList role="traveler" />
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Your Itineraries</CardTitle>
+              <CardDescription>Review and modify your travel plans</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ItineraryList role="traveler" />
+            </CardContent>
+          </Card>
+        </div>
+        
+        <div className="lg:col-span-1">
+          <ConversationalAgent role="traveler" />
+        </div>
+      </div>
     </div>
   );
 };
