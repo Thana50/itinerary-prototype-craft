@@ -23,7 +23,7 @@ const Login = () => {
         <CardHeader className="text-center pb-2">
           <div className="flex justify-center mb-6">
             <img 
-              src="/lovable-uploads/6a5c710f-c1e3-4372-ad68-89fa5515e0b6.png" 
+              src="/lovable-uploads/ef555a68-c6d2-42b5-a2c1-a1469ea4d143.png" 
               alt="Travia Logo" 
               className="h-16 w-auto"
             />
