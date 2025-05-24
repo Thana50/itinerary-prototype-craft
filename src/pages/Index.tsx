@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, Users, Briefcase, DollarSign } from "lucide-react";
+import { PlusCircle, Users, Briefcase, DollarSign, LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AgentSelector from "@/components/AgentSelector";
 
@@ -27,10 +27,22 @@ const Index = () => {
   return (
     <div className="container mx-auto px-4 py-10">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-4xl font-bold text-center mb-2">Travel Agency Platform</h1>
-        <p className="text-center text-muted-foreground mb-10">
-          A platform to streamline collaboration between travel agents, travelers, and vendors
-        </p>
+        <div className="flex justify-between items-start mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-center mb-2">Travel Agency Platform</h1>
+            <p className="text-center text-muted-foreground mb-10">
+              A platform to streamline collaboration between travel agents, travelers, and vendors
+            </p>
+          </div>
+          <Button 
+            variant="outline"
+            onClick={() => navigate("/login")}
+            className="flex items-center gap-2"
+          >
+            <LogIn className="h-4 w-4" />
+            Login
+          </Button>
+        </div>
 
         <Card className="mb-8">
           <CardHeader>
