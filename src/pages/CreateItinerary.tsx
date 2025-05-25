@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,10 +8,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ArrowLeft, LogOut, Send } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import ConversationalAgent from "@/components/ConversationalAgent";
+
+interface ChatMessage {
+  id: number;
+  text: string;
+  sender: "user" | "ai";
+  timestamp: Date;
+}
 
 const CreateItinerary = () => {
   const navigate = useNavigate();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const [formData, setFormData] = useState({
     itineraryName: "",
@@ -22,7 +29,24 @@ const CreateItinerary = () => {
     clientPreferences: ""
   });
 
-  const [chatMessage, setChatMessage] = useState("");
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
+    {
+      id: 1,
+      text: "Hello! I'm your Travia AI Assistant for Southeast Asian travel planning. I specialize in Thailand, Singapore, Malaysia, Indonesia, Philippines, and Vietnam - perfect for Middle Eastern travelers! Try saying: 'Create a 7-day trip to Phuket called Paradise Beach for 4 people'",
+      sender: "ai",
+      timestamp: new Date()
+    }
+  ]);
+  
+  const [chatInput, setChatInput] = useState("");
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatMessages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -38,9 +62,55 @@ const CreateItinerary = () => {
   };
 
   const handleSendMessage = () => {
-    if (!chatMessage.trim()) return;
-    // This would integrate with the ConversationalAgent
-    setChatMessage("");
+    if (!chatInput.trim()) return;
+
+    // Add user message
+    const userMessage: ChatMessage = {
+      id: Date.now(),
+      text: chatInput,
+      sender: "user",
+      timestamp: new Date()
+    };
+
+    setChatMessages(prev => [...prev, userMessage]);
+    setChatInput("");
+
+    // Simulate AI response
+    setTimeout(() => {
+      const aiResponse: ChatMessage = {
+        id: Date.now() + 1,
+        text: getAIResponse(chatInput),
+        sender: "ai",
+        timestamp: new Date()
+      };
+      setChatMessages(prev => [...prev, aiResponse]);
+    }, 1000);
+  };
+
+  const getAIResponse = (input: string) => {
+    const lowercaseInput = input.toLowerCase();
+    
+    if (lowercaseInput.includes("phuket") || lowercaseInput.includes("paradise beach")) {
+      return "Perfect choice! Phuket is ideal for Middle Eastern travelers. I'll create 'Paradise Beach' - a 7-day luxury itinerary featuring pristine beaches, halal dining, cultural experiences, and world-class spas. Would you like me to include specific activities like island hopping to Phi Phi Islands or traditional Thai cooking classes?";
+    } else if (lowercaseInput.includes("singapore")) {
+      return "Singapore is excellent for Middle Eastern visitors! It's a Muslim-friendly destination with halal food everywhere, stunning architecture, and amazing shopping. What type of experience are you looking for - luxury, family-friendly, or cultural exploration?";
+    } else if (lowercaseInput.includes("thailand")) {
+      return "Thailand offers incredible experiences for Middle Eastern travelers! From Bangkok's vibrant culture to Phuket's beaches and Chiang Mai's temples. What cities or experiences interest your clients most?";
+    } else if (lowercaseInput.includes("malaysia")) {
+      return "Malaysia is perfect for Middle Eastern travelers - it's a Muslim-majority country with incredible diversity! Kuala Lumpur's modern skyline, Penang's heritage, and Langkawi's beaches. What aspects would you like to highlight?";
+    } else if (lowercaseInput.includes("indonesia")) {
+      return "Indonesia, especially Bali and Jakarta, offers amazing experiences! Bali has Hindu culture with Muslim-friendly accommodations, while Jakarta showcases modern Indonesia. What type of Indonesian adventure are you planning?";
+    } else if (lowercaseInput.includes("create") || lowercaseInput.includes("itinerary")) {
+      return "I'd love to help create an amazing Southeast Asian itinerary! Please tell me: Which country/countries? How many days? How many travelers? What's their budget range and interests?";
+    } else {
+      return "I'm here to help you create amazing Southeast Asian travel experiences! Feel free to ask about destinations, activities, cultural considerations, or specific itinerary requests for Thailand, Singapore, Malaysia, Indonesia, Philippines, or Vietnam.";
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSendMessage();
+    }
   };
 
   return (
@@ -94,7 +164,7 @@ const CreateItinerary = () => {
                       <Input 
                         id="itineraryName"
                         name="itineraryName"
-                        placeholder="e.g., Paris Adventure (AI can suggest this)"
+                        placeholder="e.g., Paradise Beach Adventure"
                         value={formData.itineraryName}
                         onChange={handleChange}
                         className="mt-1"
@@ -108,7 +178,7 @@ const CreateItinerary = () => {
                       <Input 
                         id="destination"
                         name="destination"
-                        placeholder="e.g., Paris, France (Tell AI first)"
+                        placeholder="e.g., Phuket, Thailand"
                         value={formData.destination}
                         onChange={handleChange}
                         className="mt-1"
@@ -152,7 +222,7 @@ const CreateItinerary = () => {
                       <Input 
                         id="numberOfTravelers"
                         name="numberOfTravelers"
-                        placeholder="e.g., 2"
+                        placeholder="e.g., 4"
                         value={formData.numberOfTravelers}
                         onChange={handleChange}
                         className="mt-1"
@@ -166,7 +236,7 @@ const CreateItinerary = () => {
                       <Textarea 
                         id="clientPreferences"
                         name="clientPreferences"
-                        placeholder="e.g., Luxury hotels, historical sites, dietary needs (AI will ask for this)"
+                        placeholder="e.g., Luxury hotels, halal dining, cultural experiences"
                         value={formData.clientPreferences}
                         onChange={handleChange}
                         rows={3}
@@ -195,7 +265,7 @@ const CreateItinerary = () => {
             </Card>
           </div>
 
-          {/* Right Column - AI Assistant */}
+          {/* Right Column - AI Chat Interface */}
           <div className="lg:col-span-1">
             <Card className="h-fit">
               <CardHeader className="bg-blue-500 text-white rounded-t-lg">
@@ -206,27 +276,39 @@ const CreateItinerary = () => {
                   Travia AI Assistant
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-4">
-                <div className="bg-blue-100 rounded-lg p-4 mb-4">
-                  <p className="text-sm text-blue-800">
-                    Hello! I'm your Travia AI Assistant. To get started, please tell me about the trip you'd like to plan (e.g., "A 7-day luxury trip to Paris for 2 people").
-                  </p>
+              <CardContent className="p-0">
+                {/* Chat Messages Area */}
+                <div className="h-96 overflow-y-auto p-4 space-y-4">
+                  {chatMessages.map((message) => (
+                    <div 
+                      key={message.id}
+                      className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
+                    >
+                      <div 
+                        className={`max-w-[80%] rounded-lg p-3 ${
+                          message.sender === "user" 
+                            ? "bg-blue-500 text-white" 
+                            : "bg-gray-200 text-gray-800"
+                        }`}
+                      >
+                        <p className="text-sm">{message.text}</p>
+                        <span className="text-xs opacity-70 mt-1 block">
+                          {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                  <div ref={messagesEndRef} />
                 </div>
                 
-                <div className="space-y-4">
-                  <div className="h-64 bg-gray-50 rounded-lg p-4 overflow-y-auto">
-                    {/* Chat messages would appear here */}
-                    <div className="text-center text-gray-500 text-sm">
-                      Start chatting to build your itinerary...
-                    </div>
-                  </div>
-                  
+                {/* Chat Input */}
+                <div className="border-t p-4">
                   <div className="flex gap-2">
                     <Input 
                       placeholder="Describe the trip you want to plan..."
-                      value={chatMessage}
-                      onChange={(e) => setChatMessage(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      onKeyPress={handleKeyPress}
                       className="flex-1"
                     />
                     <Button 
