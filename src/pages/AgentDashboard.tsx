@@ -106,7 +106,10 @@ const AgentDashboard = () => {
         <div className="mb-8">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Core Tools</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="bg-blue-500 text-white cursor-pointer hover:bg-blue-600 transition-colors">
+            <Card 
+              className="bg-blue-500 text-white cursor-pointer hover:bg-blue-600 transition-colors"
+              onClick={() => navigate("/create-itinerary")}
+            >
               <CardContent className="p-8 text-center">
                 <FileText className="h-12 w-12 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Itinerary Builder</h3>
