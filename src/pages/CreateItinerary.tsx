@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,14 @@ interface ChatMessage {
   text: string;
   sender: "user" | "ai";
   timestamp: Date;
+}
+
+interface TripDetails {
+  itineraryName?: string;
+  destination?: string;
+  numberOfTravelers?: string;
+  duration?: string;
+  clientPreferences?: string;
 }
 
 const CreateItinerary = () => {
@@ -61,6 +68,64 @@ const CreateItinerary = () => {
     });
   };
 
+  const parseTripDetails = (input: string): TripDetails => {
+    const lowercaseInput = input.toLowerCase();
+    const details: TripDetails = {};
+
+    // Extract trip name (after "called" or "named")
+    const nameMatch = input.match(/(?:called|named)\s+["']?([^"']+?)["']?(?:\s|$|for|to)/i);
+    if (nameMatch) {
+      details.itineraryName = nameMatch[1].trim();
+    }
+
+    // Extract destinations
+    const destinations = {
+      phuket: "Phuket, Thailand",
+      bangkok: "Bangkok, Thailand", 
+      singapore: "Singapore",
+      bali: "Bali, Indonesia",
+      "kuala lumpur": "Kuala Lumpur, Malaysia",
+      penang: "Penang, Malaysia",
+      langkawi: "Langkawi, Malaysia",
+      jakarta: "Jakarta, Indonesia",
+      "ho chi minh": "Ho Chi Minh City, Vietnam",
+      hanoi: "Hanoi, Vietnam",
+      manila: "Manila, Philippines",
+      boracay: "Boracay, Philippines"
+    };
+
+    for (const [key, value] of Object.entries(destinations)) {
+      if (lowercaseInput.includes(key)) {
+        details.destination = value;
+        break;
+      }
+    }
+
+    // Extract number of travelers
+    const travelersMatch = input.match(/(\d+)\s*(?:people|travelers?|persons?|pax)/i);
+    if (travelersMatch) {
+      details.numberOfTravelers = travelersMatch[1];
+    }
+
+    // Extract duration
+    const durationMatch = input.match(/(\d+)[\s-]*(?:days?|nights?)/i);
+    if (durationMatch) {
+      details.duration = `${durationMatch[1]} days`;
+    }
+
+    return details;
+  };
+
+  const updateFormWithTripDetails = (details: TripDetails) => {
+    setFormData(prev => ({
+      ...prev,
+      ...(details.itineraryName && { itineraryName: details.itineraryName }),
+      ...(details.destination && { destination: details.destination }),
+      ...(details.numberOfTravelers && { numberOfTravelers: details.numberOfTravelers }),
+      ...(details.duration && { clientPreferences: prev.clientPreferences + (prev.clientPreferences ? ", " : "") + `Duration: ${details.duration}` })
+    }));
+  };
+
   const handleSendMessage = () => {
     if (!chatInput.trim()) return;
 
@@ -73,13 +138,20 @@ const CreateItinerary = () => {
     };
 
     setChatMessages(prev => [...prev, userMessage]);
+    
+    // Parse trip details and update form
+    const tripDetails = parseTripDetails(chatInput);
+    if (Object.keys(tripDetails).length > 0) {
+      updateFormWithTripDetails(tripDetails);
+    }
+
     setChatInput("");
 
     // Simulate AI response
     setTimeout(() => {
       const aiResponse: ChatMessage = {
         id: Date.now() + 1,
-        text: getAIResponse(chatInput),
+        text: getAIResponse(chatInput, tripDetails),
         sender: "ai",
         timestamp: new Date()
       };
@@ -87,11 +159,41 @@ const CreateItinerary = () => {
     }, 1000);
   };
 
-  const getAIResponse = (input: string) => {
+  const getAIResponse = (input: string, parsedDetails: TripDetails) => {
     const lowercaseInput = input.toLowerCase();
     
-    if (lowercaseInput.includes("phuket") || lowercaseInput.includes("paradise beach")) {
-      return "Perfect choice! Phuket is ideal for Middle Eastern travelers. I'll create 'Paradise Beach' - a 7-day luxury itinerary featuring pristine beaches, halal dining, cultural experiences, and world-class spas. Would you like me to include specific activities like island hopping to Phi Phi Islands or traditional Thai cooking classes?";
+    // Special response for the example case
+    if (lowercaseInput.includes("phuket") && lowercaseInput.includes("paradise beach") && lowercaseInput.includes("4 people") && lowercaseInput.includes("7")) {
+      return "Perfect! I've created 'Paradise Beach' - your Phuket adventure! Thailand is excellent for Middle Eastern families with abundant halal food options, beautiful beaches, and rich culture.";
+    }
+    
+    // Generic response when trip details are detected
+    if (Object.keys(parsedDetails).length > 0) {
+      let response = "Great! I've extracted the trip details and updated your form. ";
+      
+      if (parsedDetails.itineraryName && parsedDetails.destination) {
+        response += `Your '${parsedDetails.itineraryName}' trip to ${parsedDetails.destination} looks amazing! `;
+      } else if (parsedDetails.destination) {
+        response += `${parsedDetails.destination} is an excellent choice! `;
+      }
+      
+      if (parsedDetails.destination?.includes("Thailand")) {
+        response += "Thailand offers incredible experiences with halal dining, beautiful beaches, and rich culture. ";
+      } else if (parsedDetails.destination?.includes("Singapore")) {
+        response += "Singapore is perfect for Middle Eastern travelers with excellent halal food and modern attractions. ";
+      } else if (parsedDetails.destination?.includes("Malaysia")) {
+        response += "Malaysia is ideal for Muslim travelers with abundant halal options and diverse experiences. ";
+      } else if (parsedDetails.destination?.includes("Indonesia")) {
+        response += "Indonesia offers amazing cultural experiences and beautiful landscapes. ";
+      }
+      
+      response += "What specific activities or preferences would you like me to include?";
+      return response;
+    }
+    
+    // Existing response logic for other cases
+    if (lowercaseInput.includes("phuket")) {
+      return "Perfect choice! Phuket is ideal for Middle Eastern travelers. I'll create a luxury itinerary featuring pristine beaches, halal dining, cultural experiences, and world-class spas. Would you like me to include specific activities like island hopping to Phi Phi Islands or traditional Thai cooking classes?";
     } else if (lowercaseInput.includes("singapore")) {
       return "Singapore is excellent for Middle Eastern visitors! It's a Muslim-friendly destination with halal food everywhere, stunning architecture, and amazing shopping. What type of experience are you looking for - luxury, family-friendly, or cultural exploration?";
     } else if (lowercaseInput.includes("thailand")) {
