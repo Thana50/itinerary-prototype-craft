@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,9 +27,9 @@ const Login = () => {
         <CardHeader className="text-center pb-2">
           <div className="flex justify-center mb-6">
             <img 
-              src="/lovable-uploads/ef555a68-c6d2-42b5-a2c1-a1469ea4d143.png" 
+              src="/lovable-uploads/0eec4e7f-1447-475b-928f-96fbc0eca6e8.png" 
               alt="Travia Logo" 
-              className="h-16 w-auto"
+              className="h-20 w-auto"
             />
           </div>
           <CardTitle className="text-2xl font-bold text-slate-700 mb-2">

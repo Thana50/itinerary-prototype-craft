@@ -67,9 +67,9 @@ const CreateItinerary = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <img 
-              src="/lovable-uploads/ef555a68-c6d2-42b5-a2c1-a1469ea4d143.png" 
+              src="/lovable-uploads/0eec4e7f-1447-475b-928f-96fbc0eca6e8.png" 
               alt="Travia Logo" 
-              className="h-12 w-auto mr-4"
+              className="h-14 w-auto mr-4"
             />
           </div>
           <div className="flex items-center space-x-4">
