@@ -16,6 +16,11 @@ import { useNavigate } from "react-router-dom";
 const AgentDashboard = () => {
   const navigate = useNavigate();
   
+  const handleLogout = () => {
+    // Clear any stored user data/tokens here if needed
+    navigate("/login");
+  };
+  
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -30,7 +35,7 @@ const AgentDashboard = () => {
           </div>
           <div className="flex items-center space-x-4">
             <span className="text-gray-600">Welcome, Agent!</span>
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="h-4 w-4 mr-2" />
               Logout
             </Button>

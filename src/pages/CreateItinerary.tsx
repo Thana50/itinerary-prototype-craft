@@ -51,6 +51,15 @@ const CreateItinerary = () => {
     }, 1000);
   };
 
+  const handleLogout = () => {
+    // Clear any stored user data/tokens here if needed
+    navigate("/login");
+  };
+
+  const handleBackToDashboard = () => {
+    navigate("/agent-dashboard");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -65,7 +74,7 @@ const CreateItinerary = () => {
           </div>
           <div className="flex items-center space-x-4">
             <span className="text-gray-600">Welcome, Agent!</span>
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="h-4 w-4 mr-2" />
               Logout
             </Button>
@@ -76,7 +85,7 @@ const CreateItinerary = () => {
       <div className="container mx-auto px-6 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-semibold text-gray-900">Itinerary Builder</h1>
-          <Button variant="ghost" onClick={() => navigate("/agent-dashboard")}>
+          <Button variant="ghost" onClick={handleBackToDashboard}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Dashboard
           </Button>
