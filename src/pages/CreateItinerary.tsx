@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -78,20 +79,26 @@ const CreateItinerary = () => {
       details.itineraryName = nameMatch[1].trim();
     }
 
-    // Extract destinations
+    // Enhanced destination mapping with full names
     const destinations = {
       phuket: "Phuket, Thailand",
-      bangkok: "Bangkok, Thailand", 
+      bangkok: "Bangkok, Thailand",
+      "chiang mai": "Chiang Mai, Thailand",
+      krabi: "Krabi, Thailand",
       singapore: "Singapore",
-      bali: "Bali, Indonesia",
       "kuala lumpur": "Kuala Lumpur, Malaysia",
       penang: "Penang, Malaysia",
       langkawi: "Langkawi, Malaysia",
+      malacca: "Malacca, Malaysia",
+      bali: "Bali, Indonesia",
       jakarta: "Jakarta, Indonesia",
+      yogyakarta: "Yogyakarta, Indonesia",
       "ho chi minh": "Ho Chi Minh City, Vietnam",
       hanoi: "Hanoi, Vietnam",
+      "da nang": "Da Nang, Vietnam",
       manila: "Manila, Philippines",
-      boracay: "Boracay, Philippines"
+      boracay: "Boracay, Philippines",
+      cebu: "Cebu, Philippines"
     };
 
     for (const [key, value] of Object.entries(destinations)) {
@@ -167,41 +174,48 @@ const CreateItinerary = () => {
       return "Perfect! I've created 'Paradise Beach' - your Phuket adventure! Thailand is excellent for Middle Eastern families with abundant halal food options, beautiful beaches, and rich culture.";
     }
     
-    // Generic response when trip details are detected
-    if (Object.keys(parsedDetails).length > 0) {
+    // Enhanced destination-specific responses
+    if (parsedDetails.destination) {
       let response = "Great! I've extracted the trip details and updated your form. ";
       
-      if (parsedDetails.itineraryName && parsedDetails.destination) {
+      if (parsedDetails.itineraryName) {
         response += `Your '${parsedDetails.itineraryName}' trip to ${parsedDetails.destination} looks amazing! `;
-      } else if (parsedDetails.destination) {
+      } else {
         response += `${parsedDetails.destination} is an excellent choice! `;
       }
       
-      if (parsedDetails.destination?.includes("Thailand")) {
-        response += "Thailand offers incredible experiences with halal dining, beautiful beaches, and rich culture. ";
-      } else if (parsedDetails.destination?.includes("Singapore")) {
-        response += "Singapore is perfect for Middle Eastern travelers with excellent halal food and modern attractions. ";
-      } else if (parsedDetails.destination?.includes("Malaysia")) {
-        response += "Malaysia is ideal for Muslim travelers with abundant halal options and diverse experiences. ";
-      } else if (parsedDetails.destination?.includes("Indonesia")) {
-        response += "Indonesia offers amazing cultural experiences and beautiful landscapes. ";
+      // Country-specific cultural responses
+      if (parsedDetails.destination.includes("Thailand")) {
+        response += "Thailand is excellent for Middle Eastern families - abundant halal food, beautiful beaches, Muslim-friendly hotels. ";
+      } else if (parsedDetails.destination.includes("Malaysia")) {
+        response += "Malaysia is perfect for Muslim travelers - majority Muslim country, extensive halal cuisine, Islamic heritage sites. ";
+      } else if (parsedDetails.destination.includes("Singapore")) {
+        response += "Singapore is ideal for families - extremely safe, diverse halal dining, world-class attractions. ";
+      } else if (parsedDetails.destination.includes("Indonesia")) {
+        response += "Indonesia offers stunning landscapes with growing halal tourism infrastructure. ";
+      } else if (parsedDetails.destination.includes("Vietnam")) {
+        response += "Vietnam offers rich history and beautiful landscapes with increasing Muslim-friendly accommodations. ";
+      } else if (parsedDetails.destination.includes("Philippines")) {
+        response += "The Philippines has beautiful islands and growing halal tourism options, especially in major cities. ";
       }
       
       response += "What specific activities or preferences would you like me to include?";
       return response;
     }
     
-    // Existing response logic for other cases
-    if (lowercaseInput.includes("phuket")) {
-      return "Perfect choice! Phuket is ideal for Middle Eastern travelers. I'll create a luxury itinerary featuring pristine beaches, halal dining, cultural experiences, and world-class spas. Would you like me to include specific activities like island hopping to Phi Phi Islands or traditional Thai cooking classes?";
+    // Individual destination responses when no full trip details are provided
+    if (lowercaseInput.includes("thailand") || lowercaseInput.includes("phuket") || lowercaseInput.includes("bangkok")) {
+      return "Thailand is excellent for Middle Eastern families - abundant halal food, beautiful beaches, Muslim-friendly hotels. What type of Thai experience are you looking for?";
+    } else if (lowercaseInput.includes("malaysia") || lowercaseInput.includes("kuala lumpur") || lowercaseInput.includes("penang")) {
+      return "Malaysia is perfect for Muslim travelers - majority Muslim country, extensive halal cuisine, Islamic heritage sites. Which Malaysian destinations interest you most?";
     } else if (lowercaseInput.includes("singapore")) {
-      return "Singapore is excellent for Middle Eastern visitors! It's a Muslim-friendly destination with halal food everywhere, stunning architecture, and amazing shopping. What type of experience are you looking for - luxury, family-friendly, or cultural exploration?";
-    } else if (lowercaseInput.includes("thailand")) {
-      return "Thailand offers incredible experiences for Middle Eastern travelers! From Bangkok's vibrant culture to Phuket's beaches and Chiang Mai's temples. What cities or experiences interest your clients most?";
-    } else if (lowercaseInput.includes("malaysia")) {
-      return "Malaysia is perfect for Middle Eastern travelers - it's a Muslim-majority country with incredible diversity! Kuala Lumpur's modern skyline, Penang's heritage, and Langkawi's beaches. What aspects would you like to highlight?";
-    } else if (lowercaseInput.includes("indonesia")) {
-      return "Indonesia, especially Bali and Jakarta, offers amazing experiences! Bali has Hindu culture with Muslim-friendly accommodations, while Jakarta showcases modern Indonesia. What type of Indonesian adventure are you planning?";
+      return "Singapore is ideal for families - extremely safe, diverse halal dining, world-class attractions. What type of Singapore experience would you like to create?";
+    } else if (lowercaseInput.includes("indonesia") || lowercaseInput.includes("bali") || lowercaseInput.includes("jakarta")) {
+      return "Indonesia offers stunning landscapes with growing halal tourism infrastructure. Are you interested in cultural experiences or beach destinations?";
+    } else if (lowercaseInput.includes("vietnam")) {
+      return "Vietnam offers rich history and beautiful landscapes with increasing Muslim-friendly accommodations. Which Vietnamese cities are you considering?";
+    } else if (lowercaseInput.includes("philippines")) {
+      return "The Philippines has beautiful islands and growing halal tourism options, especially in major cities. What type of island experience interests you?";
     } else if (lowercaseInput.includes("create") || lowercaseInput.includes("itinerary")) {
       return "I'd love to help create an amazing Southeast Asian itinerary! Please tell me: Which country/countries? How many days? How many travelers? What's their budget range and interests?";
     } else {
