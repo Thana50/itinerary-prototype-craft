@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,7 +16,11 @@ interface AIAssistantProps {
   onMessageSend: (message: string) => void;
 }
 
-const AIAssistant: React.FC<AIAssistantProps> = ({ onMessageSend }) => {
+export interface AIAssistantRef {
+  addAIMessage: (text: string) => void;
+}
+
+const AIAssistant = forwardRef<AIAssistantRef, AIAssistantProps>(({ onMessageSend }, ref) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
@@ -61,8 +65,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onMessageSend }) => {
     setChatMessages(prev => [...prev, aiResponse]);
   };
 
-  // Expose the addAIMessage function to parent component
-  React.useImperativeHandle(React.forwardRef(() => null), () => ({
+  useImperativeHandle(ref, () => ({
     addAIMessage
   }));
 
@@ -127,6 +130,8 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onMessageSend }) => {
       </CardContent>
     </Card>
   );
-};
+});
+
+AIAssistant.displayName = "AIAssistant";
 
 export default AIAssistant;

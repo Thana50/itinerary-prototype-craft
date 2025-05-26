@@ -4,12 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, LogOut } from "lucide-react";
 import TripOverviewForm from "@/components/TripOverviewForm";
-import AIAssistant from "@/components/AIAssistant";
+import AIAssistant, { AIAssistantRef } from "@/components/AIAssistant";
 import { parseTripDetails, getAIResponse, TripDetails } from "@/utils/tripUtils";
 
 const CreateItinerary = () => {
   const navigate = useNavigate();
-  const aiAssistantRef = useRef<any>(null);
+  const aiAssistantRef = useRef<AIAssistantRef>(null);
   
   const [formData, setFormData] = useState({
     itineraryName: "",
