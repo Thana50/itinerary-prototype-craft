@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
+import ItineraryPreview from "@/components/ItineraryPreview";
 
 interface TripOverviewFormProps {
   formData: {
@@ -17,9 +18,10 @@ interface TripOverviewFormProps {
     clientPreferences: string;
   };
   onFormChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  sampleItinerary: any[];
 }
 
-const TripOverviewForm: React.FC<TripOverviewFormProps> = ({ formData, onFormChange }) => {
+const TripOverviewForm: React.FC<TripOverviewFormProps> = ({ formData, onFormChange, sampleItinerary }) => {
   const handleSaveUpdate = (e: React.FormEvent) => {
     e.preventDefault();
     toast({
@@ -135,16 +137,7 @@ const TripOverviewForm: React.FC<TripOverviewFormProps> = ({ formData, onFormCha
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Generated Itinerary Preview</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="bg-gray-50 rounded-lg p-8 text-center text-gray-500">
-            <p>Itinerary details will appear here as you build it with AI assistance...</p>
-          </div>
-        </CardContent>
-      </Card>
+      <ItineraryPreview sampleItinerary={sampleItinerary} />
     </div>
   );
 };

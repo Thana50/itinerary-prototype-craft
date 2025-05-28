@@ -1,4 +1,3 @@
-
 export interface TripDetails {
   itineraryName?: string;
   destination?: string;
@@ -87,6 +86,194 @@ export const parseTripDetails = (input: string): TripDetails => {
   }
 
   return details;
+};
+
+export const generateSampleItinerary = (destination: string, duration: string): any[] => {
+  const days = parseInt(duration.replace(/\D/g, '')) || 7;
+  
+  if (destination.includes("Phuket, Thailand")) {
+    return [
+      {
+        day: 1,
+        title: "Arrival & Patong Beach",
+        activities: [
+          "Airport transfer to hotel",
+          "Hotel check-in and welcome drink",
+          "Patong Beach sunset walk",
+          "Halal dinner at local restaurant"
+        ]
+      },
+      {
+        day: 2,
+        title: "Phi Phi Islands Tour",
+        activities: [
+          "Full day island hopping tour",
+          "Snorkeling at Maya Bay",
+          "Halal lunch included",
+          "Evening free time"
+        ]
+      },
+      {
+        day: 3,
+        title: "Cultural Phuket",
+        activities: [
+          "Big Buddha Temple visit",
+          "Old Town walking tour",
+          "Traditional Thai massage",
+          "Halal street food experience"
+        ]
+      },
+      {
+        day: 4,
+        title: "Adventure Day",
+        activities: [
+          "Zip lining through jungle",
+          "ATV adventure tour",
+          "Elephant sanctuary visit",
+          "Hotel pool relaxation"
+        ]
+      }
+    ].slice(0, Math.min(days, 7));
+  }
+
+  if (destination.includes("Bangkok, Thailand")) {
+    return [
+      {
+        day: 1,
+        title: "Arrival & City Center",
+        activities: [
+          "Airport transfer to hotel",
+          "Hotel check-in",
+          "Chatuchak Weekend Market visit",
+          "Halal dinner in Chinatown"
+        ]
+      },
+      {
+        day: 2,
+        title: "Cultural Bangkok",
+        activities: [
+          "Grand Palace and Wat Phra Kaew",
+          "Wat Pho Temple tour",
+          "Halal lunch at local restaurant",
+          "Chao Phraya River cruise"
+        ]
+      },
+      {
+        day: 3,
+        title: "Modern Bangkok",
+        activities: [
+          "MBK Shopping Center",
+          "Jim Thompson House",
+          "Halal Thai cooking class",
+          "Rooftop dinner with city views"
+        ]
+      }
+    ].slice(0, Math.min(days, 7));
+  }
+
+  if (destination.includes("Kuala Lumpur, Malaysia")) {
+    return [
+      {
+        day: 1,
+        title: "Arrival & City Icons",
+        activities: [
+          "Airport transfer to hotel",
+          "Hotel check-in",
+          "Petronas Twin Towers visit",
+          "Halal dinner at Bukit Bintang"
+        ]
+      },
+      {
+        day: 2,
+        title: "Cultural Heritage",
+        activities: [
+          "Batu Caves temple complex",
+          "National Mosque visit",
+          "Halal lunch in Little India",
+          "Central Market shopping"
+        ]
+      },
+      {
+        day: 3,
+        title: "Modern Malaysia",
+        activities: [
+          "KLCC Park and Aquaria",
+          "Islamic Arts Museum",
+          "Halal street food tour",
+          "Menara KL Tower visit"
+        ]
+      }
+    ].slice(0, Math.min(days, 7));
+  }
+
+  if (destination.includes("Singapore")) {
+    return [
+      {
+        day: 1,
+        title: "Arrival & Marina Bay",
+        activities: [
+          "Airport transfer to hotel",
+          "Hotel check-in",
+          "Marina Bay Sands area tour",
+          "Halal dinner at Arab Street"
+        ]
+      },
+      {
+        day: 2,
+        title: "Cultural Singapore",
+        activities: [
+          "Sultan Mosque visit",
+          "Kampong Glam heritage tour",
+          "Halal lunch at Malay Heritage Centre",
+          "Gardens by the Bay evening show"
+        ]
+      },
+      {
+        day: 3,
+        title: "Family Fun",
+        activities: [
+          "Universal Studios Singapore",
+          "Sentosa Island beaches",
+          "Halal dining at VivoCity",
+          "Night Safari adventure"
+        ]
+      }
+    ].slice(0, Math.min(days, 7));
+  }
+
+  // Default itinerary for other destinations
+  return [
+    {
+      day: 1,
+      title: "Arrival & Orientation",
+      activities: [
+        "Airport transfer to hotel",
+        "Hotel check-in and orientation",
+        "Local area exploration",
+        "Welcome halal dinner"
+      ]
+    },
+    {
+      day: 2,
+      title: "Cultural Discovery",
+      activities: [
+        "Cultural sites and landmarks",
+        "Local market visit",
+        "Halal lunch experience",
+        "Traditional activities"
+      ]
+    },
+    {
+      day: 3,
+      title: "Adventure & Relaxation",
+      activities: [
+        "Adventure activities",
+        "Scenic tour",
+        "Halal dining experience",
+        "Leisure time"
+      ]
+    }
+  ].slice(0, Math.min(days, 7));
 };
 
 export const getAIResponse = (input: string, parsedDetails: TripDetails): string => {

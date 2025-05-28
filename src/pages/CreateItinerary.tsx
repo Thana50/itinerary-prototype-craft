@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, LogOut } from "lucide-react";
 import TripOverviewForm from "@/components/TripOverviewForm";
 import AIAssistant, { AIAssistantRef } from "@/components/AIAssistant";
-import { parseTripDetails, getAIResponse, TripDetails } from "@/utils/tripUtils";
+import ItineraryPreview from "@/components/ItineraryPreview";
+import { parseTripDetails, getAIResponse, TripDetails, generateSampleItinerary } from "@/utils/tripUtils";
 
 const CreateItinerary = () => {
   const navigate = useNavigate();
@@ -20,6 +21,8 @@ const CreateItinerary = () => {
     clientPreferences: ""
   });
 
+  const [sampleItinerary, setSampleItinerary] = useState<any[]>([]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -33,6 +36,12 @@ const CreateItinerary = () => {
       ...(details.numberOfTravelers && { numberOfTravelers: details.numberOfTravelers }),
       ...(details.duration && { clientPreferences: prev.clientPreferences + (prev.clientPreferences ? ", " : "") + `Duration: ${details.duration}` })
     }));
+
+    // Generate sample itinerary if destination is identified
+    if (details.destination) {
+      const itinerary = generateSampleItinerary(details.destination, details.duration || "7 days");
+      setSampleItinerary(itinerary);
+    }
   };
 
   const handleMessageSend = (message: string) => {
@@ -94,7 +103,11 @@ const CreateItinerary = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Trip Overview Form */}
           <div className="lg:col-span-2">
-            <TripOverviewForm formData={formData} onFormChange={handleChange} />
+            <TripOverviewForm 
+              formData={formData} 
+              onFormChange={handleChange} 
+              sampleItinerary={sampleItinerary}
+            />
           </div>
 
           {/* Right Column - AI Chat Interface */}
