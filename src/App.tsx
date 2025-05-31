@@ -14,6 +14,8 @@ import VendorDashboard from "./pages/VendorDashboard";
 import ItineraryDetail from "./pages/ItineraryDetail";
 import NegotiationDetail from "./pages/NegotiationDetail";
 import CreateItinerary from "./pages/CreateItinerary";
+import SharedItinerary from "./pages/SharedItinerary";
+import NegotiationRoom from "./pages/NegotiationRoom";
 
 const queryClient = new QueryClient();
 
@@ -30,7 +32,9 @@ const App = () => (
           <Route path="/traveler-dashboard" element={<TravelerDashboard />} />
           <Route path="/vendor-dashboard" element={<VendorDashboard />} />
           <Route path="/itinerary/:id" element={<ItineraryDetail />} />
+          <Route path="/itinerary/shared/:token" element={<SharedItinerary />} />
           <Route path="/negotiation/:id" element={<NegotiationDetail />} />
+          <Route path="/negotiation/room/:id" element={<NegotiationRoom />} />
           <Route path="/create-itinerary" element={<CreateItinerary />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

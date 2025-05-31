@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Send } from "lucide-react";
+import { Send, Loader2 } from "lucide-react";
 
 interface ChatMessage {
   id: number;
@@ -14,34 +14,53 @@ interface ChatMessage {
 
 interface AIAssistantProps {
   onMessageSend: (message: string) => void;
+  userRole?: "agent" | "traveler" | "vendor";
+  isLoading?: boolean;
 }
 
 export interface AIAssistantRef {
   addAIMessage: (text: string) => void;
 }
 
-const AIAssistant = forwardRef<AIAssistantRef, AIAssistantProps>(({ onMessageSend }, ref) => {
+const AIAssistant = forwardRef<AIAssistantRef, AIAssistantProps>(({ onMessageSend, userRole = "agent", isLoading = false }, ref) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    {
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [chatInput, setChatInput] = useState("");
+
+  useEffect(() => {
+    // Set initial message based on user role
+    const initialMessage = getInitialMessage(userRole);
+    setChatMessages([{
       id: 1,
-      text: "Hello! I'm your Travia AI Assistant for Southeast Asian travel planning. I specialize in Thailand, Singapore, Malaysia, Indonesia, Philippines, and Vietnam - perfect for Middle Eastern travelers! Try saying: 'Create a 7-day trip to Phuket called Paradise Beach for 4 people'",
+      text: initialMessage,
       sender: "ai",
       timestamp: new Date()
-    }
-  ]);
-  const [chatInput, setChatInput] = useState("");
+    }]);
+  }, [userRole]);
 
   useEffect(() => {
     scrollToBottom();
   }, [chatMessages]);
+
+  const getInitialMessage = (role: string) => {
+    switch(role) {
+      case "agent":
+        return "Hello! I'm your Travia AI Assistant for Southeast Asian travel planning. I specialize in Thailand, Singapore, Malaysia, Indonesia, Philippines, and Vietnam - perfect for Middle Eastern travelers! Try saying: 'Create a 7-day trip to Phuket called Paradise Beach for 4 people'";
+      case "traveler":
+        return "Welcome! I'm here to help you review and customize your itinerary. Feel free to ask about activities, request changes, or get more information about your destinations. How can I assist you today?";
+      case "vendor":
+        return "Hello! I'm your vendor assistant. I can help you respond to rate requests, negotiate pricing, and manage service inquiries from travel agents. What can I help you with?";
+      default:
+        return "Hello! How can I assist you today?";
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleSendMessage = () => {
-    if (!chatInput.trim()) return;
+    if (!chatInput.trim() || isLoading) return;
 
     const userMessage: ChatMessage = {
       id: Date.now(),
@@ -70,7 +89,7 @@ const AIAssistant = forwardRef<AIAssistantRef, AIAssistantProps>(({ onMessageSen
   }));
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && !isLoading) {
       handleSendMessage();
     }
   };
@@ -106,24 +125,38 @@ const AIAssistant = forwardRef<AIAssistantRef, AIAssistantProps>(({ onMessageSen
               </div>
             </div>
           ))}
+          {isLoading && (
+            <div className="flex justify-start">
+              <div className="bg-gray-200 text-gray-800 rounded-lg p-3 flex items-center">
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                <span className="text-sm">Thinking...</span>
+              </div>
+            </div>
+          )}
           <div ref={messagesEndRef} />
         </div>
         
         <div className="border-t p-4">
           <div className="flex gap-2">
             <Input 
-              placeholder="Describe the trip you want to plan..."
+              placeholder="Describe what you need..."
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
               onKeyPress={handleKeyPress}
               className="flex-1"
+              disabled={isLoading}
             />
             <Button 
               onClick={handleSendMessage}
               size="icon"
               className="bg-blue-600 hover:bg-blue-700"
+              disabled={isLoading || !chatInput.trim()}
             >
-              <Send className="h-4 w-4" />
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
             </Button>
           </div>
         </div>
