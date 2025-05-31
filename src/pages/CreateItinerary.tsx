@@ -9,7 +9,7 @@ import AIAssistant, { AIAssistantRef } from "@/components/AIAssistant";
 import { parseTripDetails, generateSampleItinerary } from "@/utils/tripUtils";
 import { aiService } from "@/services/aiService";
 import { itineraryService } from "@/services/itineraryService";
-import { authService } from "@/services/authService";
+import { mockAuthService } from "@/services/mockAuthService";
 
 const CreateItinerary = () => {
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ const CreateItinerary = () => {
 
   const checkAuth = async () => {
     try {
-      const userData = await authService.getCurrentUser();
+      const userData = await mockAuthService.getCurrentUser();
       if (!userData || userData.profile?.role !== 'agent') {
         navigate("/login");
         return;
@@ -135,7 +135,7 @@ const CreateItinerary = () => {
 
   const handleLogout = async () => {
     try {
-      await authService.signOut();
+      await mockAuthService.signOut();
       navigate("/login");
     } catch (error) {
       console.error('Logout error:', error);
