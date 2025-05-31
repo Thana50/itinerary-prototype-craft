@@ -36,7 +36,6 @@ const App = () => (
           <Route path="/negotiation/:id" element={<NegotiationDetail />} />
           <Route path="/negotiation/room/:id" element={<NegotiationRoom />} />
           <Route path="/create-itinerary" element={<CreateItinerary />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

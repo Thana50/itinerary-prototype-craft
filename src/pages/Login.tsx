@@ -7,18 +7,44 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { User, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { mockAuthService } from "@/services/mockAuthService";
+import { toast } from "sonner";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login attempt:", { email, password, rememberMe });
-    // Simulate successful login and redirect to agent dashboard
-    navigate("/agent-dashboard");
+    setIsLoading(true);
+    
+    try {
+      const { profile } = await mockAuthService.signIn(email, password);
+      
+      toast.success(`Welcome back, ${profile.name}!`);
+      
+      // Navigate based on user role
+      switch (profile.role) {
+        case 'agent':
+          navigate("/agent-dashboard");
+          break;
+        case 'traveler':
+          navigate("/traveler-dashboard");
+          break;
+        case 'vendor':
+          navigate("/vendor-dashboard");
+          break;
+        default:
+          navigate("/agent-dashboard");
+      }
+    } catch (error) {
+      toast.error("Invalid credentials. Try: agent@demo.com, traveler@demo.com, or vendor@demo.com");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -33,13 +59,21 @@ const Login = () => {
             />
           </div>
           <CardTitle className="text-2xl font-bold text-slate-700 mb-2">
-            Agent Portal Login
+            Travel Platform Login
           </CardTitle>
           <CardDescription className="text-slate-500">
-            Welcome back! Please sign in to continue.
+            Demo Login - Use any of the emails below
           </CardDescription>
         </CardHeader>
         <CardContent className="px-8 pb-8">
+          <div className="mb-4 p-3 bg-blue-50 rounded-lg text-sm">
+            <p className="font-medium text-blue-800 mb-1">Demo Accounts:</p>
+            <p className="text-blue-700">• agent@demo.com (Travel Agent)</p>
+            <p className="text-blue-700">• traveler@demo.com (Traveler)</p>
+            <p className="text-blue-700">• vendor@demo.com (Vendor)</p>
+            <p className="text-blue-600 text-xs mt-2">Password: any text</p>
+          </div>
+          
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-slate-700 font-medium">
@@ -50,7 +84,7 @@ const Login = () => {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="agent@example.com"
+                  placeholder="agent@demo.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10 h-12 bg-gray-50 border-gray-200 rounded-lg"
@@ -88,19 +122,14 @@ const Login = () => {
                   Remember me
                 </Label>
               </div>
-              <button 
-                type="button"
-                className="text-sm text-blue-500 hover:text-blue-600 hover:underline"
-              >
-                Forgot password?
-              </button>
             </div>
 
             <Button 
               type="submit" 
+              disabled={isLoading}
               className="w-full h-12 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg"
             >
-              Sign In
+              {isLoading ? "Signing In..." : "Sign In"}
             </Button>
           </form>
           
