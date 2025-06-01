@@ -21,6 +21,65 @@ export const aiService = {
   getAgentResponse(message: string) {
     const lowercaseMessage = message.toLowerCase()
     
+    // Handle activity additions
+    if (lowercaseMessage.includes('add')) {
+      if (lowercaseMessage.includes('snorkeling') || lowercaseMessage.includes('snorkel')) {
+        if (lowercaseMessage.includes('day')) {
+          const dayMatch = message.match(/day\s*(\d+)/i);
+          const dayNumber = dayMatch ? dayMatch[1] : "your preferred day";
+          return `Excellent choice! Snorkeling is fantastic in this region with crystal-clear waters and vibrant marine life. I'll add snorkeling to Day ${dayNumber} of your itinerary. This activity is perfect for all skill levels and typically includes equipment rental.`;
+        }
+        return "Excellent choice! Snorkeling is fantastic in this region. Which day would you like me to add this activity to your itinerary?";
+      }
+      
+      if (lowercaseMessage.includes('cooking class') || lowercaseMessage.includes('cooking')) {
+        return "What a wonderful idea! Cooking classes are very popular and you'll learn to make authentic local dishes. Would you like me to add this to a specific day, or would you prefer it as an evening activity?";
+      }
+      
+      if (lowercaseMessage.includes('spa') || lowercaseMessage.includes('massage')) {
+        return "Perfect for relaxation! Traditional spa treatments in Southeast Asia are world-renowned. I can arrange this as a half-day experience or evening wellness session.";
+      }
+      
+      if (lowercaseMessage.includes('cultural tour') || lowercaseMessage.includes('temple') || lowercaseMessage.includes('heritage')) {
+        return "Excellent addition! Cultural experiences provide wonderful insights into local traditions and history. I can include temple visits, heritage sites, or guided cultural tours. Which day would work best for this activity?";
+      }
+    }
+    
+    // Handle accommodation changes
+    if (lowercaseMessage.includes('change') && (lowercaseMessage.includes('hotel') || lowercaseMessage.includes('accommodation'))) {
+      return "I'd be happy to help you find alternative accommodations. Are you looking for something more luxurious, more budget-friendly, or with specific amenities? I can suggest options that cater well to Middle Eastern travelers.";
+    }
+    
+    if (lowercaseMessage.includes('beachfront') || (lowercaseMessage.includes('beach') && lowercaseMessage.includes('hotel'))) {
+      return "Excellent choice! Beachfront properties offer stunning views and easy beach access. I'll look for oceanview accommodations with halal dining options.";
+    }
+    
+    if (lowercaseMessage.includes('luxury') && lowercaseMessage.includes('hotel')) {
+      return "Perfect! Luxury accommodations in Southeast Asia offer exceptional service and amenities. I'll find premium properties that understand the needs of Middle Eastern guests, with excellent halal dining and privacy options.";
+    }
+    
+    // Handle duration modifications
+    if (lowercaseMessage.includes('make it') && lowercaseMessage.includes('days')) {
+      const daysMatch = message.match(/(\d+)\s*days?/i);
+      const newDuration = daysMatch ? daysMatch[1] : "the new duration";
+      return `I can definitely adjust the duration! Let me reconfigure the itinerary for ${newDuration} days to ensure we include all the best experiences without rushing.`;
+    }
+    
+    if (lowercaseMessage.includes('extend') && lowercaseMessage.includes('days')) {
+      const daysMatch = message.match(/(\d+)\s*days?/i);
+      const newDuration = daysMatch ? daysMatch[1] : "the extended duration";
+      return `Great idea! Extending to ${newDuration} days will allow for a more relaxed pace and additional experiences. I'll redesign the itinerary to make the most of the extra time.`;
+    }
+    
+    // Handle food and dining requests
+    if (lowercaseMessage.includes('halal food') || lowercaseMessage.includes('halal restaurants') || lowercaseMessage.includes('halal dining')) {
+      return "Absolutely! I always ensure halal dining options are included. This destination has excellent halal restaurants and I'll make sure all meals meet your dietary requirements.";
+    }
+    
+    if (lowercaseMessage.includes('local cuisine') || lowercaseMessage.includes('local food')) {
+      return "Wonderful! Experiencing authentic local cuisine is one of the highlights of travel. I'll include the best local restaurants that offer halal options and cultural dining experiences.";
+    }
+    
     // Parse trip details first
     const tripDetails = parseTripDetails(message)
     
@@ -38,8 +97,18 @@ export const aiService = {
       return "Great! I can help you share this itinerary with your client. Please provide their email address and I'll generate a secure link they can use to review and modify the itinerary."
     }
     
+    // Handle unclear requests with helpful suggestions
+    if (lowercaseMessage.length > 5 && !this.isCommonGreeting(lowercaseMessage)) {
+      return "I'd love to help you customize that! Could you tell me more about what you'd like to change or add? For example, you could say 'add a cultural tour to day 3' or 'change to a luxury resort'. I'm here to make your trip perfect!";
+    }
+    
     // Use the enhanced AI response system for general queries
     return getAIResponse(message, {})
+  },
+
+  isCommonGreeting(message: string): boolean {
+    const greetings = ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening'];
+    return greetings.some(greeting => message.includes(greeting));
   },
 
   getTravelerResponse(message: string) {
