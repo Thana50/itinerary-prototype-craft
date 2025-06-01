@@ -1,0 +1,69 @@
+
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, LogOut, Share } from "lucide-react";
+
+interface CreateItineraryHeaderProps {
+  currentUser: any;
+  onLogout: () => void;
+  onSaveItinerary: () => void;
+  onBackToDashboard: () => void;
+  isLoading: boolean;
+  hasDestination: boolean;
+}
+
+const CreateItineraryHeader: React.FC<CreateItineraryHeaderProps> = ({
+  currentUser,
+  onLogout,
+  onSaveItinerary,
+  onBackToDashboard,
+  isLoading,
+  hasDestination
+}) => {
+  return (
+    <>
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <img 
+              src="/lovable-uploads/0eec4e7f-1447-475b-928f-96fbc0eca6e8.png" 
+              alt="Travia Logo" 
+              className="h-14 w-auto mr-4"
+            />
+          </div>
+          <div className="flex items-center space-x-4">
+            <span className="text-gray-600">Welcome, {currentUser?.profile?.name || 'Agent'}!</span>
+            <Button variant="ghost" size="sm" onClick={onLogout}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      {/* Page Header */}
+      <div className="container mx-auto px-6 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-2xl font-semibold text-gray-900">Itinerary Builder</h1>
+          <div className="flex gap-2">
+            <Button 
+              onClick={onSaveItinerary} 
+              disabled={isLoading || !hasDestination}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              <Share className="mr-2 h-4 w-4" />
+              Save & Share
+            </Button>
+            <Button variant="ghost" onClick={onBackToDashboard}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Dashboard
+            </Button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default CreateItineraryHeader;
