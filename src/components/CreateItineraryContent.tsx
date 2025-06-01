@@ -2,6 +2,7 @@
 import React, { useRef } from "react";
 import TripOverviewForm from "@/components/TripOverviewForm";
 import AIAssistant, { AIAssistantRef } from "@/components/AIAssistant";
+import ClientLinkGenerator from "@/components/ClientLinkGenerator";
 
 interface CreateItineraryContentProps {
   formData: {
@@ -47,6 +48,9 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
           onFormChange={onFormChange} 
           sampleItinerary={sampleItinerary}
         />
+        
+        {/* Client Link Generator */}
+        <ClientLinkGenerator hasItinerary={sampleItinerary.length > 0} />
       </div>
 
       {/* Right Column - AI Chat Interface */}
