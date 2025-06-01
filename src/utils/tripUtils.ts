@@ -122,7 +122,7 @@ export const generateSampleItinerary = (destination: string, duration: string): 
           "Airport transfer to hotel",
           "Hotel check-in and welcome drink",
           "Patong Beach sunset walk",
-          "Halal dinner at local restaurant"
+          "Halal dinner at local Thai restaurant"
         ]
       },
       {
@@ -131,31 +131,167 @@ export const generateSampleItinerary = (destination: string, duration: string): 
         activities: [
           "Full day island hopping tour",
           "Snorkeling at Maya Bay",
-          "Halal lunch included",
-          "Evening free time"
+          "Halal lunch included on boat",
+          "Return to hotel, evening free"
         ]
       },
       {
         day: 3,
-        title: "Cultural Phuket",
+        title: "Cultural Phuket Experience",
         activities: [
-          "Big Buddha Temple visit",
-          "Old Town walking tour",
+          "Visit Big Buddha Temple",
+          "Old Town Phuket walking tour",
           "Traditional Thai massage",
           "Halal street food experience"
         ]
       },
       {
         day: 4,
-        title: "Adventure Day",
+        title: "Adventure Activities",
         activities: [
           "Zip lining through jungle",
           "ATV adventure tour",
           "Elephant sanctuary visit",
-          "Hotel pool relaxation"
+          "Free time at hotel pool"
+        ]
+      },
+      {
+        day: 5,
+        title: "Beach & Relaxation",
+        activities: [
+          "Private beach day",
+          "Water sports (optional)",
+          "Spa treatment",
+          "Sunset dinner cruise"
+        ]
+      },
+      {
+        day: 6,
+        title: "Shopping & Culture",
+        activities: [
+          "Weekend market visit",
+          "Souvenir shopping",
+          "Cooking class experience",
+          "Farewell dinner"
+        ]
+      },
+      {
+        day: 7,
+        title: "Departure",
+        activities: [
+          "Hotel check-out",
+          "Last-minute shopping",
+          "Airport transfer"
         ]
       }
     ].slice(0, Math.min(days, 7));
+  }
+
+  if (destination.includes("Singapore")) {
+    return [
+      {
+        day: 1,
+        title: "City Arrival",
+        activities: [
+          "Changi Airport arrival",
+          "Marina Bay Sands area",
+          "Halal food court dinner"
+        ]
+      },
+      {
+        day: 2,
+        title: "Cultural Singapore",
+        activities: [
+          "Arab Quarter exploration",
+          "Sultan Mosque visit",
+          "Halal food trail tour"
+        ]
+      },
+      {
+        day: 3,
+        title: "Modern Attractions",
+        activities: [
+          "Gardens by the Bay",
+          "Singapore Flyer",
+          "Universal Studios"
+        ]
+      },
+      {
+        day: 4,
+        title: "Island & Nature",
+        activities: [
+          "Sentosa Island",
+          "Beach activities",
+          "Cable car ride"
+        ]
+      },
+      {
+        day: 5,
+        title: "Shopping & Departure",
+        activities: [
+          "Orchard Road shopping",
+          "Airport transfer"
+        ]
+      }
+    ].slice(0, Math.min(days, 5));
+  }
+
+  if (destination.includes("Kuala Lumpur, Malaysia")) {
+    return [
+      {
+        day: 1,
+        title: "City Arrival",
+        activities: [
+          "KLIA arrival",
+          "Petronas Towers visit",
+          "Halal dinner in KLCC"
+        ]
+      },
+      {
+        day: 2,
+        title: "Islamic Heritage",
+        activities: [
+          "National Mosque visit",
+          "Islamic Arts Museum",
+          "Central Market exploration"
+        ]
+      },
+      {
+        day: 3,
+        title: "Cultural Mix",
+        activities: [
+          "Batu Caves temple",
+          "Little India tour",
+          "Chinatown visit"
+        ]
+      },
+      {
+        day: 4,
+        title: "Modern KL",
+        activities: [
+          "KL Tower observation",
+          "Shopping at Pavilion",
+          "Food court experience"
+        ]
+      },
+      {
+        day: 5,
+        title: "Day Trip",
+        activities: [
+          "Malacca historical city",
+          "UNESCO sites",
+          "Traditional crafts"
+        ]
+      },
+      {
+        day: 6,
+        title: "Departure",
+        activities: [
+          "Last-minute shopping",
+          "Airport transfer"
+        ]
+      }
+    ].slice(0, Math.min(days, 6));
   }
 
   if (destination.includes("Bangkok, Thailand")) {
@@ -189,75 +325,50 @@ export const generateSampleItinerary = (destination: string, duration: string): 
           "Halal Thai cooking class",
           "Rooftop dinner with city views"
         ]
-      }
-    ].slice(0, Math.min(days, 7));
-  }
-
-  if (destination.includes("Kuala Lumpur, Malaysia")) {
-    return [
-      {
-        day: 1,
-        title: "Arrival & City Icons",
-        activities: [
-          "Airport transfer to hotel",
-          "Hotel check-in",
-          "Petronas Twin Towers visit",
-          "Halal dinner at Bukit Bintang"
-        ]
       },
       {
-        day: 2,
-        title: "Cultural Heritage",
+        day: 4,
+        title: "Cultural & Shopping",
         activities: [
-          "Batu Caves temple complex",
-          "National Mosque visit",
-          "Halal lunch in Little India",
-          "Central Market shopping"
-        ]
-      },
-      {
-        day: 3,
-        title: "Modern Malaysia",
-        activities: [
-          "KLCC Park and Aquaria",
-          "Islamic Arts Museum",
-          "Halal street food tour",
-          "Menara KL Tower visit"
+          "Floating market tour",
+          "Traditional massage experience",
+          "Siam Square shopping",
+          "Cultural show dinner"
         ]
       }
     ].slice(0, Math.min(days, 7));
   }
 
-  if (destination.includes("Singapore")) {
+  if (destination.includes("Bali, Indonesia")) {
     return [
       {
         day: 1,
-        title: "Arrival & Marina Bay",
+        title: "Arrival & Ubud",
         activities: [
-          "Airport transfer to hotel",
+          "Airport transfer to Ubud",
           "Hotel check-in",
-          "Marina Bay Sands area tour",
-          "Halal dinner at Arab Street"
+          "Rice terrace walk",
+          "Halal dinner with cultural show"
         ]
       },
       {
         day: 2,
-        title: "Cultural Singapore",
+        title: "Cultural Exploration",
         activities: [
-          "Sultan Mosque visit",
-          "Kampong Glam heritage tour",
-          "Halal lunch at Malay Heritage Centre",
-          "Gardens by the Bay evening show"
+          "Temple visits (Tanah Lot)",
+          "Traditional art villages",
+          "Halal Indonesian cooking class",
+          "Spa treatment"
         ]
       },
       {
         day: 3,
-        title: "Family Fun",
+        title: "Beach & Relaxation",
         activities: [
-          "Universal Studios Singapore",
-          "Sentosa Island beaches",
-          "Halal dining at VivoCity",
-          "Night Safari adventure"
+          "Transfer to beach resort",
+          "Beach activities",
+          "Water sports (optional)",
+          "Sunset dinner"
         ]
       }
     ].slice(0, Math.min(days, 7));
@@ -300,27 +411,27 @@ export const generateSampleItinerary = (destination: string, duration: string): 
 
 export const getDestinationResponse = (destination: string): string => {
   if (destination.includes("Thailand")) {
-    return "Excellent choice! Thailand is one of our most popular destinations for Middle Eastern families. Thailand offers abundant halal food options, beautiful beaches, Muslim-friendly hotels, and great value for money. The Thai people are very welcoming to visitors from the Middle East.";
+    return "Excellent selection! Based on my experience with similar itineraries, Thailand consistently receives outstanding feedback from our clients. Thailand offers abundant halal food options, beautiful beaches, Muslim-friendly hotels with prayer facilities, and exceptional value for money. Many of my Middle Eastern clients love how welcoming the Thai people are to visitors from the Middle East.";
   }
   
   if (destination.includes("Malaysia")) {
-    return "Perfect choice! Malaysia is ideal for Muslim travelers - it's a majority Muslim country with extensive halal cuisine, beautiful Islamic heritage sites, modern infrastructure, and the Malaysian people share many cultural values with Middle Eastern visitors.";
+    return "Perfect choice! This is one of our most popular combinations for Muslim travelers. Malaysia is ideal as it's a majority Muslim country with extensive halal cuisine, beautiful Islamic heritage sites, modern infrastructure, and the Malaysian people share many cultural values with Middle Eastern visitors. The hotels provide excellent prayer facilities and the dining is always halal-certified.";
   }
   
   if (destination.includes("Singapore")) {
-    return "Singapore is excellent for families! It's extremely safe and clean, has diverse halal dining options throughout the city, is easy to navigate, and offers world-class attractions. Many Middle Eastern families love Singapore for its efficiency and family-friendly environment.";
+    return "Singapore is excellent for families! Based on my experience, it's extremely safe and clean, perfect for families with children. It has diverse halal dining options throughout the city, is easy to navigate, and offers world-class attractions. Many Middle Eastern families love Singapore for its efficiency, family-friendly environment, and the fact that prayer facilities are readily available.";
   }
   
   if (destination.includes("Indonesia")) {
-    return "Great selection! Indonesia offers stunning tropical landscapes and Bali especially has been developing excellent facilities for Middle Eastern visitors, with growing halal tourism infrastructure and beautiful resorts.";
+    return "Great selection! Indonesia offers stunning tropical landscapes and Bali especially has been developing excellent facilities for Middle Eastern visitors, with growing halal tourism infrastructure and beautiful resorts. The local people are very welcoming to Middle Eastern visitors, and I often recommend it for its natural beauty and cultural experiences.";
   }
   
   if (destination.includes("Philippines")) {
-    return "The Philippines offers beautiful islands and beaches! English is widely spoken, making it easy for international travelers, and there are growing halal dining options in major cities.";
+    return "The Philippines offers beautiful islands and beaches! English is widely spoken, making it easy for international travelers, and there are growing halal dining options in major cities. Based on my local contacts, the best experiences are the pristine beaches and warm hospitality of the Filipino people.";
   }
   
   if (destination.includes("Vietnam")) {
-    return "Vietnam is an emerging destination with rich culture and history! The country is becoming more welcoming to international tourists with improving halal food options in major cities.";
+    return "Vietnam is an emerging destination with rich culture and history! The country is becoming more welcoming to international tourists with improving halal food options in major cities. I often recommend Vietnam for travelers seeking authentic cultural experiences and beautiful landscapes.";
   }
   
   return "This is an excellent Southeast Asian destination for Middle Eastern travelers!";
@@ -329,17 +440,17 @@ export const getDestinationResponse = (destination: string): string => {
 export const getAIResponse = (input: string, parsedDetails: TripDetails): string => {
   const lowercaseInput = input.toLowerCase();
   
-  // Handle activity requests and modifications
+  // Handle activity requests and modifications with professional expertise
   if (lowercaseInput.includes("add") && (lowercaseInput.includes("snorkeling") || lowercaseInput.includes("snorkel"))) {
     if (lowercaseInput.includes("day")) {
       const dayMatch = input.match(/day\s*(\d+)/i);
       const dayNumber = dayMatch ? dayMatch[1] : "your preferred day";
-      return `Excellent choice! Snorkeling is fantastic in this region with crystal-clear waters and vibrant marine life. I'll add snorkeling to Day ${dayNumber} of your itinerary. This activity is perfect for all skill levels and typically includes equipment rental.`;
+      return `Excellent choice! Based on my experience with similar itineraries, snorkeling is fantastic in this region with crystal-clear waters and vibrant marine life. I'll add snorkeling to Day ${dayNumber} of your itinerary. This activity is perfect for all skill levels and typically includes equipment rental. Many of my Middle Eastern clients love the underwater experiences here!`;
     }
-    return "Excellent choice! Snorkeling is fantastic in this region. Which day would you like me to add this activity to your itinerary?";
+    return "Excellent choice! Snorkeling is fantastic in this region. Which day would you like me to add this activity to your itinerary? A tip from my local contacts: the morning sessions usually offer the best visibility.";
   }
 
-  // Enhanced destination-specific responses with cultural insights
+  // Enhanced destination-specific responses with cultural insights and professional expertise
   if (parsedDetails.destination) {
     let response = "Excellent! I've updated your form with the trip details. ";
     
@@ -348,18 +459,18 @@ export const getAIResponse = (input: string, parsedDetails: TripDetails): string
     }
     
     response += getDestinationResponse(parsedDetails.destination);
-    response += " Would you like me to suggest some specific activities or cultural experiences for your trip?";
+    response += " I'm excited to create this amazing journey for you! Would you like me to suggest some specific activities or cultural experiences that I often recommend for this destination?";
     return response;
   }
   
   // Individual destination responses when no full trip details are provided
   const destinations = [
-    { keywords: ["thailand", "phuket", "bangkok", "chiang mai"], response: getDestinationResponse("Thailand") + " What specific Thai destinations are you considering?" },
-    { keywords: ["malaysia", "kuala lumpur", "kl", "penang", "langkawi"], response: getDestinationResponse("Malaysia") + " Which Malaysian cities interest you most?" },
-    { keywords: ["singapore"], response: getDestinationResponse("Singapore") + " What type of Singapore experience would you like to create?" },
-    { keywords: ["indonesia", "bali", "jakarta"], response: getDestinationResponse("Indonesia") + " Are you interested in cultural experiences or beach destinations?" },
-    { keywords: ["vietnam", "hanoi", "saigon", "ho chi minh"], response: getDestinationResponse("Vietnam") + " Which Vietnamese destinations are you considering?" },
-    { keywords: ["philippines", "manila", "boracay", "cebu"], response: getDestinationResponse("Philippines") + " What type of island experience interests you?" }
+    { keywords: ["thailand", "phuket", "bangkok", "chiang mai"], response: getDestinationResponse("Thailand") + " What specific Thai destinations are you considering? I have several excellent options for you based on your preferences." },
+    { keywords: ["malaysia", "kuala lumpur", "kl", "penang", "langkawi"], response: getDestinationResponse("Malaysia") + " Which Malaysian cities interest you most? This destination combines the best of culture, relaxation, and adventure." },
+    { keywords: ["singapore"], response: getDestinationResponse("Singapore") + " What type of Singapore experience would you like to create? I can absolutely accommodate any preference you have." },
+    { keywords: ["indonesia", "bali", "jakarta"], response: getDestinationResponse("Indonesia") + " Are you interested in cultural experiences or beach destinations? Let me find the perfect solution for that." },
+    { keywords: ["vietnam", "hanoi", "saigon", "ho chi minh"], response: getDestinationResponse("Vietnam") + " Which Vietnamese destinations are you considering? This experience is particularly special because of its rich history and emerging tourism infrastructure." },
+    { keywords: ["philippines", "manila", "boracay", "cebu"], response: getDestinationResponse("Philippines") + " What type of island experience interests you? If you're interested in beach activities, I could also suggest some wonderful alternatives." }
   ];
   
   for (const dest of destinations) {
@@ -369,8 +480,8 @@ export const getAIResponse = (input: string, parsedDetails: TripDetails): string
   }
   
   if (lowercaseInput.includes("create") || lowercaseInput.includes("itinerary") || lowercaseInput.includes("trip")) {
-    return "I'd love to help create an amazing Southeast Asian itinerary! Please tell me: Which country/destination? How many days? How many travelers? I specialize in Thailand, Malaysia, Singapore, Indonesia, Vietnam, and the Philippines - all excellent choices for Middle Eastern travelers!";
+    return "I'd love to help create an amazing Southeast Asian itinerary! Based on my experience with similar itineraries, please tell me: Which country/destination? How many days? How many travelers? I specialize in Thailand, Malaysia, Singapore, Indonesia, Vietnam, and the Philippines - all excellent choices for Middle Eastern travelers with proper halal facilities and cultural sensitivity!";
   }
   
-  return "I'm your Southeast Asian travel specialist! I can help you plan amazing trips to Thailand, Malaysia, Singapore, Indonesia, Vietnam, and the Philippines - all with special consideration for Middle Eastern travelers' needs including halal food, cultural sensitivity, and family-friendly activities. What destination interests you?";
+  return "I'm your Southeast Asian travel specialist! Based on my experience helping hundreds of Middle Eastern families plan successful vacations, I can help you plan amazing trips to Thailand, Malaysia, Singapore, Indonesia, Vietnam, and the Philippines - all with special consideration for halal food, prayer facilities, cultural sensitivity, and family-friendly activities. You're going to love these destinations! What destination interests you?";
 };
