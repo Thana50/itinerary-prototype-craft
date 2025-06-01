@@ -1,13 +1,11 @@
 
-import { parseTripDetails, generateSampleItinerary } from '@/utils/tripUtils'
+import { parseTripDetails, generateSampleItinerary, getAIResponse } from '@/utils/tripUtils'
 
 // For demo purposes, we'll simulate AI responses. In production, this would use OpenAI/Claude API
 export const aiService = {
   async generateItineraryResponse(message: string, userRole: 'agent' | 'traveler' | 'vendor') {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    const lowercaseMessage = message.toLowerCase()
     
     if (userRole === 'agent') {
       return this.getAgentResponse(message)
@@ -23,14 +21,15 @@ export const aiService = {
   getAgentResponse(message: string) {
     const lowercaseMessage = message.toLowerCase()
     
-    if (lowercaseMessage.includes('create') && lowercaseMessage.includes('itinerary')) {
-      const tripDetails = parseTripDetails(message)
-      if (tripDetails.destination) {
-        return `Perfect! I've identified ${tripDetails.destination} as your destination. I can see this is for ${tripDetails.numberOfTravelers || 'multiple'} travelers. I've generated a sample itinerary that includes halal dining options and cultural experiences perfect for Middle Eastern clients. Would you like me to customize any specific days or add particular activities?`
-      }
-      return "I'd love to help you create an itinerary! Please tell me the destination, duration, and number of travelers to get started."
+    // Parse trip details first
+    const tripDetails = parseTripDetails(message)
+    
+    // If we have trip details, use the enhanced response system
+    if (Object.keys(tripDetails).length > 0) {
+      return getAIResponse(message, tripDetails)
     }
     
+    // Handle other agent-specific requests
     if (lowercaseMessage.includes('negotiate') || lowercaseMessage.includes('vendor')) {
       return "I can help you initiate rate negotiations with vendors. What type of service do you need pricing for? (e.g., hotels, transportation, tours, restaurants)"
     }
@@ -39,7 +38,8 @@ export const aiService = {
       return "Great! I can help you share this itinerary with your client. Please provide their email address and I'll generate a secure link they can use to review and modify the itinerary."
     }
     
-    return "As your travel agent assistant, I can help you create itineraries, negotiate with vendors, and manage client communications. What would you like to work on?"
+    // Use the enhanced AI response system for general queries
+    return getAIResponse(message, {})
   },
 
   getTravelerResponse(message: string) {
