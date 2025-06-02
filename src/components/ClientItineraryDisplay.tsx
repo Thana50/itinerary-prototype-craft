@@ -2,50 +2,17 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const ClientItineraryDisplay = () => {
-  const sampleItinerary = [
-    {
-      day: 1,
-      title: "Arrival & Patong Beach",
-      activities: [
-        "🚌 Airport transfer to hotel",
-        "🏨 Hotel check-in and welcome drink", 
-        "🏖️ Patong Beach sunset walk",
-        "🍽️ Halal dinner at local Thai restaurant"
-      ]
-    },
-    {
-      day: 2,
-      title: "Phi Phi Islands Adventure",
-      activities: [
-        "🛥️ Island hopping boat tour",
-        "🤿 Snorkeling at Maya Bay",
-        "🍽️ Halal lunch on boat",
-        "🌅 Return to hotel evening"
-      ]
-    },
-    {
-      day: 3,
-      title: "Cultural Phuket Experience", 
-      activities: [
-        "🛕 Big Buddha Temple visit",
-        "🏛️ Old Town Phuket walking tour",
-        "💆 Traditional Thai massage",
-        "🍜 Halal street food experience"
-      ]
-    },
-    {
-      day: 4,
-      title: "Adventure & Nature",
-      activities: [
-        "🌿 Zip lining through jungle",
-        "🏍️ ATV adventure tour", 
-        "🐘 Elephant sanctuary visit",
-        "🏊 Pool relaxation time"
-      ]
-    }
-  ];
+interface ItineraryDay {
+  day: number;
+  title: string;
+  activities: string[];
+}
 
+interface ClientItineraryDisplayProps {
+  itinerary: ItineraryDay[];
+}
+
+const ClientItineraryDisplay = ({ itinerary }: ClientItineraryDisplayProps) => {
   return (
     <Card className="bg-white shadow-lg">
       <CardHeader className="bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-t-lg">
@@ -54,10 +21,10 @@ const ClientItineraryDisplay = () => {
       </CardHeader>
       <CardContent className="p-6">
         <div className="space-y-6">
-          {sampleItinerary.map((day, index) => (
+          {itinerary.map((day, index) => (
             <div key={day.day} className="relative">
               {/* Timeline connector */}
-              {index < sampleItinerary.length - 1 && (
+              {index < itinerary.length - 1 && (
                 <div className="absolute left-6 top-16 w-0.5 h-16 bg-gradient-to-b from-blue-300 to-green-300"></div>
               )}
               
@@ -89,16 +56,18 @@ const ClientItineraryDisplay = () => {
         </div>
         
         {/* Additional Days Note */}
-        <Card className="mt-6 bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
-          <CardContent className="p-4 text-center">
-            <p className="text-gray-600">
-              <span className="font-semibold">Days 5-7:</span> Beach relaxation, shopping, cultural experiences, and departure arrangements
-            </p>
-            <p className="text-sm text-gray-500 mt-2">
-              Complete itinerary details available - chat with our AI to explore more activities!
-            </p>
-          </CardContent>
-        </Card>
+        {itinerary.length < 7 && (
+          <Card className="mt-6 bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+            <CardContent className="p-4 text-center">
+              <p className="text-gray-600">
+                <span className="font-semibold">Days {itinerary.length + 1}-7:</span> Beach relaxation, shopping, cultural experiences, and departure arrangements
+              </p>
+              <p className="text-sm text-gray-500 mt-2">
+                Complete itinerary details available - chat with our AI to explore more activities!
+              </p>
+            </CardContent>
+          </Card>
+        )}
       </CardContent>
     </Card>
   );
