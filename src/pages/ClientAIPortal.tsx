@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +11,7 @@ import ClientItineraryDisplay from "@/components/ClientItineraryDisplay";
 import PricingUpdates from "@/components/PricingUpdates";
 import ModificationTracking from "@/components/ModificationTracking";
 import WeatherForecast from "@/components/WeatherForecast";
+import PhuketMap from "@/components/PhuketMap";
 
 interface ItineraryDay {
   day: number;
@@ -273,6 +273,9 @@ const ClientAIPortal = () => {
           {/* Left Side - Itinerary Display (60% / 3 columns) */}
           <div className="lg:col-span-3 space-y-6">
             <ClientItineraryDisplay itinerary={itinerary} />
+            
+            {/* Phuket Activity Map */}
+            <PhuketMap />
             
             {/* Weather Forecast */}
             <WeatherForecast />
