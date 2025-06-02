@@ -16,6 +16,7 @@ import NegotiationDetail from "./pages/NegotiationDetail";
 import CreateItinerary from "./pages/CreateItinerary";
 import SharedItinerary from "./pages/SharedItinerary";
 import NegotiationRoom from "./pages/NegotiationRoom";
+import ClientAIPortal from "./pages/ClientAIPortal";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/agent-dashboard" element={<AgentDashboard />} />
           <Route path="/traveler-dashboard" element={<TravelerDashboard />} />
           <Route path="/vendor-dashboard" element={<VendorDashboard />} />
+          <Route path="/client-portal" element={<ClientAIPortal />} />
           <Route path="/itinerary/:id" element={<ItineraryDetail />} />
           <Route path="/itinerary/shared/:token" element={<SharedItinerary />} />
           <Route path="/negotiation/:id" element={<NegotiationDetail />} />

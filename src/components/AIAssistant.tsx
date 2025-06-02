@@ -47,7 +47,7 @@ const AIAssistant = forwardRef<AIAssistantRef, AIAssistantProps>(({ onMessageSen
       case "agent":
         return "Hello! I'm your Travia AI Assistant for Southeast Asian travel planning. I specialize in Thailand, Singapore, Malaysia, Indonesia, Philippines, and Vietnam - perfect for Middle Eastern travelers! Try saying: 'Create a 7-day trip to Phuket called Paradise Beach for 4 people'";
       case "traveler":
-        return "Welcome! I'm here to help you review and customize your itinerary. Feel free to ask about activities, request changes, or get more information about your destinations. How can I assist you today?";
+        return "Welcome to your Travia travel portal! I can see your agent has prepared a wonderful 7-day Phuket adventure. Feel free to ask questions or request changes. For example: 'Can we add a Thai cooking class?' or 'I'd prefer more beach time.'";
       case "vendor":
         return "Hello! I'm your vendor assistant. I can help you respond to rate requests, negotiate pricing, and manage service inquiries from travel agents. What can I help you with?";
       default:
