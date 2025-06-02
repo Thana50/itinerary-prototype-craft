@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -12,14 +11,14 @@ const PhuketMap = () => {
   const [mapboxToken, setMapboxToken] = useState('');
   const [showTokenInput, setShowTokenInput] = useState(true);
 
-  // Activity locations in Phuket
+  // Activity locations in Phuket - using proper tuple typing
   const activityLocations = [
-    { name: "Patong Beach", coordinates: [98.2969, 7.8971], day: 1 },
-    { name: "Phi Phi Islands", coordinates: [98.7784, 7.7403], day: 2 },
-    { name: "Big Buddha Temple", coordinates: [98.3122, 7.8426], day: 3 },
-    { name: "Old Town Phuket", coordinates: [98.3875, 7.8804], day: 3 },
-    { name: "Jungle Zip Line", coordinates: [98.3500, 7.9200], day: 4 },
-    { name: "Elephant Sanctuary", coordinates: [98.3200, 7.9500], day: 4 }
+    { name: "Patong Beach", coordinates: [98.2969, 7.8971] as [number, number], day: 1 },
+    { name: "Phi Phi Islands", coordinates: [98.7784, 7.7403] as [number, number], day: 2 },
+    { name: "Big Buddha Temple", coordinates: [98.3122, 7.8426] as [number, number], day: 3 },
+    { name: "Old Town Phuket", coordinates: [98.3875, 7.8804] as [number, number], day: 3 },
+    { name: "Jungle Zip Line", coordinates: [98.3500, 7.9200] as [number, number], day: 4 },
+    { name: "Elephant Sanctuary", coordinates: [98.3200, 7.9500] as [number, number], day: 4 }
   ];
 
   const initializeMap = (token: string) => {
@@ -30,7 +29,7 @@ const PhuketMap = () => {
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/light-v11',
-      center: [98.3875, 7.8804], // Phuket center
+      center: [98.3875, 7.8804] as [number, number], // Phuket center
       zoom: 10,
       pitch: 30,
     });
