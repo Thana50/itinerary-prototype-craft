@@ -1,15 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
+
+import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { MapPin } from "lucide-react";
+import { MAPBOX_TOKEN } from "@/config/mapbox";
 
 const PhuketMap = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
-  const [mapboxToken, setMapboxToken] = useState('');
-  const [showTokenInput, setShowTokenInput] = useState(true);
 
   // Activity locations in Phuket - using proper tuple typing
   const activityLocations = [
@@ -21,10 +20,10 @@ const PhuketMap = () => {
     { name: "Elephant Sanctuary", coordinates: [98.3200, 7.9500] as [number, number], day: 4 }
   ];
 
-  const initializeMap = (token: string) => {
-    if (!mapContainer.current || !token) return;
+  useEffect(() => {
+    if (!mapContainer.current) return;
 
-    mapboxgl.accessToken = token;
+    mapboxgl.accessToken = MAPBOX_TOKEN;
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
@@ -83,56 +82,10 @@ const PhuketMap = () => {
       });
     });
 
-    setShowTokenInput(false);
-  };
-
-  const handleTokenSubmit = () => {
-    if (mapboxToken.trim()) {
-      initializeMap(mapboxToken.trim());
-    }
-  };
-
-  useEffect(() => {
     return () => {
       map.current?.remove();
     };
   }, []);
-
-  if (showTokenInput) {
-    return (
-      <Card className="bg-gradient-to-r from-blue-50 to-green-50 border-blue-200">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center">
-            <MapPin className="h-5 w-5 mr-2 text-blue-600" />
-            Phuket Activity Map
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <p className="text-sm text-gray-600">
-            To display the interactive map, please enter your Mapbox public token:
-          </p>
-          <div className="flex gap-2">
-            <Input
-              type="text"
-              placeholder="Mapbox public token (pk.eyJ...)"
-              value={mapboxToken}
-              onChange={(e) => setMapboxToken(e.target.value)}
-              className="flex-1"
-            />
-            <button
-              onClick={handleTokenSubmit}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-            >
-              Load Map
-            </button>
-          </div>
-          <p className="text-xs text-gray-500">
-            Get your free token at <a href="https://mapbox.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">mapbox.com</a>
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <Card className="bg-gradient-to-r from-blue-50 to-green-50 border-blue-200">

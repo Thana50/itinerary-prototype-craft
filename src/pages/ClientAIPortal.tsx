@@ -1,9 +1,4 @@
 import React, { useState, useRef } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { MapPin, Calendar, Users, Clock, Phone, Save, CheckCircle, Share2, Printer } from "lucide-react";
 import { aiService } from "@/services/aiService";
 import { useToast } from "@/hooks/use-toast";
 import AIAssistant, { AIAssistantRef } from "@/components/AIAssistant";
@@ -12,6 +7,8 @@ import PricingUpdates from "@/components/PricingUpdates";
 import ModificationTracking from "@/components/ModificationTracking";
 import WeatherForecast from "@/components/WeatherForecast";
 import PhuketMap from "@/components/PhuketMap";
+import ClientPortalHeader from "@/components/ClientPortalHeader";
+import ApprovalWorkflow from "@/components/ApprovalWorkflow";
 
 interface ItineraryDay {
   day: number;
@@ -76,6 +73,14 @@ const ClientAIPortal = () => {
       ]
     }
   ]);
+
+  const tripDetails = {
+    destination: "Phuket, Thailand",
+    duration: "7 days",
+    travelers: "4 people",
+    startDate: "March 15, 2024",
+    endDate: "March 22, 2024"
+  };
 
   const handleMessageSend = async (message: string) => {
     setIsLoading(true);
@@ -209,63 +214,12 @@ const ClientAIPortal = () => {
     });
   };
 
-  const tripDetails = {
-    destination: "Phuket, Thailand",
-    duration: "7 days",
-    travelers: "4 people",
-    startDate: "March 15, 2024",
-    endDate: "March 22, 2024"
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-blue-600">
-                TRAVIA
-                <span className="text-gray-600 text-sm ml-2 font-normal">
-                  - Where Custom Trips Click.
-                </span>
-              </h1>
-              <p className="text-lg text-gray-700 mt-1">
-                Your Personalized Southeast Asian Adventure
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50">
-                Customization in Progress
-              </Badge>
-              <div className="text-right">
-                <div className="text-sm text-gray-600">Progress</div>
-                <Progress value={customizationProgress} className="w-24" />
-              </div>
-            </div>
-          </div>
-          
-          {/* Trip Summary */}
-          <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-600">
-            <div className="flex items-center">
-              <MapPin className="h-4 w-4 mr-1 text-blue-500" />
-              {tripDetails.destination}
-            </div>
-            <div className="flex items-center">
-              <Clock className="h-4 w-4 mr-1 text-green-500" />
-              {tripDetails.duration}
-            </div>
-            <div className="flex items-center">
-              <Users className="h-4 w-4 mr-1 text-purple-500" />
-              {tripDetails.travelers}
-            </div>
-            <div className="flex items-center">
-              <Calendar className="h-4 w-4 mr-1 text-orange-500" />
-              {tripDetails.startDate} - {tripDetails.endDate}
-            </div>
-          </div>
-        </div>
-      </header>
+      <ClientPortalHeader 
+        tripDetails={tripDetails} 
+        customizationProgress={customizationProgress}
+      />
 
       {/* Main Content */}
       <div className="container mx-auto px-6 py-8">
@@ -273,31 +227,9 @@ const ClientAIPortal = () => {
           {/* Left Side - Itinerary Display (60% / 3 columns) */}
           <div className="lg:col-span-3 space-y-6">
             <ClientItineraryDisplay itinerary={itinerary} />
-            
-            {/* Phuket Activity Map */}
             <PhuketMap />
-            
-            {/* Weather Forecast */}
             <WeatherForecast />
-            
-            {/* Pricing Updates */}
             <PricingUpdates totalPrice={totalPrice} modifications={modifications} />
-            
-            {/* Share and Print Options */}
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex gap-3">
-                  <Button variant="outline" onClick={handleShareItinerary} className="flex-1">
-                    <Share2 className="h-4 w-4 mr-2" />
-                    Share with Companion
-                  </Button>
-                  <Button variant="outline" onClick={handlePrintItinerary} className="flex-1">
-                    <Printer className="h-4 w-4 mr-2" />
-                    Print Itinerary
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
           </div>
 
           {/* Right Side - AI Chat Interface (40% / 2 columns) */}
@@ -309,37 +241,15 @@ const ClientAIPortal = () => {
               isLoading={isLoading}
             />
             
-            {/* Modification Tracking */}
             <ModificationTracking modifications={modifications} />
             
-            {/* Approval Workflow */}
-            <Card>
-              <CardContent className="p-4 space-y-3">
-                <Button 
-                  onClick={handleApproveItinerary} 
-                  className="w-full bg-green-600 hover:bg-green-700"
-                >
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  Approve This Itinerary
-                </Button>
-                <Button 
-                  onClick={handleRequestCall} 
-                  variant="outline" 
-                  className="w-full border-blue-200 text-blue-600 hover:bg-blue-50"
-                >
-                  <Phone className="h-4 w-4 mr-2" />
-                  Request Agent Call
-                </Button>
-                <Button 
-                  onClick={handleSaveChanges} 
-                  variant="outline" 
-                  className="w-full"
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  Save Changes & Continue Later
-                </Button>
-              </CardContent>
-            </Card>
+            <ApprovalWorkflow 
+              onApproveItinerary={handleApproveItinerary}
+              onRequestCall={handleRequestCall}
+              onSaveChanges={handleSaveChanges}
+              onShareItinerary={handleShareItinerary}
+              onPrintItinerary={handlePrintItinerary}
+            />
           </div>
         </div>
       </div>
