@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -23,12 +22,16 @@ const ClientPortalHeader = ({ tripDetails, customizationProgress }: ClientPortal
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-blue-600">
-              TRAVIA
-              <span className="text-gray-600 text-sm ml-2 font-normal">
+            <div className="flex items-center">
+              <img 
+                src="/lovable-uploads/cfb6c0d3-1e40-482b-b1b7-da284c52ef0d.png" 
+                alt="Travia Logo" 
+                className="h-10"
+              />
+              <span className="text-gray-500 text-sm ml-3 font-normal hidden md:block">
                 - Where Custom Trips Click.
               </span>
-            </h1>
+            </div>
             <p className="text-lg text-gray-700 mt-1">
               Your Personalized Southeast Asian Adventure
             </p>
