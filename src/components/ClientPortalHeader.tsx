@@ -19,11 +19,11 @@ const ClientPortalHeader = ({
   customizationProgress
 }: ClientPortalHeaderProps) => {
   return <header className="bg-white shadow-sm border-b">
-      <div className="container mx-auto px-6 py-4">
+      <div className="container mx-auto px-6 py-6">
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center">
-              <img alt="Travia Logo" className="w-[200px] h-[50px] object-contain" src="/lovable-uploads/60dd85bc-f81b-4d18-a1bc-350f50be3e46.png" />
+              <img alt="Travia Logo" className="w-[240px] h-[60px] md:w-[280px] md:h-[70px] object-contain" src="/lovable-uploads/60dd85bc-f81b-4d18-a1bc-350f50be3e46.png" />
               <span className="text-gray-500 text-sm ml-3 font-normal hidden md:block">
                 - Where Custom Trips Click.
               </span>
