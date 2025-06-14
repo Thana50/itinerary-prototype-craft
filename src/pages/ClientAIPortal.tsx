@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from "react";
 import { aiService } from "@/services/aiService";
 import { useToast } from "@/hooks/use-toast";
@@ -9,6 +10,7 @@ import WeatherForecast from "@/components/WeatherForecast";
 import PhuketMap from "@/components/PhuketMap";
 import ClientPortalHeader from "@/components/ClientPortalHeader";
 import ApprovalWorkflow from "@/components/ApprovalWorkflow";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ItineraryDay {
   day: number;
@@ -24,6 +26,7 @@ interface Modification {
 }
 
 const ClientAIPortal = () => {
+  const isMobile = useIsMobile();
   const aiAssistantRef = useRef<AIAssistantRef>(null);
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -185,10 +188,18 @@ const ClientAIPortal = () => {
   };
 
   const handleRequestCall = () => {
-    toast({
-      title: "Call Requested",
-      description: "Your travel agent will contact you within 2 hours to discuss your itinerary.",
-    });
+    if (isMobile) {
+      window.location.href = "tel:+15551234567"; // Example phone number
+      toast({
+        title: "Calling Agent",
+        description: "Opening your phone app...",
+      });
+    } else {
+      toast({
+        title: "Call Requested",
+        description: "Your travel agent will contact you within 2 hours to discuss your itinerary.",
+      });
+    }
   };
 
   const handleSaveChanges = () => {
@@ -199,11 +210,24 @@ const ClientAIPortal = () => {
   };
 
   const handleShareItinerary = () => {
-    navigator.clipboard.writeText("https://travia.app/shared/phuket-abc123");
-    toast({
-      title: "Link Copied!",
-      description: "Share this view-only link with your travel companions.",
-    });
+    const shareText = "Check out my awesome Phuket itinerary from Travia!";
+    const shareUrl = window.location.href;
+
+    if (isMobile && navigator.share) {
+      navigator.share({
+        title: 'My Travia Itinerary',
+        text: shareText,
+        url: shareUrl,
+      }).then(() => {
+        toast({ title: "Itinerary Shared!" });
+      }).catch((error) => console.log('Error sharing', error));
+    } else {
+      navigator.clipboard.writeText(shareUrl);
+      toast({
+        title: "Link Copied!",
+        description: "Share this view-only link with your travel companions.",
+      });
+    }
   };
 
   const handlePrintItinerary = () => {

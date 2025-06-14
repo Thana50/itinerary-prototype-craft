@@ -1,9 +1,8 @@
-
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Send, Loader2 } from "lucide-react";
+import { Send, Loader2, Mic } from "lucide-react";
 
 interface ChatMessage {
   id: number;
@@ -146,11 +145,22 @@ const AIAssistant = forwardRef<AIAssistantRef, AIAssistantProps>(({ onMessageSen
               className="flex-1"
               disabled={isLoading}
             />
+            <Button
+              size="icon"
+              variant="outline"
+              className="border-gray-300"
+              disabled={isLoading}
+              onClick={() => toast({ title: "Coming Soon!", description: "Voice input will be available in a future update."})}
+              aria-label="Use microphone"
+            >
+              <Mic className="h-4 w-4" />
+            </Button>
             <Button 
               onClick={handleSendMessage}
               size="icon"
               className="bg-blue-600 hover:bg-blue-700"
               disabled={isLoading || !chatInput.trim()}
+              aria-label="Send message"
             >
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

@@ -27,6 +27,7 @@ const ApprovalWorkflow = ({
           <Button 
             onClick={onApproveItinerary} 
             className="w-full bg-green-600 hover:bg-green-700"
+            size="lg"
           >
             <CheckCircle className="h-4 w-4 mr-2" />
             Approve This Itinerary
@@ -35,6 +36,7 @@ const ApprovalWorkflow = ({
             onClick={onRequestCall} 
             variant="outline" 
             className="w-full border-blue-200 text-blue-600 hover:bg-blue-50"
+            size="lg"
           >
             <Phone className="h-4 w-4 mr-2" />
             Request Agent Call
@@ -43,6 +45,7 @@ const ApprovalWorkflow = ({
             onClick={onSaveChanges} 
             variant="outline" 
             className="w-full"
+            size="lg"
           >
             <Save className="h-4 w-4 mr-2" />
             Save Changes & Continue Later
@@ -54,11 +57,11 @@ const ApprovalWorkflow = ({
       <Card>
         <CardContent className="p-4">
           <div className="flex gap-3">
-            <Button variant="outline" onClick={onShareItinerary} className="flex-1">
+            <Button variant="outline" onClick={onShareItinerary} className="flex-1" size="lg">
               <Share2 className="h-4 w-4 mr-2" />
               Share with Companion
             </Button>
-            <Button variant="outline" onClick={onPrintItinerary} className="flex-1">
+            <Button variant="outline" onClick={onPrintItinerary} className="flex-1" size="lg">
               <Printer className="h-4 w-4 mr-2" />
               Print Itinerary
             </Button>
