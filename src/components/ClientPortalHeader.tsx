@@ -1,9 +1,7 @@
-
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { MapPin, Calendar, Users, Clock } from "lucide-react";
-
 interface TripDetails {
   destination: string;
   duration: string;
@@ -11,24 +9,20 @@ interface TripDetails {
   startDate: string;
   endDate: string;
 }
-
 interface ClientPortalHeaderProps {
   tripDetails: TripDetails;
   customizationProgress: number;
 }
-
-const ClientPortalHeader = ({ tripDetails, customizationProgress }: ClientPortalHeaderProps) => {
-  return (
-    <header className="bg-white shadow-sm border-b">
+const ClientPortalHeader = ({
+  tripDetails,
+  customizationProgress
+}: ClientPortalHeaderProps) => {
+  return <header className="bg-white shadow-sm border-b">
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center">
-              <img 
-                src="/lovable-uploads/cfb6c0d3-1e40-482b-b1b7-da284c52ef0d.png" 
-                alt="Travia Logo" 
-                className="h-10"
-              />
+              <img alt="Travia Logo" className="h-10" src="/lovable-uploads/60dd85bc-f81b-4d18-a1bc-350f50be3e46.png" />
               <span className="text-gray-500 text-sm ml-3 font-normal hidden md:block">
                 - Where Custom Trips Click.
               </span>
@@ -68,8 +62,6 @@ const ClientPortalHeader = ({ tripDetails, customizationProgress }: ClientPortal
           </div>
         </div>
       </div>
-    </header>
-  );
+    </header>;
 };
-
 export default ClientPortalHeader;
