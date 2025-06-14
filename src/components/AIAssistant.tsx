@@ -1,8 +1,10 @@
+
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Send, Loader2, Mic } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface ChatMessage {
   id: number;
