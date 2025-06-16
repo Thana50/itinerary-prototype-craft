@@ -1,6 +1,6 @@
+
 import React, { useState, useRef } from "react";
 import { aiService } from "@/services/aiService";
-import { useToast } from "@/hooks/use-toast";
 import AIAssistant, { AIAssistantRef } from "@/components/AIAssistant";
 import ClientItineraryDisplay from "@/components/ClientItineraryDisplay";
 import PricingUpdates from "@/components/PricingUpdates";
@@ -9,75 +9,33 @@ import WeatherForecast from "@/components/WeatherForecast";
 import PhuketMap from "@/components/PhuketMap";
 import ClientPortalHeader from "@/components/ClientPortalHeader";
 import ApprovalWorkflow from "@/components/ApprovalWorkflow";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearchParams } from "react-router-dom";
-
-interface ItineraryDay {
-  day: number;
-  title: string;
-  activities: string[];
-}
-
-interface Modification {
-  id: string;
-  description: string;
-  priceChange: number;
-  timestamp: Date;
-}
+import { useItineraryState } from "@/hooks/useItineraryState";
+import { useClientPortalActions } from "@/hooks/useClientPortalActions";
+import { detectModification } from "@/utils/modificationDetector";
 
 const ClientAIPortal = () => {
-  const isMobile = useIsMobile();
   const [searchParams] = useSearchParams();
-  const isAgentView = searchParams.get('agent') === 'true'; // Check if accessed from agent dashboard
+  const isAgentView = searchParams.get('agent') === 'true';
   const aiAssistantRef = useRef<AIAssistantRef>(null);
-  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [totalPrice, setTotalPrice] = useState(3100);
-  const [modifications, setModifications] = useState<Modification[]>([]);
-  const [customizationProgress, setCustomizationProgress] = useState(25);
 
-  const [itinerary, setItinerary] = useState<ItineraryDay[]>([
-    {
-      day: 1,
-      title: "Arrival & Patong Beach",
-      activities: [
-        "🚌 Airport transfer to hotel",
-        "🏨 Hotel check-in and welcome drink", 
-        "🏖️ Patong Beach sunset walk",
-        "🍽️ Halal dinner at local Thai restaurant"
-      ]
-    },
-    {
-      day: 2,
-      title: "Phi Phi Islands Adventure",
-      activities: [
-        "🛥️ Island hopping boat tour",
-        "🤿 Snorkeling at Maya Bay",
-        "🍽️ Halal lunch on boat",
-        "🌅 Return to hotel evening"
-      ]
-    },
-    {
-      day: 3,
-      title: "Cultural Phuket Experience", 
-      activities: [
-        "🛕 Big Buddha Temple visit",
-        "🏛️ Old Town Phuket walking tour",
-        "💆 Traditional Thai massage",
-        "🍜 Halal street food experience"
-      ]
-    },
-    {
-      day: 4,
-      title: "Adventure & Nature",
-      activities: [
-        "🌿 Zip lining through jungle",
-        "🏍️ ATV adventure tour", 
-        "🐘 Elephant sanctuary visit",
-        "🏊 Pool relaxation time"
-      ]
-    }
-  ]);
+  const {
+    itinerary,
+    totalPrice,
+    modifications,
+    customizationProgress,
+    updateItinerary,
+    addModification
+  } = useItineraryState();
+
+  const {
+    handleApproveItinerary,
+    handleRequestCall,
+    handleSaveChanges,
+    handleShareItinerary,
+    handlePrintItinerary
+  } = useClientPortalActions();
 
   const tripDetails = {
     destination: "Phuket, Thailand",
@@ -113,131 +71,6 @@ const ClientAIPortal = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const detectModification = (message: string): Modification | null => {
-    const lowercaseMessage = message.toLowerCase();
-    
-    if (lowercaseMessage.includes('cooking class') && lowercaseMessage.includes('day 3')) {
-      return {
-        id: Date.now().toString(),
-        description: "Added Thai cooking class to Day 3",
-        priceChange: 45,
-        timestamp: new Date()
-      };
-    }
-    
-    if (lowercaseMessage.includes('more beach') || lowercaseMessage.includes('beach day')) {
-      return {
-        id: Date.now().toString(),
-        description: "Extended beach activities",
-        priceChange: 25,
-        timestamp: new Date()
-      };
-    }
-    
-    if (lowercaseMessage.includes('spa') || lowercaseMessage.includes('massage')) {
-      return {
-        id: Date.now().toString(),
-        description: "Added luxury spa treatment",
-        priceChange: 80,
-        timestamp: new Date()
-      };
-    }
-    
-    return null;
-  };
-
-  const updateItinerary = (modification: Modification) => {
-    if (modification.description.includes('cooking class')) {
-      setItinerary(prev => prev.map(day => 
-        day.day === 3 
-          ? {
-              ...day,
-              title: "Cultural & Culinary Experience",
-              activities: [...day.activities, "👨‍🍳 Thai cooking class (evening)"]
-            }
-          : day
-      ));
-      setCustomizationProgress(prev => Math.min(prev + 15, 100));
-    }
-    
-    if (modification.description.includes('beach')) {
-      setItinerary(prev => [...prev, {
-        day: 5,
-        title: "Extended Beach Paradise",
-        activities: [
-          "🏖️ Full day at Kata Beach",
-          "🏄‍♂️ Water sports activities",
-          "🍹 Beachside lunch",
-          "🌅 Sunset photography session"
-        ]
-      }]);
-      setCustomizationProgress(prev => Math.min(prev + 20, 100));
-    }
-  };
-
-  const addModification = (modification: Modification) => {
-    setModifications(prev => [modification, ...prev]);
-    setTotalPrice(prev => prev + (modification.priceChange * 4)); // 4 people
-  };
-
-  const handleApproveItinerary = () => {
-    toast({
-      title: "Itinerary Approved!",
-      description: "Your customized trip has been sent to your travel agent for final booking.",
-    });
-  };
-
-  const handleRequestCall = () => {
-    if (isMobile) {
-      window.location.href = "tel:+15551234567"; // Example phone number
-      toast({
-        title: "Calling Agent",
-        description: "Opening your phone app...",
-      });
-    } else {
-      toast({
-        title: "Call Requested",
-        description: "Your travel agent will contact you within 2 hours to discuss your itinerary.",
-      });
-    }
-  };
-
-  const handleSaveChanges = () => {
-    toast({
-      title: "Changes Saved",
-      description: "Your modifications have been saved. You can continue customizing anytime.",
-    });
-  };
-
-  const handleShareItinerary = () => {
-    const shareText = "Check out my awesome Phuket itinerary from Travia!";
-    const shareUrl = window.location.href;
-
-    if (isMobile && navigator.share) {
-      navigator.share({
-        title: 'My Travia Itinerary',
-        text: shareText,
-        url: shareUrl,
-      }).then(() => {
-        toast({ title: "Itinerary Shared!" });
-      }).catch((error) => console.log('Error sharing', error));
-    } else {
-      navigator.clipboard.writeText(shareUrl);
-      toast({
-        title: "Link Copied!",
-        description: "Share this view-only link with your travel companions.",
-      });
-    }
-  };
-
-  const handlePrintItinerary = () => {
-    window.print();
-    toast({
-      title: "Print Ready",
-      description: "Your itinerary is ready to print.",
-    });
   };
 
   return (
