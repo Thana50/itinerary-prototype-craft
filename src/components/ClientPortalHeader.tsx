@@ -2,8 +2,18 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { MapPin, Calendar, Users, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { MapPin, Calendar, Users, Clock, ArrowLeft, Home } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useNavigate } from "react-router-dom";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
 
 interface TripDetails {
   destination: string;
@@ -16,30 +26,81 @@ interface TripDetails {
 interface ClientPortalHeaderProps {
   tripDetails: TripDetails;
   customizationProgress: number;
+  showBackButton?: boolean;
 }
 
 const ClientPortalHeader = ({
   tripDetails,
-  customizationProgress
+  customizationProgress,
+  showBackButton = false
 }: ClientPortalHeaderProps) => {
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
-  return <header className="bg-white shadow-sm border-b">
+  const handleBackToDashboard = () => {
+    navigate("/agent-dashboard");
+  };
+
+  return (
+    <header className="bg-white shadow-sm border-b">
       <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center">
-              <img alt="Travia Logo" className="w-[200px] h-[50px] md:w-[280px] md:h-[70px] object-contain" src="/lovable-uploads/60dd85bc-f81b-4d18-a1bc-350f50be3e46.png" />
-              {!isMobile && (
-                <span className="text-gray-500 text-sm ml-3 font-normal hidden md:block">
-                  - Where Custom Trips Click.
-                </span>
-              )}
-            </div>
-            <p className="text-base md:text-lg text-gray-700 mt-1">
-              Your Personalized Southeast Asian Adventure
-            </p>
+        {/* Breadcrumb Navigation */}
+        {showBackButton && !isMobile && (
+          <div className="mb-4">
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink onClick={handleBackToDashboard} className="cursor-pointer flex items-center">
+                    <Home className="h-4 w-4 mr-1" />
+                    Agent Dashboard
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Client AI Portal</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
           </div>
+        )}
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            {/* Mobile back button */}
+            {showBackButton && isMobile && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleBackToDashboard}
+                className="mr-2 p-1"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            )}
+            
+            <div>
+              <div className="flex items-center">
+                {isMobile ? (
+                  <span className="text-xl font-bold text-blue-600">TRAVIA</span>
+                ) : (
+                  <img 
+                    alt="Travia Logo" 
+                    className="w-[240px] h-[60px] md:w-[280px] md:h-[70px] object-contain" 
+                    src="/lovable-uploads/60dd85bc-f81b-4d18-a1bc-350f50be3e46.png" 
+                  />
+                )}
+                {!isMobile && (
+                  <span className="text-gray-500 text-sm ml-3 font-normal hidden md:block">
+                    - Where Custom Trips Click.
+                  </span>
+                )}
+              </div>
+              <p className="text-base md:text-lg text-gray-700 mt-1">
+                Your Personalized Southeast Asian Adventure
+              </p>
+            </div>
+          </div>
+          
           {!isMobile && (
             <div className="flex items-center gap-4">
               <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50">
@@ -73,6 +134,8 @@ const ClientPortalHeader = ({
           </div>
         </div>
       </div>
-    </header>;
+    </header>
+  );
 };
+
 export default ClientPortalHeader;

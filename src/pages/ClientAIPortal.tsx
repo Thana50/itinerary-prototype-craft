@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from "react";
 import { aiService } from "@/services/aiService";
 import { useToast } from "@/hooks/use-toast";
@@ -11,6 +10,7 @@ import PhuketMap from "@/components/PhuketMap";
 import ClientPortalHeader from "@/components/ClientPortalHeader";
 import ApprovalWorkflow from "@/components/ApprovalWorkflow";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useSearchParams } from "react-router-dom";
 
 interface ItineraryDay {
   day: number;
@@ -27,6 +27,8 @@ interface Modification {
 
 const ClientAIPortal = () => {
   const isMobile = useIsMobile();
+  const [searchParams] = useSearchParams();
+  const isAgentView = searchParams.get('agent') === 'true'; // Check if accessed from agent dashboard
   const aiAssistantRef = useRef<AIAssistantRef>(null);
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -243,6 +245,7 @@ const ClientAIPortal = () => {
       <ClientPortalHeader 
         tripDetails={tripDetails} 
         customizationProgress={customizationProgress}
+        showBackButton={isAgentView}
       />
 
       {/* Main Content */}
