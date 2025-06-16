@@ -123,7 +123,10 @@ const AgentDashboard = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-orange-500 text-white cursor-pointer hover:bg-orange-600 transition-colors">
+            <Card 
+              className="bg-orange-500 text-white cursor-pointer hover:bg-orange-600 transition-colors"
+              onClick={() => navigate("/rate-negotiation")}
+            >
               <CardContent className="p-8 text-center">
                 <Handshake className="h-12 w-12 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Rate Negotiator</h3>
