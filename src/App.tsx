@@ -18,6 +18,7 @@ import SharedItinerary from "./pages/SharedItinerary";
 import NegotiationRoom from "./pages/NegotiationRoom";
 import ClientAIPortal from "./pages/ClientAIPortal";
 import RateNegotiationAI from "./pages/RateNegotiationAI";
+import ProviderPortal from "./pages/ProviderPortal";
 
 // Create QueryClient outside of component to prevent recreation on every render
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/vendor-dashboard" element={<VendorDashboard />} />
           <Route path="/client-portal" element={<ClientAIPortal />} />
           <Route path="/rate-negotiation" element={<RateNegotiationAI />} />
+          <Route path="/provider-portal/:id" element={<ProviderPortal />} />
           <Route path="/itinerary/:id" element={<ItineraryDetail />} />
           <Route path="/itinerary/shared/:token" element={<SharedItinerary />} />
           <Route path="/negotiation/:id" element={<NegotiationDetail />} />
