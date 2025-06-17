@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Brain, Clock, Copy, Check, Settings, ExternalLink } from "lucide-react";
+import { Brain, Clock, Copy, Check, Settings, ExternalLink, MessageCircle } from "lucide-react";
 import { aiNegotiationService, type NegotiationContext } from "@/services/aiNegotiationService";
 import ProviderResponseSimulator from "./ProviderResponseSimulator";
 import AIResponseAnalysis from "./AIResponseAnalysis";
+import CommunicationTimeline from "./CommunicationTimeline";
 
 interface ActiveNegotiation {
   id: number;
@@ -31,6 +32,7 @@ const ActiveNegotiationCard = ({ negotiation }: ActiveNegotiationCardProps) => {
   const [showSimulator, setShowSimulator] = useState(false);
   const [providerResponse, setProviderResponse] = useState<any>(null);
   const [showAnalysis, setShowAnalysis] = useState(false);
+  const [showCommunicationTimeline, setShowCommunicationTimeline] = useState(false);
 
   const openProviderPortal = () => {
     const portalUrl = `/provider-portal/${negotiation.id}`;
@@ -236,11 +238,20 @@ const ActiveNegotiationCard = ({ negotiation }: ActiveNegotiationCardProps) => {
               <Button 
                 size="sm" 
                 variant="outline"
+                onClick={() => setShowCommunicationTimeline(true)}
+                className="text-purple-600 border-purple-200 hover:bg-purple-50"
+              >
+                <MessageCircle className="h-4 w-4 mr-1" />
+                View Timeline
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline"
                 onClick={openProviderPortal}
                 className="text-purple-600 border-purple-200 hover:bg-purple-50"
               >
                 <ExternalLink className="h-4 w-4 mr-1" />
-                View Provider Portal
+                Provider Portal
               </Button>
               {negotiation.currentOffer === 0 ? (
                 <>
@@ -285,6 +296,12 @@ const ActiveNegotiationCard = ({ negotiation }: ActiveNegotiationCardProps) => {
         onClose={() => setShowSimulator(false)}
         negotiation={negotiation}
         onResponseSubmit={handleProviderResponse}
+      />
+
+      <CommunicationTimeline
+        isOpen={showCommunicationTimeline}
+        onClose={() => setShowCommunicationTimeline(false)}
+        negotiation={negotiation}
       />
     </>
   );
