@@ -19,6 +19,7 @@ import NegotiationRoom from "./pages/NegotiationRoom";
 import ClientAIPortal from "./pages/ClientAIPortal";
 import RateNegotiationAI from "./pages/RateNegotiationAI";
 
+// Create QueryClient outside of component to prevent recreation on every render
 const queryClient = new QueryClient();
 
 const App = () => (
