@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import ProviderResponseSimulator from "./ProviderResponseSimulator";
 import AIResponseAnalysis from "./AIResponseAnalysis";
 import CommunicationTimeline from "./CommunicationTimeline";
+import NegotiationTimeline from "./NegotiationTimeline";
 import NegotiationHeader from "./NegotiationHeader";
 import NegotiationDetails from "./NegotiationDetails";
 import AIAnalysisPanel from "./AIAnalysisPanel";
@@ -34,6 +35,7 @@ const ActiveNegotiationCard = ({ negotiation }: ActiveNegotiationCardProps) => {
   const [providerResponse, setProviderResponse] = useState<any>(null);
   const [showAnalysis, setShowAnalysis] = useState(false);
   const [showCommunicationTimeline, setShowCommunicationTimeline] = useState(false);
+  const [showNegotiationTimeline, setShowNegotiationTimeline] = useState(false);
 
   const handleProviderResponse = (response: any) => {
     setProviderResponse(response);
@@ -107,6 +109,7 @@ const ActiveNegotiationCard = ({ negotiation }: ActiveNegotiationCardProps) => {
           <NegotiationActions 
             negotiation={negotiation}
             onShowCommunicationTimeline={() => setShowCommunicationTimeline(true)}
+            onShowNegotiationTimeline={() => setShowNegotiationTimeline(true)}
             onShowSimulator={() => setShowSimulator(true)}
           />
         </CardContent>
@@ -122,6 +125,12 @@ const ActiveNegotiationCard = ({ negotiation }: ActiveNegotiationCardProps) => {
       <CommunicationTimeline
         isOpen={showCommunicationTimeline}
         onClose={() => setShowCommunicationTimeline(false)}
+        negotiation={negotiation}
+      />
+
+      <NegotiationTimeline
+        isOpen={showNegotiationTimeline}
+        onClose={() => setShowNegotiationTimeline(false)}
         negotiation={negotiation}
       />
     </>
