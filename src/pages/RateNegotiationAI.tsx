@@ -7,6 +7,7 @@ import ActiveNegotiationCard from "@/components/rate-negotiation/ActiveNegotiati
 import CompletedNegotiationsTab from "@/components/rate-negotiation/CompletedNegotiationsTab";
 import AICommunicationsTab from "@/components/rate-negotiation/AICommunicationsTab";
 import ProviderNetworkTab from "@/components/rate-negotiation/ProviderNetworkTab";
+import AIIntelligenceDashboard from "@/components/rate-negotiation/AIIntelligenceDashboard";
 
 const RateNegotiationAI = () => {
   const activeNegotiations = [
@@ -63,11 +64,12 @@ const RateNegotiationAI = () => {
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="active" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="active">Active Negotiations</TabsTrigger>
             <TabsTrigger value="completed">Completed</TabsTrigger>
             <TabsTrigger value="communications">AI Communications</TabsTrigger>
             <TabsTrigger value="providers">Provider Network</TabsTrigger>
+            <TabsTrigger value="ai-intelligence">AI Intelligence</TabsTrigger>
           </TabsList>
 
           <TabsContent value="active" className="mt-6">
@@ -88,6 +90,10 @@ const RateNegotiationAI = () => {
 
           <TabsContent value="providers">
             <ProviderNetworkTab />
+          </TabsContent>
+
+          <TabsContent value="ai-intelligence">
+            <AIIntelligenceDashboard />
           </TabsContent>
         </Tabs>
       </div>
