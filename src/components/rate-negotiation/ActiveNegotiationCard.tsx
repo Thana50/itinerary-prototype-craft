@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,7 @@ import ProviderResponseSimulator from "./ProviderResponseSimulator";
 import AIResponseAnalysis from "./AIResponseAnalysis";
 import CommunicationTimeline from "./CommunicationTimeline";
 import NegotiationTimeline from "./NegotiationTimeline";
+import CompletionWizard from "./CompletionWizard";
 import NegotiationHeader from "./NegotiationHeader";
 import NegotiationDetails from "./NegotiationDetails";
 import AIAnalysisPanel from "./AIAnalysisPanel";
@@ -36,6 +36,7 @@ const ActiveNegotiationCard = ({ negotiation }: ActiveNegotiationCardProps) => {
   const [showAnalysis, setShowAnalysis] = useState(false);
   const [showCommunicationTimeline, setShowCommunicationTimeline] = useState(false);
   const [showNegotiationTimeline, setShowNegotiationTimeline] = useState(false);
+  const [showCompletionWizard, setShowCompletionWizard] = useState(false);
 
   const handleProviderResponse = (response: any) => {
     setProviderResponse(response);
@@ -48,6 +49,8 @@ const ActiveNegotiationCard = ({ negotiation }: ActiveNegotiationCardProps) => {
     console.log('Action selected:', actionId);
     // Here you would implement the actual action logic
   };
+
+  const isNegotiationAccepted = negotiation.status === "Accepted" || negotiation.status === "Negotiating";
 
   if (showAnalysis && providerResponse) {
     return (
@@ -63,13 +66,24 @@ const ActiveNegotiationCard = ({ negotiation }: ActiveNegotiationCardProps) => {
                   {negotiation.service}
                 </div>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setShowAnalysis(false)}
-              >
-                Back to Negotiation
-              </Button>
+              <div className="flex gap-2">
+                {isNegotiationAccepted && (
+                  <Button 
+                    onClick={() => setShowCompletionWizard(true)}
+                    className="bg-green-600 hover:bg-green-700"
+                    size="sm"
+                  >
+                    Complete Negotiation
+                  </Button>
+                )}
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setShowAnalysis(false)}
+                >
+                  Back to Negotiation
+                </Button>
+              </div>
             </div>
           </CardHeader>
           <CardContent>
@@ -101,7 +115,18 @@ const ActiveNegotiationCard = ({ negotiation }: ActiveNegotiationCardProps) => {
     <>
       <Card className="bg-white">
         <CardHeader>
-          <NegotiationHeader negotiation={negotiation} />
+          <div className="flex justify-between items-start">
+            <NegotiationHeader negotiation={negotiation} />
+            {isNegotiationAccepted && (
+              <Button 
+                onClick={() => setShowCompletionWizard(true)}
+                className="bg-green-600 hover:bg-green-700"
+                size="sm"
+              >
+                Complete Negotiation
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           <NegotiationDetails negotiation={negotiation} />
@@ -131,6 +156,12 @@ const ActiveNegotiationCard = ({ negotiation }: ActiveNegotiationCardProps) => {
       <NegotiationTimeline
         isOpen={showNegotiationTimeline}
         onClose={() => setShowNegotiationTimeline(false)}
+        negotiation={negotiation}
+      />
+
+      <CompletionWizard
+        isOpen={showCompletionWizard}
+        onClose={() => setShowCompletionWizard(false)}
         negotiation={negotiation}
       />
     </>
