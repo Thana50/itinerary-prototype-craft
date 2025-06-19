@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import { Send, DollarSign, Check, X } from "lucide-react";
+import { Send, DollarSign, Check, X, ArrowLeft, Clock, MessageSquare } from "lucide-react";
 import { negotiationService } from "@/services/negotiationService";
 import { aiService } from "@/services/aiService";
 import { authService } from "@/services/authService";
@@ -92,8 +92,8 @@ const NegotiationRoom = () => {
       );
       
       toast({
-        title: "AI Suggestion",
-        description: aiSuggestion,
+        title: "Message Sent",
+        description: "Your message has been sent successfully.",
       });
 
     } catch (error) {
@@ -121,7 +121,7 @@ const NegotiationRoom = () => {
         description: "Offer accepted! Booking process initiated.",
       });
 
-      // In a real app, this would trigger booking workflow
+      // Navigate based on user role
       navigate(currentUser.profile.role === 'agent' ? '/agent-dashboard' : '/vendor-dashboard');
 
     } catch (error) {
@@ -129,9 +129,17 @@ const NegotiationRoom = () => {
     }
   };
 
+  const handleBackNavigation = () => {
+    if (currentUser?.profile.role === 'vendor') {
+      navigate('/vendor-dashboard');
+    } else {
+      navigate('/agent-dashboard');
+    }
+  };
+
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading negotiation...</p>
@@ -142,61 +150,102 @@ const NegotiationRoom = () => {
 
   if (!negotiation) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Negotiation Not Found</h1>
+          <Button onClick={handleBackNavigation} className="bg-blue-600 hover:bg-blue-700 text-white">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Dashboard
+          </Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 px-6 py-4 shadow-sm">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-semibold">{negotiation.service_type} Negotiation</h1>
-            <p className="text-sm text-gray-600">{negotiation.description}</p>
+          <div className="flex items-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleBackNavigation}
+              className="mr-4 text-blue-600 hover:bg-blue-50"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Dashboard
+            </Button>
+            <div>
+              <h1 className="text-xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                {negotiation.service_type} Negotiation
+              </h1>
+              <p className="text-sm text-gray-600">{negotiation.description}</p>
+            </div>
           </div>
-          <Badge variant={negotiation.status === 'pending' ? 'secondary' : 'default'}>
-            {negotiation.status}
-          </Badge>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center text-sm text-gray-500">
+              <Clock className="h-4 w-4 mr-1" />
+              Active negotiation
+            </div>
+            <Badge 
+              variant={negotiation.status === 'pending' ? 'secondary' : 'default'}
+              className={negotiation.status === 'pending' 
+                ? 'bg-orange-100 text-orange-800 border-orange-200' 
+                : 'bg-green-100 text-green-800 border-green-200'
+              }
+            >
+              {negotiation.status}
+            </Badge>
+          </div>
         </div>
       </header>
 
       <div className="container mx-auto px-6 py-8">
-        <Card>
+        <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="flex items-center">
-              <DollarSign className="mr-2 h-5 w-5" />
-              Rate Negotiation
+            <CardTitle className="flex items-center text-2xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <DollarSign className="mr-2 h-6 w-6 text-blue-600" />
+              Rate Negotiation Room
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4 mb-6" style={{ height: '400px', overflowY: 'auto' }}>
+            <div 
+              className="space-y-4 mb-6 bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-4 border border-blue-100" 
+              style={{ height: '400px', overflowY: 'auto' }}
+            >
               {negotiation.messages.map((message) => (
                 <div 
                   key={message.id}
                   className={`flex ${message.sender_id === currentUser?.user.id ? "justify-end" : "justify-start"}`}
                 >
                   <div 
-                    className={`max-w-[70%] rounded-lg p-3 ${
+                    className={`max-w-[70%] rounded-lg p-4 shadow-sm ${
                       message.sender_id === currentUser?.user.id
-                        ? "bg-blue-500 text-white" 
-                        : "bg-gray-200 text-gray-800"
+                        ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white" 
+                        : "bg-gradient-to-r from-white to-gray-50 text-gray-800 border border-gray-200"
                     }`}
                   >
-                    <div className="flex items-center mb-1">
-                      <span className="text-xs font-medium">
+                    <div className="flex items-center mb-2">
+                      <span className={`text-xs font-medium ${
+                        message.sender_id === currentUser?.user.id ? 'text-blue-100' : 'text-gray-600'
+                      }`}>
                         {message.sender_role === 'agent' ? 'Travel Agent' : 'Vendor'}
                       </span>
-                      <span className="text-xs ml-auto opacity-70">
+                      <span className={`text-xs ml-auto ${
+                        message.sender_id === currentUser?.user.id ? 'text-blue-100 opacity-70' : 'text-gray-500'
+                      }`}>
                         {new Date(message.created_at).toLocaleTimeString()}
                       </span>
                     </div>
-                    <p className="text-sm">{message.message}</p>
+                    <p className="text-sm leading-relaxed">{message.message}</p>
                     {message.price_offer && (
-                      <div className="mt-2 p-2 bg-white/20 rounded text-sm font-medium">
+                      <div className={`mt-3 p-3 rounded-lg text-sm font-medium ${
+                        message.sender_id === currentUser?.user.id 
+                          ? 'bg-white/20 text-white' 
+                          : 'bg-blue-50 text-blue-800 border border-blue-200'
+                      }`}>
+                        <DollarSign className="h-4 w-4 inline mr-1" />
                         Price Offer: ${message.price_offer}
                       </div>
                     )}
@@ -207,35 +256,63 @@ const NegotiationRoom = () => {
             </div>
 
             <div className="space-y-4">
-              <div className="flex gap-2">
+              <div className="flex gap-3">
                 <Input
                   placeholder="Type your message..."
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                  className="flex-1"
+                  className="flex-1 border-blue-200 focus:border-blue-400"
                 />
                 <Input
                   placeholder="Price ($)"
                   type="number"
                   value={priceOffer}
                   onChange={(e) => setPriceOffer(e.target.value)}
-                  className="w-32"
+                  className="w-32 border-blue-200 focus:border-blue-400"
                 />
-                <Button onClick={handleSendMessage}>
+                <Button 
+                  onClick={handleSendMessage}
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+                >
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
 
               {currentUser?.profile.role === 'agent' && (
-                <div className="flex gap-2">
-                  <Button onClick={handleAcceptOffer} className="bg-green-600 hover:bg-green-700">
+                <div className="flex gap-3 pt-2">
+                  <Button 
+                    onClick={handleAcceptOffer} 
+                    className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
+                  >
                     <Check className="mr-2 h-4 w-4" />
                     Accept & Book
                   </Button>
-                  <Button variant="outline">
+                  <Button 
+                    variant="outline"
+                    className="border-orange-200 text-orange-600 hover:bg-orange-50"
+                  >
                     <X className="mr-2 h-4 w-4" />
                     Counter Offer
+                  </Button>
+                </div>
+              )}
+
+              {currentUser?.profile.role === 'vendor' && (
+                <div className="flex gap-3 pt-2">
+                  <Button 
+                    onClick={handleAcceptOffer} 
+                    className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
+                  >
+                    <Check className="mr-2 h-4 w-4" />
+                    Accept Rate
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    className="border-orange-200 text-orange-600 hover:bg-orange-50"
+                  >
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    Send Counter
                   </Button>
                 </div>
               )}
