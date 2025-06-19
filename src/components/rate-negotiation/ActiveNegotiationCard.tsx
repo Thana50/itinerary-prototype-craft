@@ -50,6 +50,10 @@ const ActiveNegotiationCard = ({ negotiation }: ActiveNegotiationCardProps) => {
     // Here you would implement the actual action logic
   };
 
+  const handleViewProviderPortal = () => {
+    window.open(`/provider-portal/${negotiation.id}`, '_blank');
+  };
+
   const isNegotiationAccepted = negotiation.status === "Accepted" || negotiation.status === "Negotiating";
 
   if (showAnalysis && providerResponse) {
@@ -117,15 +121,25 @@ const ActiveNegotiationCard = ({ negotiation }: ActiveNegotiationCardProps) => {
         <CardHeader>
           <div className="flex justify-between items-start">
             <NegotiationHeader negotiation={negotiation} />
-            {isNegotiationAccepted && (
+            <div className="flex gap-2">
+              {isNegotiationAccepted && (
+                <Button 
+                  onClick={() => setShowCompletionWizard(true)}
+                  className="bg-green-600 hover:bg-green-700"
+                  size="sm"
+                >
+                  Complete Negotiation
+                </Button>
+              )}
               <Button 
-                onClick={() => setShowCompletionWizard(true)}
-                className="bg-green-600 hover:bg-green-700"
+                onClick={handleViewProviderPortal}
+                variant="outline"
                 size="sm"
+                className="text-blue-600 border-blue-200 hover:bg-blue-50"
               >
-                Complete Negotiation
+                View Provider Portal
               </Button>
-            )}
+            </div>
           </div>
         </CardHeader>
         <CardContent>
