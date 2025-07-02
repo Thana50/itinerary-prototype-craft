@@ -6,16 +6,16 @@ import { Clock } from "lucide-react";
 
 const RequestDetailsCard = () => {
   return (
-    <Card>
+    <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
       <CardHeader>
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="text-lg">Negotiation Request #TRV-2025-001</CardTitle>
+            <CardTitle className="text-lg text-gray-800">Negotiation Request #TRV-2025-001</CardTitle>
             <p className="text-sm text-gray-500 mt-1">Submitted: March 10, 2025 at 2:30 PM</p>
           </div>
           <div className="flex items-center gap-2">
-            <Badge className="bg-green-100 text-green-800">Standard</Badge>
-            <Badge variant="outline" className="flex items-center gap-1">
+            <Badge className="bg-gradient-to-r from-green-400 to-green-600 text-white">Standard</Badge>
+            <Badge variant="outline" className="flex items-center gap-1 border-orange-200 text-orange-600">
               <Clock className="h-3 w-3" />
               48 hours left
             </Badge>
@@ -44,7 +44,7 @@ const RequestDetailsCard = () => {
           </div>
         </div>
         
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+        <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-100">
           <div className="flex justify-between items-center">
             <div>
               <span className="text-sm text-gray-500">Current Rate:</span>
@@ -52,7 +52,7 @@ const RequestDetailsCard = () => {
             </div>
             <div>
               <span className="text-sm text-gray-500">Requested Rate:</span>
-              <span className="ml-2 font-semibold text-blue-600">$150/night</span>
+              <span className="ml-2 font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">$150/night</span>
             </div>
           </div>
         </div>
