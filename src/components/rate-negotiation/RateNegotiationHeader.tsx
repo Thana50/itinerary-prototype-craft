@@ -14,7 +14,7 @@ const RateNegotiationHeader = () => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate("/agent-dashboard")}
+            onClick={() => navigate("/vendor-dashboard")}
             className="mr-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
