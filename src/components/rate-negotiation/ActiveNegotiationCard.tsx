@@ -1,6 +1,8 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import ProviderResponseSimulator from "./ProviderResponseSimulator";
 import AIResponseAnalysis from "./AIResponseAnalysis";
 import CommunicationTimeline from "./CommunicationTimeline";
@@ -31,6 +33,7 @@ interface ActiveNegotiationCardProps {
 }
 
 const ActiveNegotiationCard = ({ negotiation }: ActiveNegotiationCardProps) => {
+  const navigate = useNavigate();
   const [showSimulator, setShowSimulator] = useState(false);
   const [providerResponse, setProviderResponse] = useState<any>(null);
   const [showAnalysis, setShowAnalysis] = useState(false);
@@ -52,6 +55,10 @@ const ActiveNegotiationCard = ({ negotiation }: ActiveNegotiationCardProps) => {
 
   const handleViewProviderPortal = () => {
     window.open(`/provider-portal/${negotiation.id}`, '_blank');
+  };
+
+  const handleViewAsProvider = () => {
+    navigate('/vendor-dashboard');
   };
 
   const isNegotiationAccepted = negotiation.status === "Accepted" || negotiation.status === "Negotiating";
@@ -131,6 +138,13 @@ const ActiveNegotiationCard = ({ negotiation }: ActiveNegotiationCardProps) => {
                   Complete Negotiation
                 </Button>
               )}
+              <Button 
+                onClick={handleViewAsProvider}
+                className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white"
+                size="sm"
+              >
+                View as Provider
+              </Button>
               <Button 
                 onClick={handleViewProviderPortal}
                 variant="outline"
