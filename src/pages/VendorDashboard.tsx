@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, Clock, Calendar, MessageSquare, Eye, CheckCircle, AlertCircle, TrendingUp, Trophy, Timer, Award } from "lucide-react";
@@ -9,11 +8,14 @@ import { useNavigate } from "react-router-dom";
 import VendorDashboardHeader from "@/components/vendor-dashboard/VendorDashboardHeader";
 import VendorStatsCards from "@/components/vendor-dashboard/VendorStatsCards";
 import VendorNegotiationInterface from "@/components/vendor-dashboard/VendorNegotiationInterface";
+import VendorSimulationCenter from "@/components/vendor-dashboard/VendorSimulationCenter";
+import VendorSimulationInterface from "@/components/vendor-dashboard/VendorSimulationInterface";
 
 const VendorDashboard = () => {
   const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState("active");
   const [selectedNegotiation, setSelectedNegotiation] = useState<string | null>(null);
+  const [selectedSimulation, setSelectedSimulation] = useState<string | null>(null);
 
   const activeNegotiations = [
     {
@@ -110,6 +112,19 @@ const VendorDashboard = () => {
     setSelectedNegotiation(negotiationId);
   };
 
+  const handleStartSimulation = (scenarioId: string) => {
+    setSelectedSimulation(scenarioId);
+  };
+
+  if (selectedSimulation) {
+    return (
+      <VendorSimulationInterface 
+        scenarioId={selectedSimulation}
+        onBack={() => setSelectedSimulation(null)}
+      />
+    );
+  }
+
   if (selectedNegotiation) {
     const negotiation = activeNegotiations.find(n => n.id === selectedNegotiation);
     return (
@@ -132,19 +147,22 @@ const VendorDashboard = () => {
           <div className="lg:col-span-2">
             <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-2xl text-gray-800">Active Negotiations</CardTitle>
+                <CardTitle className="text-2xl text-gray-800">Vendor Management Center</CardTitle>
                 <CardDescription className="text-gray-600">
-                  Manage incoming rate requests and build partner relationships
+                  Manage negotiations and practice your skills
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-                  <TabsList className="grid w-full grid-cols-2 mb-6">
+                  <TabsList className="grid w-full grid-cols-3 mb-6">
                     <TabsTrigger value="active" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">
-                      Pending Requests (3)
+                      Active Requests (3)
                     </TabsTrigger>
                     <TabsTrigger value="completed" className="data-[state=active]:bg-green-500 data-[state=active]:text-white">
                       Completed (12)
+                    </TabsTrigger>
+                    <TabsTrigger value="practice" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white">
+                      Practice Negotiations
                     </TabsTrigger>
                   </TabsList>
 
@@ -235,6 +253,10 @@ const VendorDashboard = () => {
                         </div>
                       </div>
                     ))}
+                  </TabsContent>
+
+                  <TabsContent value="practice">
+                    <VendorSimulationCenter onStartSimulation={handleStartSimulation} />
                   </TabsContent>
                 </Tabs>
               </CardContent>
