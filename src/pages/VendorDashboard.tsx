@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, Clock, Calendar, MessageSquare, Eye, CheckCircle, AlertCircle, TrendingUp, Trophy, Timer, Award } from "lucide-react";
@@ -10,6 +11,7 @@ import VendorStatsCards from "@/components/vendor-dashboard/VendorStatsCards";
 import VendorNegotiationInterface from "@/components/vendor-dashboard/VendorNegotiationInterface";
 import VendorSimulationCenter from "@/components/vendor-dashboard/VendorSimulationCenter";
 import VendorSimulationInterface from "@/components/vendor-dashboard/VendorSimulationInterface";
+import VendorAnalyticsDashboard from "@/components/vendor-dashboard/VendorAnalyticsDashboard";
 
 const VendorDashboard = () => {
   const navigate = useNavigate();
@@ -154,7 +156,7 @@ const VendorDashboard = () => {
               </CardHeader>
               <CardContent>
                 <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-                  <TabsList className="grid w-full grid-cols-3 mb-6">
+                  <TabsList className="grid w-full grid-cols-4 mb-6">
                     <TabsTrigger value="active" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">
                       Active Requests (3)
                     </TabsTrigger>
@@ -163,6 +165,9 @@ const VendorDashboard = () => {
                     </TabsTrigger>
                     <TabsTrigger value="practice" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white">
                       Practice Negotiations
+                    </TabsTrigger>
+                    <TabsTrigger value="analytics" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white">
+                      Performance Analytics
                     </TabsTrigger>
                   </TabsList>
 
@@ -257,6 +262,10 @@ const VendorDashboard = () => {
 
                   <TabsContent value="practice">
                     <VendorSimulationCenter onStartSimulation={handleStartSimulation} />
+                  </TabsContent>
+
+                  <TabsContent value="analytics">
+                    <VendorAnalyticsDashboard />
                   </TabsContent>
                 </Tabs>
               </CardContent>
