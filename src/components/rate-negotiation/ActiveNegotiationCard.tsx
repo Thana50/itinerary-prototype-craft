@@ -57,6 +57,10 @@ const ActiveNegotiationCard = ({ negotiation }: ActiveNegotiationCardProps) => {
     window.open(`/provider-portal/${negotiation.id}`, '_blank');
   };
 
+  const handleViewPremiumProviderPortal = () => {
+    window.open(`/premium-provider-portal/${negotiation.id}`, '_blank');
+  };
+
   const handleViewAsProvider = () => {
     navigate('/vendor-dashboard');
   };
@@ -146,12 +150,19 @@ const ActiveNegotiationCard = ({ negotiation }: ActiveNegotiationCardProps) => {
                 View as Provider
               </Button>
               <Button 
+                onClick={handleViewPremiumProviderPortal}
+                className="bg-gradient-to-r from-gold-500 to-yellow-600 hover:from-gold-600 hover:to-yellow-700 text-white"
+                size="sm"
+              >
+                Premium Portal
+              </Button>
+              <Button 
                 onClick={handleViewProviderPortal}
                 variant="outline"
                 size="sm"
                 className="text-blue-600 border-blue-200 hover:bg-blue-50"
               >
-                View Provider Portal
+                Basic Portal
               </Button>
             </div>
           </div>
