@@ -18,6 +18,7 @@ import RateNegotiationAI from "./pages/RateNegotiationAI";
 import NegotiationRoom from "./pages/NegotiationRoom";
 import NegotiationDetail from "./pages/NegotiationDetail";
 import ClientAIPortal from "./pages/ClientAIPortal";
+import TemplateRepository from "./pages/TemplateRepository";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ function App() {
             <Route path="/negotiation-room/:id" element={<NegotiationRoom />} />
             <Route path="/negotiation/:id" element={<NegotiationDetail />} />
             <Route path="/client-portal/:id" element={<ClientAIPortal />} />
+            <Route path="/template-repository" element={<TemplateRepository />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
