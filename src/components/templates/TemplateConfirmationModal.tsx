@@ -22,16 +22,14 @@ import { ItineraryTemplate } from '@/types/templates';
 
 interface TemplateConfirmationModalProps {
   template: ItineraryTemplate | null;
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: (template: ItineraryTemplate) => void;
+  onConfirm: () => void;
+  onCancel: () => void;
 }
 
 const TemplateConfirmationModal: React.FC<TemplateConfirmationModalProps> = ({
   template,
-  isOpen,
-  onClose,
-  onConfirm
+  onConfirm,
+  onCancel
 }) => {
   const [selectedCustomizations, setSelectedCustomizations] = useState<Record<string, string>>({});
 
@@ -45,15 +43,7 @@ const TemplateConfirmationModal: React.FC<TemplateConfirmationModalProps> = ({
   };
 
   const handleConfirm = () => {
-    // Apply customizations to template (in real app, this would create a new itinerary)
-    const customizedTemplate = {
-      ...template,
-      customizationPoints: template.customizationPoints.map(point => ({
-        ...point,
-        defaultOption: selectedCustomizations[point.id] || point.defaultOption
-      }))
-    };
-    onConfirm(customizedTemplate);
+    onConfirm();
   };
 
   const getCategoryColor = (category: string) => {
@@ -69,7 +59,7 @@ const TemplateConfirmationModal: React.FC<TemplateConfirmationModalProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={!!template} onOpenChange={onCancel}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
@@ -245,7 +235,7 @@ const TemplateConfirmationModal: React.FC<TemplateConfirmationModalProps> = ({
           </div>
           
           <div className="flex space-x-3">
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={onCancel}>
               Cancel
             </Button>
             <Button onClick={handleConfirm} className="bg-blue-600 hover:bg-blue-700">

@@ -13,8 +13,8 @@ interface ItineraryPreviewProps {
   sampleItinerary: ItineraryDay[];
 }
 
-const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({ sampleItinerary }) => {
-  if (sampleItinerary.length === 0) {
+const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({ sampleItinerary = [] }) => {
+  if (!sampleItinerary || sampleItinerary.length === 0) {
     return (
       <Card>
         <CardHeader>
