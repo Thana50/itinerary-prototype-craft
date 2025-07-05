@@ -10,7 +10,10 @@ import {
   LogOut,
   BarChart3,
   Briefcase,
-  Users
+  Users,
+  BookTemplate,
+  Star,
+  Clock
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -106,6 +109,138 @@ const AgentDashboard = () => {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Template Library Section */}
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold text-gray-900">Template Library</h2>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate("/template-repository")}
+              className="text-blue-600 border-blue-600 hover:bg-blue-50"
+            >
+              View All Templates
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            {/* Template Stats Cards */}
+            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <div className="p-3 bg-blue-100 rounded-lg mr-4">
+                    <BookTemplate className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Templates Created</p>
+                    <p className="text-2xl font-bold text-blue-700">23</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <div className="p-3 bg-green-100 rounded-lg mr-4">
+                    <Star className="h-6 w-6 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Average Success Rate</p>
+                    <p className="text-2xl font-bold text-green-700">94%</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-r from-purple-50 to-violet-50 border-purple-200">
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <div className="p-3 bg-purple-100 rounded-lg mr-4">
+                    <Clock className="h-6 w-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Time Saved</p>
+                    <p className="text-2xl font-bold text-purple-700">67%</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Recent Templates and Quick Actions */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Recent Templates Used</CardTitle>
+                <CardDescription>Your most recently accessed templates</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                      <p className="font-medium text-gray-900">Phuket Beach Paradise</p>
+                      <p className="text-sm text-gray-600">7 days • 4.8★ • Used 2 hours ago</p>
+                    </div>
+                    <Button size="sm" variant="outline">Use</Button>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                      <p className="font-medium text-gray-900">Singapore Family Adventure</p>
+                      <p className="text-sm text-gray-600">5 days • 4.6★ • Used yesterday</p>
+                    </div>
+                    <Button size="sm" variant="outline">Use</Button>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                      <p className="font-medium text-gray-900">Bali Cultural Immersion</p>
+                      <p className="text-sm text-gray-600">6 days • 4.7★ • Used 3 days ago</p>
+                    </div>
+                    <Button size="sm" variant="outline">Use</Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Top Performing Templates</CardTitle>
+                <CardDescription>Your most successful templates this month</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                    <div>
+                      <p className="font-medium text-gray-900">Dubai Luxury Escape</p>
+                      <p className="text-sm text-green-700">100% success rate • 8 bookings</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-green-700">🏆 #1</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div>
+                      <p className="font-medium text-gray-900">Tokyo Cultural Journey</p>
+                      <p className="text-sm text-blue-700">96% success rate • 12 bookings</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-blue-700">🥈 #2</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-200">
+                    <div>
+                      <p className="font-medium text-gray-900">Morocco Adventure</p>
+                      <p className="text-sm text-orange-700">94% success rate • 6 bookings</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-orange-700">🥉 #3</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* Core Tools Section */}
