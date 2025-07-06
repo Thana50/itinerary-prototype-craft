@@ -1,19 +1,13 @@
+
 import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import TripOverviewForm from "./TripOverviewForm";
 import ItineraryPreview from "./ItineraryPreview";
 import ModificationTracking from "./ModificationTracking";
 import PricingUpdates from "./PricingUpdates";
 import ApprovalWorkflow from "./ApprovalWorkflow";
 import WeatherForecast from "./WeatherForecast";
-import TemplateSidebar from "./templates/TemplateSidebar";
-import TemplateConfirmationModal from "./templates/TemplateConfirmationModal";
-import EnhancedChatInterface from "./EnhancedChatInterface";
+import AIAssistantCard from "./AIAssistantCard";
+import TemplateIntegrationProvider from "./TemplateIntegrationProvider";
 import { useTemplateIntegration } from "@/hooks/useTemplateIntegration";
 import { ItineraryTemplate } from "@/types/templates";
 import { toast } from "@/hooks/use-toast";
@@ -46,7 +40,6 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
   
   const {
     showTemplateSidebar,
-    setShowTemplateSidebar,
     templateSearchQuery,
     setTemplateSearchQuery,
     selectedTemplate,
@@ -72,7 +65,7 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
       
       // Update form data with template information
       onFormChange('destination', selectedTemplate.destination);
-      onFormChange('numberOfTravelers', 4); // Default from template
+      onFormChange('numberOfTravelers', 4);
       
       // Convert template to modifications for tracking
       const templateModifications: Modification[] = selectedTemplate.activities.map((activity, index) => ({
@@ -94,25 +87,12 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
     }
   };
 
-  const handleApproval = () => {
-    alert('Itinerary Approved!');
-  };
-
-  const handleCall = () => {
-    alert('Requesting agent call...');
-  };
-
-  const handleSave = () => {
-    alert('Saving changes...');
-  };
-
-  const handleShare = () => {
-    alert('Sharing itinerary...');
-  };
-
-  const handlePrint = () => {
-    alert('Printing itinerary...');
-  };
+  // Workflow action handlers
+  const handleApproval = () => alert('Itinerary Approved!');
+  const handleCall = () => alert('Requesting agent call...');
+  const handleSave = () => alert('Saving changes...');
+  const handleShare = () => alert('Sharing itinerary...');
+  const handlePrint = () => alert('Printing itinerary...');
 
   return (
     <div className="flex">
@@ -123,45 +103,13 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
           <div className="space-y-6">
             <TripOverviewForm formData={formData} onFormChange={onFormChange} />
             
-            {/* Enhanced AI Assistant */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>AI Travel Assistant</span>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setShowEnhancedChat(!showEnhancedChat)}
-                  >
-                    {showEnhancedChat ? 'Basic Chat' : 'Enhanced Chat'}
-                  </Button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {showEnhancedChat ? (
-                  <EnhancedChatInterface
-                    onTemplateSelect={handleTemplateFromChat}
-                    onMessageSend={onMessageSend}
-                    isLoading={isLoading}
-                  />
-                ) : (
-                  <div className="space-y-4">
-                    <div className="bg-gray-50 rounded-lg p-4 h-64 overflow-y-auto">
-                      <p className="text-sm text-gray-600">
-                        Start describing your trip requirements to get personalized recommendations...
-                      </p>
-                    </div>
-                    <div className="flex space-x-2">
-                      <Input 
-                        placeholder="Tell me about your trip..."
-                        className="flex-1"
-                      />
-                      <Button>Send</Button>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <AIAssistantCard
+              showEnhancedChat={showEnhancedChat}
+              onToggleChat={() => setShowEnhancedChat(!showEnhancedChat)}
+              onTemplateSelect={handleTemplateFromChat}
+              onMessageSend={onMessageSend}
+              isLoading={isLoading}
+            />
 
             <ModificationTracking modifications={modifications} />
           </div>
@@ -182,22 +130,17 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
         </div>
       </div>
 
-      {/* Template Sidebar */}
-      <TemplateSidebar
-        searchQuery={templateSearchQuery}
-        onTemplateSelect={handleTemplateSelect}
+      {/* Template Integration */}
+      <TemplateIntegrationProvider
+        showTemplateSidebar={showTemplateSidebar}
+        templateSearchQuery={templateSearchQuery}
         onSearchChange={setTemplateSearchQuery}
-        isVisible={showTemplateSidebar}
+        onTemplateSelect={handleTemplateSelect}
+        showTemplateModal={showTemplateModal}
+        selectedTemplate={selectedTemplate}
+        onTemplateConfirm={handleConfirmTemplate}
+        onTemplateCancel={handleTemplateCancel}
       />
-
-      {/* Template Confirmation Modal */}
-      {showTemplateModal && selectedTemplate && (
-        <TemplateConfirmationModal
-          template={selectedTemplate}
-          onConfirm={handleConfirmTemplate}
-          onCancel={handleTemplateCancel}
-        />
-      )}
     </div>
   );
 };
