@@ -8,6 +8,7 @@ import ApprovalWorkflow from "./ApprovalWorkflow";
 import WeatherForecast from "./WeatherForecast";
 import AIAssistantCard from "./AIAssistantCard";
 import TemplateIntegrationProvider from "./TemplateIntegrationProvider";
+import WorkflowActions from "./WorkflowActions";
 import { useTemplateIntegration } from "@/hooks/useTemplateIntegration";
 import { ItineraryTemplate } from "@/types/templates";
 import { toast } from "@/hooks/use-toast";
@@ -87,50 +88,56 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
     }
   };
 
-  // Workflow action handlers
-  const handleApproval = () => alert('Itinerary Approved!');
-  const handleCall = () => alert('Requesting agent call...');
-  const handleSave = () => alert('Saving changes...');
-  const handleShare = () => alert('Sharing itinerary...');
-  const handlePrint = () => alert('Printing itinerary...');
-
   return (
-    <div className="flex">
+    <div className="flex min-h-screen">
       {/* Main Content */}
       <div className={`flex-1 transition-all duration-300 ${showTemplateSidebar ? 'mr-80' : ''}`}>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Column */}
-          <div className="space-y-6">
-            <TripOverviewForm formData={formData} onFormChange={onFormChange} />
-            
-            <AIAssistantCard
-              showEnhancedChat={showEnhancedChat}
-              onToggleChat={() => setShowEnhancedChat(!showEnhancedChat)}
-              onTemplateSelect={handleTemplateFromChat}
-              onMessageSend={onMessageSend}
-              isLoading={isLoading}
-            />
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
+            {/* Left Column */}
+            <div className="space-y-6">
+              <TripOverviewForm formData={formData} onFormChange={onFormChange} />
+              
+              <AIAssistantCard
+                showEnhancedChat={showEnhancedChat}
+                onToggleChat={() => setShowEnhancedChat(!showEnhancedChat)}
+                onTemplateSelect={handleTemplateFromChat}
+                onMessageSend={onMessageSend}
+                isLoading={isLoading}
+              />
 
-            <ModificationTracking modifications={modifications} />
-          </div>
+              <ModificationTracking modifications={modifications} />
+            </div>
 
-          {/* Right Column */}
-          <div className="space-y-6">
-            <ItineraryPreview sampleItinerary={sampleItinerary} />
-            <PricingUpdates totalPrice={totalPrice} modifications={modifications} />
-            <WeatherForecast />
-            <ApprovalWorkflow
-              onApproveItinerary={handleApproval}
-              onRequestCall={handleCall}
-              onSaveChanges={handleSave}
-              onShareItinerary={handleShare}
-              onPrintItinerary={handlePrint}
-            />
+            {/* Right Column */}
+            <div className="space-y-6">
+              <ItineraryPreview sampleItinerary={sampleItinerary} />
+              <PricingUpdates totalPrice={totalPrice} modifications={modifications} />
+              <WeatherForecast />
+              
+              <WorkflowActions
+                onApproval={() => alert('Itinerary Approved!')}
+                onCall={() => alert('Requesting agent call...')}
+                onSave={() => alert('Saving changes...')}
+                onShare={() => alert('Sharing itinerary...')}
+                onPrint={() => alert('Printing itinerary...')}
+              >
+                {(handlers) => (
+                  <ApprovalWorkflow
+                    onApproveItinerary={handlers.handleApproval}
+                    onRequestCall={handlers.handleCall}
+                    onSaveChanges={handlers.handleSave}
+                    onShareItinerary={handlers.handleShare}
+                    onPrintItinerary={handlers.handlePrint}
+                  />
+                )}
+              </WorkflowActions>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Template Integration */}
+      {/* Template Integration Sidebar */}
       <TemplateIntegrationProvider
         showTemplateSidebar={showTemplateSidebar}
         templateSearchQuery={templateSearchQuery}

@@ -28,7 +28,7 @@ const CreateItinerary = () => {
         hasDestination={!!formData.destination}
       />
 
-      <div className="container mx-auto px-6">
+      <div className="px-4 sm:px-6 lg:px-8 pb-8">
         <CreateItineraryContent
           formData={formData}
           onFormChange={handleFormChange}
@@ -38,7 +38,7 @@ const CreateItinerary = () => {
         />
 
         {/* Footer */}
-        <footer className="mt-12 text-center text-gray-500 text-sm">
+        <footer className="mt-8 text-center text-gray-500 text-sm">
           © 2025 Travia. Where Custom Trips Click.
         </footer>
       </div>
