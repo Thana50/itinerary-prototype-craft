@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Search, Star, Clock, Users, MapPin, Calendar, TrendingUp } from 'lucide-react';
+import { Search, Star, Clock, Users, MapPin, Calendar, TrendingUp, X } from 'lucide-react';
 import { templateService } from '@/services/templateService';
 import { ItineraryTemplate } from '@/types/templates';
 
@@ -14,13 +13,15 @@ interface TemplateSidebarProps {
   onTemplateSelect: (template: ItineraryTemplate) => void;
   onSearchChange: (query: string) => void;
   isVisible: boolean;
+  onToggleSidebar: () => void;
 }
 
 const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
   searchQuery,
   onTemplateSelect,
   onSearchChange,
-  isVisible
+  isVisible,
+  onToggleSidebar
 }) => {
   const [templates, setTemplates] = useState<ItineraryTemplate[]>([]);
   const [popularTemplates, setPopularTemplates] = useState<ItineraryTemplate[]>([]);
@@ -89,13 +90,23 @@ const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
   if (!isVisible) return null;
 
   return (
-    <div className="w-80 bg-white border-l border-gray-200 h-full overflow-y-auto">
+    <div className="w-80 bg-white border-l border-gray-200 h-full overflow-y-auto fixed right-0 top-0 z-40">
       <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center space-x-2 mb-4">
-          <div className="w-6 h-6 bg-blue-500 rounded flex items-center justify-center">
-            <div className="w-3 h-3 bg-white rounded"></div>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-2">
+            <div className="w-6 h-6 bg-blue-500 rounded flex items-center justify-center">
+              <div className="w-3 h-3 bg-white rounded"></div>
+            </div>
+            <span className="font-semibold text-gray-900">Travia Templates</span>
           </div>
-          <span className="font-semibold text-gray-900">Travia Templates</span>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onToggleSidebar}
+            className="h-8 w-8 p-0"
+          >
+            <X className="h-4 w-4" />
+          </Button>
         </div>
         
         <div className="relative">
@@ -110,7 +121,6 @@ const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
       </div>
 
       <div className="p-4 space-y-6">
-        {/* Quick Start Section */}
         {!searchQuery && (
           <>
             <div>
@@ -185,7 +195,6 @@ const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
           </>
         )}
 
-        {/* Search Results */}
         <div>
           <h3 className="font-medium text-gray-900 mb-3">
             {searchQuery ? `Search Results (${templates.length})` : 'All Templates'}
@@ -271,7 +280,6 @@ const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
         </div>
       </div>
 
-      {/* Footer */}
       <div className="p-4 border-t border-gray-200 bg-gray-50">
         <p className="text-xs text-center text-gray-500">
           <span className="font-medium">Travia</span> - Where Custom Trips Click

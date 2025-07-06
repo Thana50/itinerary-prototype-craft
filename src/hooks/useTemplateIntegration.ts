@@ -30,12 +30,18 @@ export const useTemplateIntegration = () => {
   const handleTemplateConfirm = (template: ItineraryTemplate) => {
     setShowTemplateModal(false);
     setSelectedTemplate(null);
+    // Close sidebar after template is applied
+    setShowTemplateSidebar(false);
     return template;
   };
 
   const handleTemplateCancel = () => {
     setShowTemplateModal(false);
     setSelectedTemplate(null);
+  };
+
+  const toggleTemplateSidebar = () => {
+    setShowTemplateSidebar(!showTemplateSidebar);
   };
 
   const convertTemplateToItinerary = (template: ItineraryTemplate) => {
@@ -66,6 +72,7 @@ export const useTemplateIntegration = () => {
     handleTemplateConfirm,
     handleTemplateCancel,
     detectTemplateRelevance,
-    convertTemplateToItinerary
+    convertTemplateToItinerary,
+    toggleTemplateSidebar
   };
 };

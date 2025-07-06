@@ -12,6 +12,8 @@ import WorkflowActions from "./WorkflowActions";
 import { useTemplateIntegration } from "@/hooks/useTemplateIntegration";
 import { ItineraryTemplate } from "@/types/templates";
 import { toast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { PanelRightOpen } from "lucide-react";
 
 interface Modification {
   id: string;
@@ -49,7 +51,8 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
     handleTemplateConfirm,
     handleTemplateCancel,
     detectTemplateRelevance,
-    convertTemplateToItinerary
+    convertTemplateToItinerary,
+    toggleTemplateSidebar
   } = useTemplateIntegration();
 
   useEffect(() => {
@@ -89,10 +92,23 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen relative">
+      {/* Template Sidebar Toggle Button - Fixed position when sidebar is closed */}
+      {!showTemplateSidebar && (
+        <Button
+          onClick={toggleTemplateSidebar}
+          variant="outline"
+          size="sm"
+          className="fixed top-4 right-4 z-50 bg-white shadow-lg hover:shadow-xl"
+        >
+          <PanelRightOpen className="h-4 w-4 mr-2" />
+          Templates
+        </Button>
+      )}
+
       {/* Main Content */}
-      <div className={`flex-1 transition-all duration-300 ${showTemplateSidebar ? 'mr-80' : ''}`}>
-        <div className="max-w-7xl mx-auto">
+      <div className={`flex-1 transition-all duration-300 ${showTemplateSidebar ? 'mr-80' : 'mr-0'}`}>
+        <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
             {/* Left Column */}
             <div className="space-y-6">
@@ -147,6 +163,7 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
         selectedTemplate={selectedTemplate}
         onTemplateConfirm={handleConfirmTemplate}
         onTemplateCancel={handleTemplateCancel}
+        onToggleSidebar={toggleTemplateSidebar}
       />
     </div>
   );
