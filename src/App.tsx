@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,6 +19,7 @@ import NegotiationDetail from "./pages/NegotiationDetail";
 import ClientAIPortal from "./pages/ClientAIPortal";
 import TemplateRepository from "./pages/TemplateRepository";
 import NotFound from "./pages/NotFound";
+import TemplateAnalyticsDashboard from "./pages/TemplateAnalyticsDashboard";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +46,7 @@ function App() {
             <Route path="/negotiation/:id" element={<NegotiationDetail />} />
             <Route path="/client-portal/:id" element={<ClientAIPortal />} />
             <Route path="/template-repository" element={<TemplateRepository />} />
+            <Route path="/template-analytics" element={<TemplateAnalyticsDashboard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
