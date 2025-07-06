@@ -10,7 +10,7 @@ const CreateItinerary = () => {
     formData,
     sampleItinerary,
     isLoading,
-    handleChange,
+    handleFormChange,
     handleMessageSend,
     handleSaveItinerary,
     handleLogout,
@@ -31,7 +31,7 @@ const CreateItinerary = () => {
       <div className="container mx-auto px-6">
         <CreateItineraryContent
           formData={formData}
-          onFormChange={handleChange}
+          onFormChange={handleFormChange}
           sampleItinerary={sampleItinerary}
           onMessageSend={handleMessageSend}
           isLoading={isLoading}

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
@@ -44,6 +43,10 @@ export const useCreateItinerary = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFormChange = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const updateFormWithTripDetails = (details: any) => {
@@ -146,6 +149,7 @@ export const useCreateItinerary = () => {
     sampleItinerary,
     isLoading,
     handleChange,
+    handleFormChange,
     handleMessageSend,
     handleSaveItinerary,
     handleLogout,
