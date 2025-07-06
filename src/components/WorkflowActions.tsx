@@ -1,5 +1,6 @@
 
 import React from "react";
+import { useWorkflowActions } from "@/hooks/useWorkflowActions";
 
 interface WorkflowActionsProps {
   onApproval: () => void;
@@ -7,6 +8,13 @@ interface WorkflowActionsProps {
   onSave: () => void;
   onShare: () => void;
   onPrint: () => void;
+  children: (handlers: {
+    handleApproval: () => void;
+    handleCall: () => void;
+    handleSave: () => void;
+    handleShare: () => void;
+    handlePrint: () => void;
+  }) => React.ReactNode;
 }
 
 const WorkflowActions: React.FC<WorkflowActionsProps> = ({
@@ -14,40 +22,18 @@ const WorkflowActions: React.FC<WorkflowActionsProps> = ({
   onCall,
   onSave,
   onShare,
-  onPrint
+  onPrint,
+  children
 }) => {
-  const handleApproval = () => {
-    alert('Itinerary Approved!');
-    onApproval();
-  };
+  const handlers = useWorkflowActions({
+    onApproval,
+    onCall,
+    onSave,
+    onShare,
+    onPrint
+  });
 
-  const handleCall = () => {
-    alert('Requesting agent call...');
-    onCall();
-  };
-
-  const handleSave = () => {
-    alert('Saving changes...');
-    onSave();
-  };
-
-  const handleShare = () => {
-    alert('Sharing itinerary...');
-    onShare();
-  };
-
-  const handlePrint = () => {
-    alert('Printing itinerary...');
-    onPrint();
-  };
-
-  return {
-    handleApproval,
-    handleCall,
-    handleSave,
-    handleShare,
-    handlePrint
-  };
+  return <>{children(handlers)}</>;
 };
 
 export default WorkflowActions;
