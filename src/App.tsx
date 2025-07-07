@@ -1,8 +1,9 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import AgentDashboard from "./pages/AgentDashboard";
 import CreateItinerary from "./pages/CreateItinerary";
@@ -47,6 +48,12 @@ function App() {
             <Route path="/client-portal/:id" element={<ClientAIPortal />} />
             <Route path="/template-repository" element={<TemplateRepository />} />
             <Route path="/template-analytics" element={<TemplateAnalyticsDashboard />} />
+            
+            {/* Fallback routes for navigation edge cases */}
+            <Route path="/client-portal" element={<Navigate to="/client-portal/demo" />} />
+            <Route path="/analytics" element={<Navigate to="/template-analytics" />} />
+            <Route path="/templates" element={<Navigate to="/template-repository" />} />
+            
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
