@@ -246,7 +246,7 @@ const AgentDashboard = () => {
         {/* Core Tools Section */}
         <div className="mb-8">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Core Tools</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card 
               className="bg-blue-500 text-white cursor-pointer hover:bg-blue-600 transition-colors"
               onClick={() => navigate("/create-itinerary")}
@@ -271,7 +271,7 @@ const AgentDashboard = () => {
 
             <Card 
               className="bg-purple-500 text-white cursor-pointer hover:bg-purple-600 transition-colors"
-              onClick={() => navigate("/client-portal")}
+              onClick={() => navigate("/client-portal/demo")}
             >
               <CardContent className="p-8 text-center">
                 <Users className="h-12 w-12 mx-auto mb-4" />
@@ -280,11 +280,25 @@ const AgentDashboard = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-green-500 text-white cursor-pointer hover:bg-green-600 transition-colors">
+            <Card 
+              className="bg-green-500 text-white cursor-pointer hover:bg-green-600 transition-colors"
+              onClick={() => navigate("/template-analytics")}
+            >
               <CardContent className="p-8 text-center">
                 <BarChart3 className="h-12 w-12 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Analytics Dashboard</h3>
                 <p className="text-green-100">View performance and insights.</p>
+              </CardContent>
+            </Card>
+
+            <Card 
+              className="bg-indigo-500 text-white cursor-pointer hover:bg-indigo-600 transition-colors"
+              onClick={() => navigate("/template-repository")}
+            >
+              <CardContent className="p-8 text-center">
+                <BookTemplate className="h-12 w-12 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">Template Repository</h3>
+                <p className="text-indigo-100">Browse and manage travel templates.</p>
               </CardContent>
             </Card>
           </div>
