@@ -16,13 +16,15 @@ import {
   Clock
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const AgentDashboard = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   
-  const handleLogout = () => {
-    // Clear any stored user data/tokens here if needed
-    navigate("/login");
+  const handleLogout = async () => {
+    await logout();
+    navigate("/", { replace: true });
   };
   
   return (
@@ -38,7 +40,7 @@ const AgentDashboard = () => {
             />
           </div>
           <div className="flex items-center space-x-4">
-            <span className="text-gray-600">Welcome, Agent!</span>
+            <span className="text-gray-600">Welcome, {user?.name || 'Agent'}!</span>
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="h-4 w-4 mr-2" />
               Logout
