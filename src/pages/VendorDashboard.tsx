@@ -1,11 +1,11 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, Clock, Calendar, MessageSquare, Eye, CheckCircle, AlertCircle, TrendingUp, Trophy, Timer, Award } from "lucide-react";
+import { DollarSign, Clock, Calendar, MessageSquare, Eye, CheckCircle, AlertCircle, TrendingUp, Trophy, Timer, Award, LogOut } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import VendorDashboardHeader from "@/components/vendor-dashboard/VendorDashboardHeader";
 import VendorStatsCards from "@/components/vendor-dashboard/VendorStatsCards";
 import VendorNegotiationInterface from "@/components/vendor-dashboard/VendorNegotiationInterface";
@@ -15,9 +15,15 @@ import VendorAnalyticsDashboard from "@/components/vendor-dashboard/VendorAnalyt
 
 const VendorDashboard = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [selectedTab, setSelectedTab] = useState("active");
   const [selectedNegotiation, setSelectedNegotiation] = useState<string | null>(null);
   const [selectedSimulation, setSelectedSimulation] = useState<string | null>(null);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/", { replace: true });
+  };
 
   const activeNegotiations = [
     {
@@ -139,6 +145,26 @@ const VendorDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      {/* Header with Logout */}
+      <header className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <img 
+              src="/lovable-uploads/0eec4e7f-1447-475b-928f-96fbc0eca6e8.png" 
+              alt="Travia Logo" 
+              className="h-14 w-auto mr-4"
+            />
+          </div>
+          <div className="flex items-center space-x-4">
+            <span className="text-gray-600">Welcome, {user?.name || 'Vendor'}!</span>
+            <Button variant="ghost" size="sm" onClick={handleLogout}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
+          </div>
+        </div>
+      </header>
+
       <VendorDashboardHeader />
 
       <div className="container mx-auto px-4 py-8">
