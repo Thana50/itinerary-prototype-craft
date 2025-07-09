@@ -1,20 +1,52 @@
 
+export interface TemplateActivity {
+  day: number;
+  time: string;
+  title: string;
+  description: string;
+  type: 'sightseeing' | 'dining' | 'entertainment' | 'transportation' | 'accommodation' | 'shopping' | 'outdoor';
+  duration: string;
+  isCustomizable: boolean;
+  alternatives: string[];
+  coordinates?: [number, number]; // [longitude, latitude]
+}
+
+export interface TemplateAccommodation {
+  name: string;
+  type: 'hotel' | 'resort' | 'hostel' | 'apartment' | 'villa';
+  location: string;
+  priceRange: { min: number; max: number; currency: string };
+  amenities: string[];
+  isCustomizable: boolean;
+  coordinates?: [number, number];
+}
+
+export interface TemplateMeal {
+  day: number;
+  type: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+  restaurant?: string;
+  cuisine?: string;
+  priceRange: { min: number; max: number; currency: string };
+  isCustomizable: boolean;
+  coordinates?: [number, number];
+}
+
 export interface ItineraryTemplate {
   id: string;
   name: string;
   destination: string;
   duration: number; // in days
-  category: 'beach' | 'cultural' | 'adventure' | 'family' | 'luxury' | 'budget';
+  category: 'family' | 'luxury' | 'adventure' | 'cultural' | 'beach' | 'budget';
   successRate: number; // percentage
-  lastUsed: string; // ISO date string
+  lastUsed: string; // ISO date
   timesUsed: number;
-  rating: number; // 1-5 stars
+  rating: number; // 1-5
   preview: string;
   tags: string[];
   activities: TemplateActivity[];
   accommodations: TemplateAccommodation[];
   meals: TemplateMeal[];
-  customizationPoints: CustomizationPoint[];
+  customizationPoints: string[];
   estimatedCost: {
     min: number;
     max: number;
@@ -22,41 +54,15 @@ export interface ItineraryTemplate {
   };
 }
 
-export interface TemplateActivity {
-  day: number;
-  time: string;
-  title: string;
-  description: string;
-  type: 'sightseeing' | 'adventure' | 'cultural' | 'relaxation' | 'shopping' | 'dining';
-  duration: string;
-  isCustomizable: boolean;
-  alternatives?: string[];
+export interface TemplateFilter {
+  destination?: string;
+  category?: string;
+  duration?: { min: number; max: number };
+  budget?: { min: number; max: number };
+  tags?: string[];
 }
 
-export interface TemplateAccommodation {
-  name: string;
-  type: 'hotel' | 'resort' | 'villa' | 'apartment';
-  checkIn: number; // day number
-  checkOut: number; // day number
-  roomType: string;
-  isCustomizable: boolean;
-  alternatives?: string[];
-}
-
-export interface TemplateMeal {
-  day: number;
-  type: 'breakfast' | 'lunch' | 'dinner' | 'snack';
-  restaurant: string;
-  cuisine: string;
-  isHalalAvailable: boolean;
-  isCustomizable: boolean;
-}
-
-export interface CustomizationPoint {
-  id: string;
-  day: number;
-  title: string;
-  description: string;
-  options: string[];
-  defaultOption: string;
+export interface TemplateSearchResult extends ItineraryTemplate {
+  relevanceScore: number;
+  matchedCriteria: string[];
 }

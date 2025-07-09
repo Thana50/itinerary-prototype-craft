@@ -20,6 +20,7 @@ import {
   Tag
 } from "lucide-react";
 import { ItineraryTemplate, TemplateActivity, TemplateAccommodation, TemplateMeal } from "@/types/templates";
+import ItineraryMap from "@/components/ItineraryMap";
 
 interface TemplateCreationWizardProps {
   template?: ItineraryTemplate;
@@ -49,6 +50,18 @@ const TemplateCreationWizard: React.FC<TemplateCreationWizardProps> = ({
 
   const [currentTag, setCurrentTag] = useState('');
   const [activeTab, setActiveTab] = useState('basic');
+
+  // Convert activities to map format
+  const getMapActivities = () => {
+    return formData.activities
+      .filter(activity => activity.coordinates)
+      .map(activity => ({
+        name: activity.title,
+        coordinates: activity.coordinates as [number, number],
+        day: activity.day,
+        type: activity.type
+      }));
+  };
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({
@@ -93,7 +106,8 @@ const TemplateCreationWizard: React.FC<TemplateCreationWizardProps> = ({
       type: 'sightseeing',
       duration: '2 hours',
       isCustomizable: true,
-      alternatives: []
+      alternatives: [],
+      coordinates: undefined
     };
     
     setFormData(prev => ({
@@ -151,9 +165,10 @@ const TemplateCreationWizard: React.FC<TemplateCreationWizardProps> = ({
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="basic">Basic Info</TabsTrigger>
             <TabsTrigger value="activities">Activities</TabsTrigger>
+            <TabsTrigger value="map">Map View</TabsTrigger>
             <TabsTrigger value="accommodations">Accommodations</TabsTrigger>
             <TabsTrigger value="pricing">Pricing</TabsTrigger>
           </TabsList>
@@ -303,10 +318,41 @@ const TemplateCreationWizard: React.FC<TemplateCreationWizardProps> = ({
                       placeholder="Activity description"
                       rows={2}
                     />
+                    <div className="grid grid-cols-2 gap-2">
+                      <Input
+                        value={activity.coordinates?.[0] || ''}
+                        onChange={(e) => {
+                          const lng = parseFloat(e.target.value);
+                          const currentCoords = activity.coordinates || [0, 0];
+                          updateActivity(index, 'coordinates', [lng, currentCoords[1]]);
+                        }}
+                        placeholder="Longitude"
+                        type="number"
+                        step="any"
+                      />
+                      <Input
+                        value={activity.coordinates?.[1] || ''}
+                        onChange={(e) => {
+                          const lat = parseFloat(e.target.value);
+                          const currentCoords = activity.coordinates || [0, 0];
+                          updateActivity(index, 'coordinates', [currentCoords[0], lat]);
+                        }}
+                        placeholder="Latitude"
+                        type="number"
+                        step="any"
+                      />
+                    </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
+          </TabsContent>
+
+          <TabsContent value="map" className="space-y-4">
+            <ItineraryMap
+              activities={getMapActivities()}
+              destination={formData.destination || 'Template Location'}
+            />
           </TabsContent>
 
           <TabsContent value="accommodations" className="space-y-4">
