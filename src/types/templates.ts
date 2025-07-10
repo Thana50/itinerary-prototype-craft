@@ -4,20 +4,24 @@ export interface TemplateActivity {
   time: string;
   title: string;
   description: string;
-  type: 'sightseeing' | 'dining' | 'entertainment' | 'transportation' | 'accommodation' | 'shopping' | 'outdoor';
+  type: 'sightseeing' | 'dining' | 'entertainment' | 'transportation' | 'accommodation' | 'shopping' | 'outdoor' | 'adventure' | 'cultural' | 'relaxation';
   duration: string;
   isCustomizable: boolean;
-  alternatives: string[];
+  alternatives?: string[];
   coordinates?: [number, number]; // [longitude, latitude]
 }
 
 export interface TemplateAccommodation {
   name: string;
   type: 'hotel' | 'resort' | 'hostel' | 'apartment' | 'villa';
-  location: string;
-  priceRange: { min: number; max: number; currency: string };
-  amenities: string[];
+  location?: string;
+  checkIn?: number;
+  checkOut?: number;
+  roomType?: string;
+  priceRange?: { min: number; max: number; currency: string };
+  amenities?: string[];
   isCustomizable: boolean;
+  alternatives?: string[];
   coordinates?: [number, number];
 }
 
@@ -26,9 +30,19 @@ export interface TemplateMeal {
   type: 'breakfast' | 'lunch' | 'dinner' | 'snack';
   restaurant?: string;
   cuisine?: string;
-  priceRange: { min: number; max: number; currency: string };
+  priceRange?: { min: number; max: number; currency: string };
+  isHalalAvailable?: boolean;
   isCustomizable: boolean;
   coordinates?: [number, number];
+}
+
+export interface TemplateCustomizationPoint {
+  id: string;
+  day: number;
+  title: string;
+  description: string;
+  options: string[];
+  defaultOption: string;
 }
 
 export interface ItineraryTemplate {
@@ -46,7 +60,7 @@ export interface ItineraryTemplate {
   activities: TemplateActivity[];
   accommodations: TemplateAccommodation[];
   meals: TemplateMeal[];
-  customizationPoints: string[];
+  customizationPoints: TemplateCustomizationPoint[];
   estimatedCost: {
     min: number;
     max: number;

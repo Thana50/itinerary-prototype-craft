@@ -23,7 +23,8 @@ const mockTemplates: ItineraryTemplate[] = [
         description: 'Airport transfer, hotel check-in, evening beach walk',
         type: 'relaxation',
         duration: '4 hours',
-        isCustomizable: false
+        isCustomizable: false,
+        alternatives: []
       },
       {
         day: 2,
@@ -93,7 +94,8 @@ const mockTemplates: ItineraryTemplate[] = [
         description: 'Gardens by the Bay and Marina Bay Sands area',
         type: 'sightseeing',
         duration: '3 hours',
-        isCustomizable: false
+        isCustomizable: false,
+        alternatives: []
       }
     ],
     accommodations: [
@@ -153,7 +155,8 @@ const mockTemplates: ItineraryTemplate[] = [
         description: 'Scenic walk through traditional rice paddies',
         type: 'cultural',
         duration: '2 hours',
-        isCustomizable: false
+        isCustomizable: false,
+        alternatives: []
       }
     ],
     accommodations: [

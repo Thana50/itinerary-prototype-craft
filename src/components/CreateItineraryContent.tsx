@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -203,7 +202,6 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
                 onMessageSend={onMessageSend}
                 userRole="agent"
                 isLoading={isLoading}
-                className="border-0 shadow-none rounded-none"
               />
             </CardContent>
           </Card>
@@ -219,7 +217,7 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
             />
           )}
           
-          <ItineraryPreview itinerary={sampleItinerary} />
+          <ItineraryPreview sampleItinerary={sampleItinerary} />
         </div>
       </div>
     </div>
