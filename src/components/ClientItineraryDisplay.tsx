@@ -1,12 +1,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-interface ItineraryDay {
-  day: number;
-  title: string;
-  activities: string[];
-}
+import type { ItineraryDay } from "@/types/itinerary";
 
 interface ClientItineraryDisplayProps {
   itinerary: ItineraryDay[];
@@ -16,7 +11,7 @@ const ClientItineraryDisplay = ({ itinerary }: ClientItineraryDisplayProps) => {
   return (
     <Card className="bg-white shadow-lg">
       <CardHeader className="bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-t-lg">
-        <CardTitle className="text-xl">Your 7-Day Phuket Adventure</CardTitle>
+        <CardTitle className="text-xl">Your Travel Itinerary</CardTitle>
         <p className="text-blue-100">A perfect blend of culture, adventure, and relaxation</p>
       </CardHeader>
       <CardContent className="p-6">
@@ -36,7 +31,10 @@ const ClientItineraryDisplay = ({ itinerary }: ClientItineraryDisplayProps) => {
                     </div>
                     <div>
                       <CardTitle className="text-lg text-gray-800">{day.title}</CardTitle>
-                      <p className="text-sm text-gray-600">Day {day.day} Activities</p>
+                      <p className="text-sm text-gray-600">
+                        {day.date ? day.date : `Day ${day.day} Activities`}
+                        {day.location && ` • ${day.location}`}
+                      </p>
                     </div>
                   </div>
                 </CardHeader>
@@ -49,6 +47,13 @@ const ClientItineraryDisplay = ({ itinerary }: ClientItineraryDisplayProps) => {
                       </li>
                     ))}
                   </ul>
+                  {day.accommodation && (
+                    <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                      <p className="text-sm text-gray-600">
+                        <span className="font-medium">Accommodation:</span> {day.accommodation}
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>

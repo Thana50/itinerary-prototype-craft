@@ -10,7 +10,7 @@ import RoleGuard from "@/components/RoleGuard";
 import Login from "./pages/Login";
 import AgentDashboard from "./pages/AgentDashboard";
 import CreateItinerary from "./pages/CreateItinerary";
-import ItineraryDetail from "./pages/ItineraryDetail";
+import UnifiedItineraryDetail from "./pages/UnifiedItineraryDetail";
 import SharedItinerary from "./pages/SharedItinerary";
 import TravelerDashboard from "./pages/TravelerDashboard";
 import VendorDashboard from "./pages/VendorDashboard";
@@ -93,12 +93,13 @@ function App() {
                 </ProtectedRoute>
               } />
               
-              {/* Shared Routes (accessible by multiple roles) */}
+              {/* Unified Itinerary Detail Route - replaces old /itinerary/:id */}
               <Route path="/itinerary/:id" element={
                 <ProtectedRoute>
-                  <ItineraryDetail />
+                  <UnifiedItineraryDetail />
                 </ProtectedRoute>
               } />
+              
               <Route path="/negotiation-room/:id" element={
                 <ProtectedRoute>
                   <RoleGuard allowedRoles={['agent', 'vendor']}>

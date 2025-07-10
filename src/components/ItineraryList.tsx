@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Edit, User, DollarSign, Share } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import type { ItineraryData } from "@/types/itinerary";
 
 interface ItineraryListProps {
   role: "agent" | "traveler" | "vendor";
@@ -12,38 +13,47 @@ interface ItineraryListProps {
 const ItineraryList: React.FC<ItineraryListProps> = ({ role }) => {
   const navigate = useNavigate();
   
-  // Mock data - in a real app, this would come from an API
-  const itineraries = [
+  // Mock data using unified type
+  const itineraries: ItineraryData[] = [
     {
       id: "it1",
       title: "European Adventure",
-      destination: "France, Italy, Spain",
+      destination: "France, Italy, Spain",  
       dates: "June 15 - June 30, 2025",
       status: "review",
       client: "John & Sarah Smith",
+      travelers: 2,
+      totalPrice: 8900,
       modificationRequests: 2,
       negotiations: 3,
+      days: []
     },
     {
-      id: "it2",
+      id: "it2", 
       title: "Asian Exploration",
       destination: "Japan, Thailand, Vietnam",
       dates: "September 5 - September 20, 2025",
       status: "approved",
       client: "Michael Johnson",
+      travelers: 1,
+      totalPrice: 6500,
       modificationRequests: 0,
       negotiations: 1,
+      days: []
     },
     {
       id: "it3",
-      title: "Caribbean Getaway",
+      title: "Caribbean Getaway", 
       destination: "Jamaica, Bahamas",
       dates: "July 10 - July 17, 2025",
       status: "draft",
       client: "Emily & David Wilson",
+      travelers: 2,
+      totalPrice: 4200,
       modificationRequests: 0,
       negotiations: 0,
-    },
+      days: []
+    }
   ];
 
   const getStatusBadge = (status: string) => {
@@ -60,7 +70,7 @@ const ItineraryList: React.FC<ItineraryListProps> = ({ role }) => {
   };
 
   const handleViewItinerary = (id: string) => {
-    navigate(`/itinerary/${id}`);
+    navigate(`/itinerary/${id}?role=${role}`);
   };
 
   return (
@@ -81,21 +91,21 @@ const ItineraryList: React.FC<ItineraryListProps> = ({ role }) => {
               {itinerary.dates}
             </div>
             
-            {role === "agent" && (
+            {role === "agent" && itinerary.client && (
               <div className="flex items-center text-sm">
                 <User className="h-4 w-4 mr-2 text-muted-foreground" />
                 {itinerary.client}
               </div>
             )}
             
-            {itinerary.modificationRequests > 0 && (
+            {(itinerary.modificationRequests || 0) > 0 && (
               <div className="flex items-center text-sm">
                 <Edit className="h-4 w-4 mr-2 text-muted-foreground" />
                 {itinerary.modificationRequests} modifications
               </div>
             )}
             
-            {role === "agent" && itinerary.negotiations > 0 && (
+            {role === "agent" && (itinerary.negotiations || 0) > 0 && (
               <div className="flex items-center text-sm">
                 <DollarSign className="h-4 w-4 mr-2 text-muted-foreground" />
                 {itinerary.negotiations} price negotiations
@@ -109,7 +119,7 @@ const ItineraryList: React.FC<ItineraryListProps> = ({ role }) => {
               size="sm"
               onClick={() => handleViewItinerary(itinerary.id)}
             >
-              {role === "traveler" ? "Review" : "View"} Itinerary
+              {role === "traveler" ? "Review & Modify" : "View"} Itinerary
             </Button>
             
             {role === "agent" && (
