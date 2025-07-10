@@ -7,7 +7,6 @@ import { Calendar, Search, Edit, Share, LogOut, MapPin, Clock, CheckCircle, Aler
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import ItineraryList from "@/components/ItineraryList";
-import ConversationalAgent from "@/components/ConversationalAgent";
 
 const TravelerDashboard = () => {
   const navigate = useNavigate();
@@ -134,37 +133,29 @@ const TravelerDashboard = () => {
           </Card>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-t-lg">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-xl font-bold text-gray-800">Your Itineraries</CardTitle>
-                    <CardDescription className="text-gray-600">Review and modify your travel plans</CardDescription>
-                  </div>
-                  <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
-                    <Share className="h-4 w-4 mr-2" />
-                    Share All
-                  </Button>
+        {/* Main Content - Full Width */}
+        <div className="mb-8">
+          <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-t-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-xl font-bold text-gray-800">Your Itineraries</CardTitle>
+                  <CardDescription className="text-gray-600">Review and modify your travel plans</CardDescription>
                 </div>
-              </CardHeader>
-              <CardContent className="p-6">
-                <ItineraryList role="traveler" />
-              </CardContent>
-            </Card>
-          </div>
-          
-          <div className="lg:col-span-1">
-            <div className="sticky top-6">
-              <ConversationalAgent role="traveler" />
-            </div>
-          </div>
+                <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
+                  <Share className="h-4 w-4 mr-2" />
+                  Share All
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="p-6">
+              <ItineraryList role="traveler" />
+            </CardContent>
+          </Card>
         </div>
 
         {/* Additional Quick Actions */}
-        <div className="mt-8">
+        <div className="mb-8">
           <Card className="bg-gradient-to-r from-gray-50 to-gray-100 border-0 shadow-lg">
             <CardHeader>
               <CardTitle className="text-lg font-semibold text-gray-800">Quick Actions</CardTitle>
@@ -188,6 +179,61 @@ const TravelerDashboard = () => {
                   <Share className="h-5 w-5" />
                   <span className="text-xs">Share with Friends</span>
                 </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Travel Insights Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <Card className="bg-gradient-to-br from-teal-50 to-cyan-50 border-teal-200 shadow-lg">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-teal-600" />
+                <CardTitle className="text-lg text-teal-800">Travel Insights</CardTitle>
+              </div>
+              <CardDescription className="text-teal-600">Personalized recommendations for your next adventure</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 p-3 bg-white/60 rounded-lg">
+                  <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+                  <span className="text-sm text-gray-700">Best time to visit Italy: April-June</span>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-white/60 rounded-lg">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span className="text-sm text-gray-700">Flight prices to Europe trending down</span>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-white/60 rounded-lg">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                  <span className="text-sm text-gray-700">New direct flights to Barcelona available</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200 shadow-lg">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Star className="h-5 w-5 text-amber-600" />
+                <CardTitle className="text-lg text-amber-800">Your Travel Profile</CardTitle>
+              </div>
+              <CardDescription className="text-amber-600">Track your travel achievements and preferences</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center p-3 bg-white/60 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700">Countries Visited</span>
+                  <Badge className="bg-amber-500 text-white">12</Badge>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-white/60 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700">Miles Traveled</span>
+                  <Badge className="bg-blue-500 text-white">48,392</Badge>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-white/60 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700">Favorite Season</span>
+                  <Badge className="bg-green-500 text-white">Spring</Badge>
+                </div>
               </div>
             </CardContent>
           </Card>
