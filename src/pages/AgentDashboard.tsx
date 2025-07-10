@@ -10,7 +10,6 @@ import {
   LogOut,
   BarChart3,
   Briefcase,
-  Users,
   BookTemplate,
   Star,
   Clock
@@ -245,7 +244,7 @@ const AgentDashboard = () => {
           </div>
         </div>
 
-        {/* Core Tools Section */}
+        {/* Core Tools Section - Updated to 2x2 grid */}
         <div className="mb-8">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Core Tools</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -268,17 +267,6 @@ const AgentDashboard = () => {
                 <Handshake className="h-12 w-12 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Rate Negotiator</h3>
                 <p className="text-orange-100">Negotiate rates with service providers.</p>
-              </CardContent>
-            </Card>
-
-            <Card 
-              className="bg-purple-500 text-white cursor-pointer hover:bg-purple-600 transition-colors"
-              onClick={() => navigate("/client-portal/demo")}
-            >
-              <CardContent className="p-8 text-center">
-                <Users className="h-12 w-12 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Client AI Portal</h3>
-                <p className="text-purple-100">Let clients customize their trips with AI.</p>
               </CardContent>
             </Card>
 
