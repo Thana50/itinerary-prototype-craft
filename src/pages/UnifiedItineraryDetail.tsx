@@ -122,6 +122,10 @@ const UnifiedItineraryDetail = () => {
     }
   };
 
+  const handleQuickAction = (message: string) => {
+    handleMessageSend(message);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
       {/* Enhanced Header */}
@@ -242,21 +246,21 @@ const UnifiedItineraryDetail = () => {
                     <Button 
                       variant="outline" 
                       className="w-full justify-start text-left"
-                      onClick={() => aiAssistantRef.current?.focusInput("I'd like to add more cultural activities")}
+                      onClick={() => handleQuickAction("I'd like to add more cultural activities")}
                     >
                       Add cultural experiences
                     </Button>
                     <Button 
                       variant="outline" 
                       className="w-full justify-start text-left"
-                      onClick={() => aiAssistantRef.current?.focusInput("Can we include more local food experiences?")}
+                      onClick={() => handleQuickAction("Can we include more local food experiences?")}
                     >
                       More local dining
                     </Button>
                     <Button 
                       variant="outline" 
                       className="w-full justify-start text-left"
-                      onClick={() => aiAssistantRef.current?.focusInput("I need family-friendly activities for kids")}
+                      onClick={() => handleQuickAction("I need family-friendly activities for kids")}
                     >
                       Family-friendly options
                     </Button>
