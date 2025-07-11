@@ -1,15 +1,16 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { parseTripDetails, generateSampleItinerary } from "@/utils/tripUtils";
 import { aiService } from "@/services/aiService";
 import { itineraryService } from "@/services/itineraryService";
-import { mockAuthService } from "@/services/mockAuthService";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const useCreateItinerary = () => {
   const navigate = useNavigate();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   
-  const [currentUser, setCurrentUser] = useState<any>(null);
   const [formData, setFormData] = useState({
     itineraryName: "",
     destination: "",
@@ -23,22 +24,10 @@ export const useCreateItinerary = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    try {
-      const userData = await mockAuthService.getCurrentUser();
-      if (!userData || userData.profile?.role !== 'agent') {
-        navigate("/login");
-        return;
-      }
-      setCurrentUser(userData);
-    } catch (error) {
-      console.error('Auth check failed:', error);
+    if (!authLoading && (!isAuthenticated || user?.role !== 'agent')) {
       navigate("/login");
     }
-  };
+  }, [isAuthenticated, user, authLoading, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -91,13 +80,20 @@ export const useCreateItinerary = () => {
   };
 
   const handleSaveItinerary = async () => {
-    if (!currentUser) return;
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to save an itinerary.",
+        variant: "destructive"
+      });
+      return;
+    }
     
     try {
       setIsLoading(true);
       
       const itineraryData = {
-        agent_id: currentUser.user.id,
+        agent_id: user.id,
         name: formData.itineraryName || "Untitled Itinerary",
         destination: formData.destination,
         start_date: formData.startDate,
@@ -132,7 +128,8 @@ export const useCreateItinerary = () => {
 
   const handleLogout = async () => {
     try {
-      await mockAuthService.signOut();
+      const { logout } = useAuth();
+      await logout();
       navigate("/login");
     } catch (error) {
       console.error('Logout error:', error);
@@ -144,7 +141,7 @@ export const useCreateItinerary = () => {
   };
 
   return {
-    currentUser,
+    currentUser: user,
     formData,
     sampleItinerary,
     isLoading,

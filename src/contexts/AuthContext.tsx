@@ -1,14 +1,24 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { mockAuthService } from '@/services/mockAuthService';
-import type { User } from '@/services/mockAuthService';
+import { supabase } from '@/integrations/supabase/client';
+import type { User, Session } from '@supabase/supabase-js';
+
+interface UserProfile {
+  id: string;
+  email: string;
+  role: 'agent' | 'traveler' | 'vendor';
+  name: string;
+  created_at: string;
+}
 
 interface AuthContextType {
-  user: User | null;
+  user: UserProfile | null;
+  session: Session | null;
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  signup: (email: string, password: string, role: 'agent' | 'traveler' | 'vendor', name: string) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,50 +36,131 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session on app start
-    const initializeAuth = async () => {
-      try {
-        const currentUser = await mockAuthService.getCurrentUser();
-        if (currentUser) {
-          setUser(currentUser.profile);
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.id);
+        setSession(session);
+        
+        if (session?.user) {
+          // Fetch user profile after auth state change
+          setTimeout(async () => {
+            try {
+              const { data: profile } = await supabase
+                .from('users')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+              
+              setUser(profile);
+            } catch (error) {
+              console.error('Error fetching user profile:', error);
+              setUser(null);
+            }
+          }, 0);
+        } else {
+          setUser(null);
         }
-      } catch (error) {
-        console.error('Failed to initialize auth:', error);
-      } finally {
+        
+        if (event === 'INITIAL_SESSION') {
+          setIsLoading(false);
+        }
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user) {
+        setTimeout(async () => {
+          try {
+            const { data: profile } = await supabase
+              .from('users')
+              .select('*')
+              .eq('id', session.user.id)
+              .single();
+            
+            setUser(profile);
+          } catch (error) {
+            console.error('Error fetching user profile:', error);
+            setUser(null);
+          }
+          setIsLoading(false);
+        }, 0);
+      } else {
         setIsLoading(false);
       }
-    };
+    });
 
-    initializeAuth();
+    return () => subscription.unsubscribe();
   }, []);
 
   const login = async (email: string, password: string) => {
     try {
-      const { profile } = await mockAuthService.signIn(email, password);
-      setUser(profile);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) throw error;
+      
+      // User profile will be set via the auth state change listener
     } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
+  };
+
+  const signup = async (email: string, password: string, role: 'agent' | 'traveler' | 'vendor', name: string) => {
+    try {
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            role,
+            name
+          }
+        }
+      });
+      
+      if (error) throw error;
+      
+      return data;
+    } catch (error) {
+      console.error('Signup error:', error);
       throw error;
     }
   };
 
   const logout = async () => {
     try {
-      await mockAuthService.signOut();
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
       setUser(null);
+      setSession(null);
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error('Logout error:', error);
+      throw error;
     }
   };
 
   const value: AuthContextType = {
     user,
+    session,
     isLoading,
-    isAuthenticated: !!user,
+    isAuthenticated: !!session && !!user,
     login,
+    signup,
     logout
   };
 

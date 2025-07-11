@@ -1,6 +1,6 @@
 
-import { supabase } from '@/lib/supabase'
-import type { Negotiation, NegotiationMessage } from '@/lib/supabase'
+import { supabase } from '@/integrations/supabase/client';
+import type { Negotiation, NegotiationMessage } from '@/lib/supabase';
 
 export const negotiationService = {
   async createNegotiation(negotiation: Omit<Negotiation, 'id' | 'created_at' | 'updated_at' | 'messages'>) {
@@ -8,10 +8,10 @@ export const negotiationService = {
       .from('negotiations')
       .insert({ ...negotiation, messages: [] })
       .select()
-      .single()
+      .single();
     
-    if (error) throw error
-    return data
+    if (error) throw error;
+    return data;
   },
 
   async getNegotiation(id: string) {
@@ -19,10 +19,10 @@ export const negotiationService = {
       .from('negotiations')
       .select('*')
       .eq('id', id)
-      .single()
+      .single();
     
-    if (error) throw error
-    return data
+    if (error) throw error;
+    return data;
   },
 
   async addMessage(negotiationId: string, message: Omit<NegotiationMessage, 'id' | 'created_at'>) {
@@ -31,15 +31,15 @@ export const negotiationService = {
       .from('negotiations')
       .select('messages')
       .eq('id', negotiationId)
-      .single()
+      .single();
     
     const newMessage = {
       ...message,
       id: crypto.randomUUID(),
       created_at: new Date().toISOString()
-    }
+    };
     
-    const updatedMessages = [...(negotiation?.messages || []), newMessage]
+    const updatedMessages = [...(negotiation?.messages || []), newMessage];
     
     const { data, error } = await supabase
       .from('negotiations')
@@ -49,10 +49,10 @@ export const negotiationService = {
       })
       .eq('id', negotiationId)
       .select()
-      .single()
+      .single();
     
-    if (error) throw error
-    return data
+    if (error) throw error;
+    return data;
   },
 
   async getVendorNegotiations(vendorId: string) {
@@ -60,10 +60,10 @@ export const negotiationService = {
       .from('negotiations')
       .select('*')
       .eq('vendor_id', vendorId)
-      .order('created_at', { ascending: false })
+      .order('created_at', { ascending: false });
     
-    if (error) throw error
-    return data
+    if (error) throw error;
+    return data;
   },
 
   async getAgentNegotiations(agentId: string) {
@@ -71,9 +71,9 @@ export const negotiationService = {
       .from('negotiations')
       .select('*')
       .eq('agent_id', agentId)
-      .order('created_at', { ascending: false })
+      .order('created_at', { ascending: false });
     
-    if (error) throw error
-    return data
+    if (error) throw error;
+    return data;
   }
-}
+};

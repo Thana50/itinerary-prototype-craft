@@ -14,7 +14,157 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      itineraries: {
+        Row: {
+          agent_id: string
+          created_at: string | null
+          days: Json
+          destination: string
+          end_date: string
+          id: string
+          name: string
+          number_of_travelers: number
+          preferences: string | null
+          share_token: string | null
+          start_date: string
+          status: string
+          traveler_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          agent_id: string
+          created_at?: string | null
+          days?: Json
+          destination: string
+          end_date: string
+          id?: string
+          name: string
+          number_of_travelers?: number
+          preferences?: string | null
+          share_token?: string | null
+          start_date: string
+          status?: string
+          traveler_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          agent_id?: string
+          created_at?: string | null
+          days?: Json
+          destination?: string
+          end_date?: string
+          id?: string
+          name?: string
+          number_of_travelers?: number
+          preferences?: string | null
+          share_token?: string | null
+          start_date?: string
+          status?: string
+          traveler_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "itineraries_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "itineraries_traveler_id_fkey"
+            columns: ["traveler_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      negotiations: {
+        Row: {
+          agent_id: string
+          created_at: string | null
+          description: string
+          id: string
+          itinerary_id: string
+          messages: Json
+          service_type: string
+          status: string
+          updated_at: string | null
+          vendor_id: string
+        }
+        Insert: {
+          agent_id: string
+          created_at?: string | null
+          description: string
+          id?: string
+          itinerary_id: string
+          messages?: Json
+          service_type: string
+          status?: string
+          updated_at?: string | null
+          vendor_id: string
+        }
+        Update: {
+          agent_id?: string
+          created_at?: string | null
+          description?: string
+          id?: string
+          itinerary_id?: string
+          messages?: Json
+          service_type?: string
+          status?: string
+          updated_at?: string | null
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "negotiations_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "negotiations_itinerary_id_fkey"
+            columns: ["itinerary_id"]
+            isOneToOne: false
+            referencedRelation: "itineraries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "negotiations_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          name: string
+          role: string
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id: string
+          name: string
+          role: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          name?: string
+          role?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -1,67 +1,61 @@
 
-import { supabase } from '@/lib/supabase'
-import type { User } from '@/lib/supabase'
+import { supabase } from '@/integrations/supabase/client';
 
 export const authService = {
   async signIn(email: string, password: string) {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
-    })
+    });
     
-    if (error) throw error
+    if (error) throw error;
     
     // Get user profile
     const { data: profile } = await supabase
       .from('users')
       .select('*')
       .eq('id', data.user.id)
-      .single()
+      .single();
     
-    return { user: data.user, profile }
+    return { user: data.user, profile };
   },
 
   async signUp(email: string, password: string, role: 'agent' | 'traveler' | 'vendor', name: string) {
+    const redirectUrl = `${window.location.origin}/`;
+    
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-    })
-    
-    if (error) throw error
-    
-    // Create user profile
-    if (data.user) {
-      const { error: profileError } = await supabase
-        .from('users')
-        .insert({
-          id: data.user.id,
-          email,
+      options: {
+        emailRedirectTo: redirectUrl,
+        data: {
           role,
-          name,
-        })
-      
-      if (profileError) throw profileError
-    }
+          name
+        }
+      }
+    });
     
-    return data
+    if (error) throw error;
+    
+    return data;
   },
 
   async signOut() {
-    const { error } = await supabase.auth.signOut()
-    if (error) throw error
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
   },
 
   async getCurrentUser() {
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { user } } = await supabase.auth.getUser();
     
-    if (!user) return null
+    if (!user) return null;
     
     const { data: profile } = await supabase
       .from('users')
       .select('*')
       .eq('id', user.id)
-      .single()
+      .single();
     
-    return { user, profile }
+    return { user, profile };
   }
-}
+};
