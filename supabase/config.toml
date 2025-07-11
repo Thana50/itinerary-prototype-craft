@@ -25,3 +25,6 @@ enable_confirmations = false
 
 [functions.create-demo-users]
 verify_jwt = false
+
+[functions.fix-demo-users]
+verify_jwt = false

@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
@@ -58,11 +57,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 .from('users')
                 .select('*')
                 .eq('id', session.user.id)
-                .single();
+                .maybeSingle(); // Use maybeSingle to handle case where no profile exists
               
               if (error) {
                 console.error('Error fetching user profile:', error);
-                setUser(null);
+                // Check if it's a "no rows" error vs actual error
+                if (error.code === 'PGRST116') {
+                  console.log('No profile found in users table - this might be expected for new users');
+                  setUser(null);
+                } else {
+                  console.error('Database error fetching profile:', error);
+                  setUser(null);
+                }
                 return;
               }
               
@@ -80,7 +86,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 setUser(null);
               }
             } catch (error) {
-              console.error('Error fetching user profile:', error);
+              console.error('Exception fetching user profile:', error);
               setUser(null);
             }
           }, 0);
@@ -106,7 +112,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               .from('users')
               .select('*')
               .eq('id', session.user.id)
-              .single();
+              .maybeSingle();
             
             if (error) {
               console.error('Error fetching initial user profile:', error);
@@ -122,7 +128,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               });
             }
           } catch (error) {
-            console.error('Error fetching initial user profile:', error);
+            console.error('Exception fetching initial user profile:', error);
             setUser(null);
           }
           setIsLoading(false);
@@ -145,7 +151,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       if (error) {
         console.error('Login error:', error);
-        throw error;
+        // Provide more specific error messages
+        if (error.message.includes('Invalid login credentials')) {
+          throw new Error('Invalid email or password. Please check your credentials.');
+        } else if (error.message.includes('Database error')) {
+          throw new Error('Authentication system error. Please try again or contact support.');
+        } else {
+          throw error;
+        }
       }
       
       console.log('Login successful:', data.user?.id);
