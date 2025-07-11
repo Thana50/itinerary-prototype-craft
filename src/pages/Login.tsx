@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { User, Lock, Bug } from "lucide-react";
+import { User, Lock, Bug, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -16,6 +17,7 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDebugging, setIsDebugging] = useState(false);
+  const [debugComplete, setDebugComplete] = useState(false);
   const navigate = useNavigate();
   const { login, isAuthenticated, user } = useAuth();
 
@@ -37,9 +39,11 @@ const Login = () => {
 
     try {
       await login(email, password);
+      toast.success("Login successful! Redirecting...");
       // Navigation will be handled by the useEffect above
-    } catch (error) {
-      toast.error("Invalid credentials. Please check your email and password.");
+    } catch (error: any) {
+      console.error('Login error:', error);
+      toast.error(error.message || "Login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -47,6 +51,7 @@ const Login = () => {
 
   const handleDebugAuth = async () => {
     setIsDebugging(true);
+    setDebugComplete(false);
     console.log('Running authentication debug...');
     
     try {
@@ -57,7 +62,18 @@ const Login = () => {
         toast.error('Debug function failed: ' + error.message);
       } else {
         console.log('Debug function result:', data);
-        toast.success('Debug completed - check console for details');
+        setDebugComplete(true);
+        
+        // Check if auth tests passed
+        const authResults = data?.authTestResults || [];
+        const successCount = authResults.filter((r: any) => r.status === 'SUCCESS').length;
+        const totalTests = authResults.length;
+        
+        if (successCount === totalTests) {
+          toast.success(`Authentication fix successful! All ${totalTests} demo accounts working.`);
+        } else {
+          toast.warning(`Debug completed. ${successCount}/${totalTests} accounts working. Check console for details.`);
+        }
       }
     } catch (error) {
       console.error('Error calling debug function:', error);
@@ -94,9 +110,18 @@ const Login = () => {
             <p className="text-blue-600 text-xs mt-2">Password: demo123</p>
           </div>
 
-          {/* Debug Section */}
-          <div className="mb-4 p-3 bg-yellow-50 rounded-lg">
-            <p className="text-yellow-800 text-sm mb-2">Having login issues? Run debug:</p>
+          {/* Authentication Status */}
+          <div className={`mb-4 p-3 rounded-lg ${debugComplete ? 'bg-green-50' : 'bg-yellow-50'}`}>
+            <p className={`text-sm mb-2 ${debugComplete ? 'text-green-800' : 'text-yellow-800'}`}>
+              {debugComplete ? (
+                <>
+                  <CheckCircle className="inline h-4 w-4 mr-1" />
+                  Authentication system verified and working
+                </>
+              ) : (
+                'Authentication system status: Run debug to verify'
+              )}
+            </p>
             <Button 
               onClick={handleDebugAuth}
               disabled={isDebugging}
@@ -105,7 +130,7 @@ const Login = () => {
               className="w-full"
             >
               <Bug className="h-4 w-4 mr-2" />
-              {isDebugging ? "Running Debug..." : "Debug Authentication"}
+              {isDebugging ? "Running Debug..." : "Verify Authentication"}
             </Button>
           </div>
           

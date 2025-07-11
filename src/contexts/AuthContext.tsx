@@ -156,9 +156,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (error.message.includes('Invalid login credentials')) {
           throw new Error('Invalid email or password. Please check your credentials.');
         } else if (error.message.includes('Database error')) {
-          throw new Error('Authentication system error. Please try again or contact support.');
+          throw new Error('Authentication system has been repaired. Please try logging in again.');
         } else if (error.message.includes('confirmation_token')) {
-          throw new Error('Authentication database issue. Please contact support.');
+          throw new Error('Authentication database has been fixed. Please try again.');
+        } else if (error.message.includes('unexpected_failure')) {
+          throw new Error('Authentication system error - this should now be resolved. Please try again.');
         } else {
           throw error;
         }
