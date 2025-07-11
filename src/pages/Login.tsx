@@ -1,20 +1,21 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { User, Lock } from "lucide-react";
+import { User, Lock, Bug } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDebugging, setIsDebugging] = useState(false);
   const navigate = useNavigate();
   const { login, isAuthenticated, user } = useAuth();
 
@@ -44,6 +45,28 @@ const Login = () => {
     }
   };
 
+  const handleDebugAuth = async () => {
+    setIsDebugging(true);
+    console.log('Running authentication debug...');
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('fix-demo-users');
+      
+      if (error) {
+        console.error('Edge function error:', error);
+        toast.error('Debug function failed: ' + error.message);
+      } else {
+        console.log('Debug function result:', data);
+        toast.success('Debug completed - check console for details');
+      }
+    } catch (error) {
+      console.error('Error calling debug function:', error);
+      toast.error('Failed to run debug function');
+    } finally {
+      setIsDebugging(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-700 px-4">
       <Card className="w-full max-w-md bg-white rounded-2xl shadow-xl">
@@ -69,6 +92,21 @@ const Login = () => {
             <p className="text-blue-700">• traveler@demo.com (Traveler)</p>
             <p className="text-blue-700">• vendor@demo.com (Vendor)</p>
             <p className="text-blue-600 text-xs mt-2">Password: demo123</p>
+          </div>
+
+          {/* Debug Section */}
+          <div className="mb-4 p-3 bg-yellow-50 rounded-lg">
+            <p className="text-yellow-800 text-sm mb-2">Having login issues? Run debug:</p>
+            <Button 
+              onClick={handleDebugAuth}
+              disabled={isDebugging}
+              variant="outline"
+              size="sm"
+              className="w-full"
+            >
+              <Bug className="h-4 w-4 mr-2" />
+              {isDebugging ? "Running Debug..." : "Debug Authentication"}
+            </Button>
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-6">
