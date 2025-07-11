@@ -13,7 +13,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    console.log('Starting demo users cleanup and recreation...')
+    console.log('Starting comprehensive demo users cleanup and recreation...')
     
     // Create admin client using service role key
     const supabaseAdmin = createClient(
@@ -30,41 +30,61 @@ Deno.serve(async (req) => {
     const demoEmails = ['agent@demo.com', 'traveler@demo.com', 'vendor@demo.com']
     const results = []
 
-    // Step 1: Clean up existing users
-    console.log('Step 1: Cleaning up existing demo users...')
-    for (const email of demoEmails) {
-      try {
-        // Get user by email first
-        const { data: users, error: listError } = await supabaseAdmin.auth.admin.listUsers({
-          page: 1,
-          perPage: 1000
-        })
+    // Step 1: Direct database cleanup using SQL to bypass corrupted auth.users scanning
+    console.log('Step 1: Direct database cleanup...')
+    
+    try {
+      // Clean up public.users first (no corruption issues here)
+      for (const email of demoEmails) {
+        const { error: publicDeleteError } = await supabaseAdmin
+          .from('users')
+          .delete()
+          .eq('email', email)
         
-        if (listError) {
-          console.error(`Error listing users:`, listError)
-          continue
+        if (publicDeleteError && publicDeleteError.code !== 'PGRST116') {
+          console.error(`Error deleting from public.users for ${email}:`, publicDeleteError)
+        } else {
+          console.log(`Cleaned up public.users record for ${email}`)
         }
+      }
 
-        const existingUser = users.users.find(u => u.email === email)
-        if (existingUser) {
-          console.log(`Found existing user ${email}, deleting...`)
-          const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(existingUser.id)
-          if (deleteError) {
-            console.error(`Error deleting user ${email}:`, deleteError)
-          } else {
-            console.log(`Successfully deleted user ${email}`)
+      // Direct SQL cleanup of auth.users to bypass scanning issues
+      console.log('Performing direct auth.users cleanup...')
+      
+      // Use raw SQL to delete corrupted auth users without scanning
+      const { error: authCleanupError } = await supabaseAdmin.rpc('cleanup_demo_auth_users')
+      
+      if (authCleanupError) {
+        console.log('RPC cleanup failed, trying alternative approach:', authCleanupError.message)
+        
+        // Alternative: Delete by email using SQL query that doesn't trigger the scan error
+        for (const email of demoEmails) {
+          try {
+            const { error } = await supabaseAdmin
+              .rpc('delete_auth_user_by_email', { user_email: email })
+            
+            if (error) {
+              console.log(`Could not delete auth user ${email}:`, error.message)
+            } else {
+              console.log(`Successfully deleted auth user ${email}`)
+            }
+          } catch (err) {
+            console.log(`Exception deleting auth user ${email}:`, err.message)
           }
         }
-      } catch (err) {
-        console.error(`Exception while cleaning up ${email}:`, err)
       }
+      
+    } catch (cleanupError) {
+      console.log('Database cleanup encountered issues:', cleanupError.message)
+      // Continue anyway - we'll try to create users
     }
 
-    // Wait a moment for cleanup to complete
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // Wait for cleanup to settle
+    await new Promise(resolve => setTimeout(resolve, 2000))
 
-    // Step 2: Create fresh demo users
+    // Step 2: Create fresh demo users using Auth Admin API
     console.log('Step 2: Creating fresh demo users...')
+    
     const demoUsers = [
       {
         email: 'agent@demo.com',
@@ -105,10 +125,52 @@ Deno.serve(async (req) => {
 
         if (authError) {
           console.error(`Failed to create user ${userData.email}:`, authError)
+          
+          // If user already exists, try to update them instead
+          if (authError.message?.includes('already been registered')) {
+            console.log(`User ${userData.email} already exists, attempting to update...`)
+            
+            // Try to find and update the existing user
+            try {
+              // Create the public.users record manually if trigger didn't work
+              const { error: insertError } = await supabaseAdmin
+                .from('users')
+                .upsert({
+                  id: authData?.user?.id || crypto.randomUUID(),
+                  email: userData.email,
+                  role: userData.user_metadata.role,
+                  name: userData.user_metadata.name
+                }, { onConflict: 'email' })
+              
+              if (insertError) {
+                console.error(`Error upserting user profile for ${userData.email}:`, insertError)
+                results.push({ 
+                  email: userData.email, 
+                  status: 'error', 
+                  error: `Profile upsert failed: ${insertError.message}`
+                })
+              } else {
+                results.push({ 
+                  email: userData.email, 
+                  status: 'updated',
+                  message: 'User already existed, profile updated'
+                })
+              }
+            } catch (upsertError) {
+              console.error(`Exception during upsert for ${userData.email}:`, upsertError)
+              results.push({ 
+                email: userData.email, 
+                status: 'error', 
+                error: `Upsert exception: ${upsertError.message}`
+              })
+            }
+            continue
+          }
+          
           results.push({ 
             email: userData.email, 
             status: 'error', 
-            error: authError.message || 'Unknown error'
+            error: authError.message || 'Unknown auth error'
           })
           continue
         }
@@ -118,26 +180,44 @@ Deno.serve(async (req) => {
           results.push({ 
             email: userData.email, 
             status: 'error', 
-            error: 'No user data returned'
+            error: 'No user data returned from auth creation'
           })
           continue
         }
 
         console.log(`Successfully created user: ${userData.email} with ID: ${authData.user.id}`)
         
-        // Verify the user was created in public.users table (should be handled by trigger)
-        await new Promise(resolve => setTimeout(resolve, 500)) // Wait for trigger
+        // Verify/create the public.users record manually (in case trigger didn't work)
+        await new Promise(resolve => setTimeout(resolve, 1000))
         
-        const { data: publicUser, error: publicError } = await supabaseAdmin
+        const { data: publicUser, error: publicSelectError } = await supabaseAdmin
           .from('users')
           .select('*')
           .eq('id', authData.user.id)
-          .single()
+          .maybeSingle()
         
-        if (publicError) {
-          console.log(`User ${userData.email} not yet in public.users, this is expected if trigger is working`)
+        if (publicSelectError) {
+          console.error(`Error checking public.users for ${userData.email}:`, publicSelectError)
+        }
+        
+        if (!publicUser) {
+          console.log(`Creating public.users record for ${userData.email}`)
+          const { error: insertError } = await supabaseAdmin
+            .from('users')
+            .insert({
+              id: authData.user.id,
+              email: userData.email,
+              role: userData.user_metadata.role,
+              name: userData.user_metadata.name
+            })
+          
+          if (insertError) {
+            console.error(`Error creating public.users record for ${userData.email}:`, insertError)
+          } else {
+            console.log(`Successfully created public.users record for ${userData.email}`)
+          }
         } else {
-          console.log(`User ${userData.email} found in public.users:`, publicUser)
+          console.log(`Public.users record already exists for ${userData.email}`)
         }
 
         results.push({ 
@@ -152,12 +232,13 @@ Deno.serve(async (req) => {
         results.push({ 
           email: userData.email, 
           status: 'error', 
-          error: err.message || 'Exception occurred'
+          error: err.message || 'Exception occurred during user creation'
         })
       }
     }
 
     console.log('Demo users cleanup and recreation completed')
+    console.log('Results:', results)
     
     return new Response(
       JSON.stringify({ 
@@ -178,7 +259,8 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message || 'Unknown error occurred'
+        error: error.message || 'Unknown error occurred',
+        details: 'Check function logs for more details'
       }),
       { 
         status: 500, 
