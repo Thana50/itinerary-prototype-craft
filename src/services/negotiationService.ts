@@ -15,7 +15,7 @@ export const negotiationService = {
     return {
       ...data,
       status: data.status as 'pending' | 'negotiating' | 'accepted' | 'rejected',
-      messages: Array.isArray(data.messages) ? data.messages as NegotiationMessage[] : []
+      messages: Array.isArray(data.messages) ? (data.messages as unknown as NegotiationMessage[]) : []
     } as Negotiation;
   },
 
@@ -31,7 +31,7 @@ export const negotiationService = {
     return {
       ...data,
       status: data.status as 'pending' | 'negotiating' | 'accepted' | 'rejected',
-      messages: Array.isArray(data.messages) ? data.messages as NegotiationMessage[] : []
+      messages: Array.isArray(data.messages) ? (data.messages as unknown as NegotiationMessage[]) : []
     } as Negotiation;
   },
 
@@ -49,7 +49,7 @@ export const negotiationService = {
       created_at: new Date().toISOString()
     };
     
-    const currentMessages = Array.isArray(negotiation?.messages) ? negotiation.messages as NegotiationMessage[] : [];
+    const currentMessages = Array.isArray(negotiation?.messages) ? (negotiation.messages as unknown as NegotiationMessage[]) : [];
     const updatedMessages = [...currentMessages, newMessage];
     
     const { data, error } = await supabase
@@ -67,7 +67,7 @@ export const negotiationService = {
     return {
       ...data,
       status: data.status as 'pending' | 'negotiating' | 'accepted' | 'rejected',
-      messages: Array.isArray(data.messages) ? data.messages as NegotiationMessage[] : []
+      messages: Array.isArray(data.messages) ? (data.messages as unknown as NegotiationMessage[]) : []
     } as Negotiation;
   },
 
@@ -83,7 +83,7 @@ export const negotiationService = {
     return data.map(item => ({
       ...item,
       status: item.status as 'pending' | 'negotiating' | 'accepted' | 'rejected',
-      messages: Array.isArray(item.messages) ? item.messages as NegotiationMessage[] : []
+      messages: Array.isArray(item.messages) ? (item.messages as unknown as NegotiationMessage[]) : []
     })) as Negotiation[];
   },
 
@@ -99,7 +99,7 @@ export const negotiationService = {
     return data.map(item => ({
       ...item,
       status: item.status as 'pending' | 'negotiating' | 'accepted' | 'rejected',
-      messages: Array.isArray(item.messages) ? item.messages as NegotiationMessage[] : []
+      messages: Array.isArray(item.messages) ? (item.messages as unknown as NegotiationMessage[]) : []
     })) as Negotiation[];
   }
 };
