@@ -6,12 +6,21 @@ export const itineraryService = {
   async createItinerary(itinerary: Omit<Itinerary, 'id' | 'created_at' | 'updated_at'>) {
     const { data, error } = await supabase
       .from('itineraries')
-      .insert(itinerary)
+      .insert({
+        ...itinerary,
+        days: itinerary.days as any // Convert to JSONB
+      })
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    
+    // Convert back to our type format
+    return {
+      ...data,
+      status: data.status as 'draft' | 'shared' | 'confirmed' | 'modified',
+      days: (data.days as any) || []
+    } as Itinerary;
   },
 
   async getItinerary(id: string) {
@@ -22,7 +31,12 @@ export const itineraryService = {
       .single();
     
     if (error) throw error;
-    return data;
+    
+    return {
+      ...data,
+      status: data.status as 'draft' | 'shared' | 'confirmed' | 'modified',
+      days: (data.days as any) || []
+    } as Itinerary;
   },
 
   async getItineraryByToken(token: string) {
@@ -33,19 +47,39 @@ export const itineraryService = {
       .single();
     
     if (error) throw error;
-    return data;
+    
+    return {
+      ...data,
+      status: data.status as 'draft' | 'shared' | 'confirmed' | 'modified',
+      days: (data.days as any) || []
+    } as Itinerary;
   },
 
   async updateItinerary(id: string, updates: Partial<Itinerary>) {
+    const updateData: any = {
+      ...updates,
+      updated_at: new Date().toISOString()
+    };
+    
+    // Convert days array to JSONB if present
+    if (updates.days) {
+      updateData.days = updates.days as any;
+    }
+    
     const { data, error } = await supabase
       .from('itineraries')
-      .update({ ...updates, updated_at: new Date().toISOString() })
+      .update(updateData)
       .eq('id', id)
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    
+    return {
+      ...data,
+      status: data.status as 'draft' | 'shared' | 'confirmed' | 'modified',
+      days: (data.days as any) || []
+    } as Itinerary;
   },
 
   async getAgentItineraries(agentId: string) {
@@ -56,7 +90,12 @@ export const itineraryService = {
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    return data;
+    
+    return data.map(item => ({
+      ...item,
+      status: item.status as 'draft' | 'shared' | 'confirmed' | 'modified',
+      days: (item.days as any) || []
+    })) as Itinerary[];
   },
 
   async shareItinerary(id: string, travelerEmail: string) {
@@ -79,6 +118,10 @@ export const itineraryService = {
     // TODO: Send email notification to traveler
     console.log(`Share link: ${window.location.origin}/itinerary/shared/${shareToken}`);
     
-    return data;
+    return {
+      ...data,
+      status: data.status as 'draft' | 'shared' | 'confirmed' | 'modified',
+      days: (data.days as any) || []
+    } as Itinerary;
   }
 };

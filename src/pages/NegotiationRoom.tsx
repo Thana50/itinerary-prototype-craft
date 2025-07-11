@@ -214,7 +214,7 @@ const NegotiationRoom = () => {
               className="space-y-4 mb-6 bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-4 border border-blue-100" 
               style={{ height: '400px', overflowY: 'auto' }}
             >
-              {negotiation.messages.map((message) => (
+              {negotiation?.messages && negotiation.messages.map((message) => (
                 <div 
                   key={message.id}
                   className={`flex ${message.sender_id === currentUser?.user.id ? "justify-end" : "justify-start"}`}

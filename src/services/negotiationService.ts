@@ -11,7 +11,12 @@ export const negotiationService = {
       .single();
     
     if (error) throw error;
-    return data;
+    
+    return {
+      ...data,
+      status: data.status as 'pending' | 'negotiating' | 'accepted' | 'rejected',
+      messages: Array.isArray(data.messages) ? data.messages as NegotiationMessage[] : []
+    } as Negotiation;
   },
 
   async getNegotiation(id: string) {
@@ -22,7 +27,12 @@ export const negotiationService = {
       .single();
     
     if (error) throw error;
-    return data;
+    
+    return {
+      ...data,
+      status: data.status as 'pending' | 'negotiating' | 'accepted' | 'rejected',
+      messages: Array.isArray(data.messages) ? data.messages as NegotiationMessage[] : []
+    } as Negotiation;
   },
 
   async addMessage(negotiationId: string, message: Omit<NegotiationMessage, 'id' | 'created_at'>) {
@@ -39,12 +49,13 @@ export const negotiationService = {
       created_at: new Date().toISOString()
     };
     
-    const updatedMessages = [...(negotiation?.messages || []), newMessage];
+    const currentMessages = Array.isArray(negotiation?.messages) ? negotiation.messages as NegotiationMessage[] : [];
+    const updatedMessages = [...currentMessages, newMessage];
     
     const { data, error } = await supabase
       .from('negotiations')
       .update({ 
-        messages: updatedMessages,
+        messages: updatedMessages as any,
         updated_at: new Date().toISOString()
       })
       .eq('id', negotiationId)
@@ -52,7 +63,12 @@ export const negotiationService = {
       .single();
     
     if (error) throw error;
-    return data;
+    
+    return {
+      ...data,
+      status: data.status as 'pending' | 'negotiating' | 'accepted' | 'rejected',
+      messages: Array.isArray(data.messages) ? data.messages as NegotiationMessage[] : []
+    } as Negotiation;
   },
 
   async getVendorNegotiations(vendorId: string) {
@@ -63,7 +79,12 @@ export const negotiationService = {
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    return data;
+    
+    return data.map(item => ({
+      ...item,
+      status: item.status as 'pending' | 'negotiating' | 'accepted' | 'rejected',
+      messages: Array.isArray(item.messages) ? item.messages as NegotiationMessage[] : []
+    })) as Negotiation[];
   },
 
   async getAgentNegotiations(agentId: string) {
@@ -74,6 +95,11 @@ export const negotiationService = {
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    return data;
+    
+    return data.map(item => ({
+      ...item,
+      status: item.status as 'pending' | 'negotiating' | 'accepted' | 'rejected',
+      messages: Array.isArray(item.messages) ? item.messages as NegotiationMessage[] : []
+    })) as Negotiation[];
   }
 };

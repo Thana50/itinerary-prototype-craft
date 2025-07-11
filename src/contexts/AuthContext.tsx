@@ -57,7 +57,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 .eq('id', session.user.id)
                 .single();
               
-              setUser(profile);
+              if (profile) {
+                setUser({
+                  id: profile.id,
+                  email: profile.email,
+                  role: profile.role as 'agent' | 'traveler' | 'vendor',
+                  name: profile.name,
+                  created_at: profile.created_at || new Date().toISOString()
+                });
+              }
             } catch (error) {
               console.error('Error fetching user profile:', error);
               setUser(null);
@@ -85,7 +93,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               .eq('id', session.user.id)
               .single();
             
-            setUser(profile);
+            if (profile) {
+              setUser({
+                id: profile.id,
+                email: profile.email,
+                role: profile.role as 'agent' | 'traveler' | 'vendor',
+                name: profile.name,
+                created_at: profile.created_at || new Date().toISOString()
+              });
+            }
           } catch (error) {
             console.error('Error fetching user profile:', error);
             setUser(null);
@@ -134,7 +150,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       if (error) throw error;
       
-      return data;
+      // Don't return data, just complete successfully
     } catch (error) {
       console.error('Signup error:', error);
       throw error;
