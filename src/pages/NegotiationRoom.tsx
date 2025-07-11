@@ -23,6 +23,9 @@ const NegotiationRoom = () => {
   const [isLoading, setIsLoading] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Ensure user role is valid for negotiations
+  const userRole = user?.role === 'agent' || user?.role === 'vendor' ? user.role : null;
+
   useEffect(() => {
     if (id) {
       loadNegotiation();
@@ -32,6 +35,18 @@ const NegotiationRoom = () => {
   useEffect(() => {
     scrollToBottom();
   }, [negotiation?.messages]);
+
+  // Redirect if user doesn't have valid role for negotiations
+  useEffect(() => {
+    if (user && !userRole) {
+      toast({
+        title: "Access Denied",
+        description: "Only agents and vendors can access negotiations.",
+        variant: "destructive"
+      });
+      navigate('/');
+    }
+  }, [user, userRole, navigate]);
 
   const loadNegotiation = async () => {
     try {
@@ -55,12 +70,12 @@ const NegotiationRoom = () => {
   };
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !negotiation || !user) return;
+    if (!newMessage.trim() || !negotiation || !user || !userRole) return;
 
     try {
       const message = {
         sender_id: user.id,
-        sender_role: user.role,
+        sender_role: userRole,
         message: newMessage,
         price_offer: priceOffer ? parseFloat(priceOffer) : undefined
       };
@@ -73,7 +88,7 @@ const NegotiationRoom = () => {
       // Get AI suggestion for response
       const aiSuggestion = await aiService.generateItineraryResponse(
         newMessage, 
-        user.role === 'agent' ? 'vendor' : 'agent'
+        userRole === 'agent' ? 'vendor' : 'agent'
       );
       
       toast({
@@ -92,12 +107,12 @@ const NegotiationRoom = () => {
   };
 
   const handleAcceptOffer = async () => {
-    if (!negotiation || !user) return;
+    if (!negotiation || !user || !userRole) return;
 
     try {
       await negotiationService.addMessage(negotiation.id, {
         sender_id: user.id,
-        sender_role: user.role,
+        sender_role: userRole,
         message: "Offer accepted! Proceeding with booking."
       });
 
@@ -107,7 +122,7 @@ const NegotiationRoom = () => {
       });
 
       // Navigate based on user role
-      navigate(user.role === 'agent' ? '/agent-dashboard' : '/vendor-dashboard');
+      navigate(userRole === 'agent' ? '/agent-dashboard' : '/vendor-dashboard');
 
     } catch (error) {
       console.error('Failed to accept offer:', error);
@@ -115,7 +130,7 @@ const NegotiationRoom = () => {
   };
 
   const handleBackNavigation = () => {
-    if (user?.role === 'vendor') {
+    if (userRole === 'vendor') {
       navigate('/vendor-dashboard');
     } else {
       navigate('/agent-dashboard');
@@ -264,7 +279,7 @@ const NegotiationRoom = () => {
                 </Button>
               </div>
 
-              {user?.role === 'agent' && (
+              {userRole === 'agent' && (
                 <div className="flex gap-3 pt-2">
                   <Button 
                     onClick={handleAcceptOffer} 
@@ -283,7 +298,7 @@ const NegotiationRoom = () => {
                 </div>
               )}
 
-              {user?.role === 'vendor' && (
+              {userRole === 'vendor' && (
                 <div className="flex gap-3 pt-2">
                   <Button 
                     onClick={handleAcceptOffer} 
