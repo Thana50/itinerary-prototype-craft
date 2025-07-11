@@ -38,7 +38,7 @@ const Login = () => {
       await login(email, password);
       // Navigation will be handled by the useEffect above
     } catch (error) {
-      toast.error("Invalid credentials. Try: agent@demo.com, traveler@demo.com, or vendor@demo.com");
+      toast.error("Invalid credentials. Please check your email and password.");
     } finally {
       setIsLoading(false);
     }
@@ -68,7 +68,7 @@ const Login = () => {
             <p className="text-blue-700">• agent@demo.com (Travel Agent)</p>
             <p className="text-blue-700">• traveler@demo.com (Traveler)</p>
             <p className="text-blue-700">• vendor@demo.com (Vendor)</p>
-            <p className="text-blue-600 text-xs mt-2">Password: any text</p>
+            <p className="text-blue-600 text-xs mt-2">Password: demo123</p>
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -99,7 +99,7 @@ const Login = () => {
                 <Input 
                   id="password" 
                   type="password" 
-                  placeholder="••••••••" 
+                  placeholder="demo123" 
                   value={password} 
                   onChange={(e) => setPassword(e.target.value)} 
                   className="pl-10 h-12 bg-gray-50 border-gray-200 rounded-lg" 
