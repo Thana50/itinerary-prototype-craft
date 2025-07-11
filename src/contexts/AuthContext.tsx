@@ -58,11 +58,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 .from('users')
                 .select('*')
                 .eq('id', session.user.id)
-                .maybeSingle(); // Use maybeSingle to handle case where no profile exists
+                .maybeSingle();
               
               if (error) {
                 console.error('Error fetching user profile:', error);
-                // Check if it's a "no rows" error vs actual error
                 if (error.code === 'PGRST116') {
                   console.log('No profile found in users table - this might be expected for new users');
                   setUser(null);
@@ -152,17 +151,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       if (error) {
         console.error('Login error:', error);
-        // Provide more specific error messages based on the error type
+        // Provide user-friendly error messages
         if (error.message.includes('Invalid login credentials')) {
           throw new Error('Invalid email or password. Please check your credentials.');
-        } else if (error.message.includes('Database error')) {
-          throw new Error('Authentication system has been repaired. Please try logging in again.');
-        } else if (error.message.includes('confirmation_token')) {
-          throw new Error('Authentication database has been fixed. Please try again.');
-        } else if (error.message.includes('unexpected_failure')) {
-          throw new Error('Authentication system error - this should now be resolved. Please try again.');
+        } else if (error.message.includes('Email not confirmed')) {
+          throw new Error('Please check your email and click the confirmation link before signing in.');
         } else {
-          throw error;
+          throw new Error('Login failed. Please try again.');
         }
       }
       

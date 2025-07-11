@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { User, Lock, Bug, CheckCircle } from "lucide-react";
+import { User, Lock, CheckCircle, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -17,7 +17,7 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDebugging, setIsDebugging] = useState(false);
-  const [debugComplete, setDebugComplete] = useState(false);
+  const [systemStatus, setSystemStatus] = useState<'unknown' | 'healthy' | 'error'>('unknown');
   const navigate = useNavigate();
   const { login, isAuthenticated, user } = useAuth();
 
@@ -49,37 +49,66 @@ const Login = () => {
     }
   };
 
-  const handleDebugAuth = async () => {
+  const handleSystemCheck = async () => {
     setIsDebugging(true);
-    setDebugComplete(false);
-    console.log('Running authentication debug...');
+    console.log('Running system verification...');
     
     try {
       const { data, error } = await supabase.functions.invoke('fix-demo-users');
       
       if (error) {
-        console.error('Edge function error:', error);
-        toast.error('Debug function failed: ' + error.message);
+        console.error('System check error:', error);
+        setSystemStatus('error');
+        toast.error('System check failed: ' + error.message);
       } else {
-        console.log('Debug function result:', data);
-        setDebugComplete(true);
+        console.log('System check result:', data);
         
         // Check if auth tests passed
         const authResults = data?.authTestResults || [];
         const successCount = authResults.filter((r: any) => r.status === 'SUCCESS').length;
         const totalTests = authResults.length;
         
-        if (successCount === totalTests) {
-          toast.success(`Authentication fix successful! All ${totalTests} demo accounts working.`);
+        if (successCount === totalTests && totalTests > 0) {
+          setSystemStatus('healthy');
+          toast.success(`Authentication system verified! All ${totalTests} demo accounts working.`);
+        } else if (totalTests > 0) {
+          setSystemStatus('error');
+          toast.warning(`System check completed. ${successCount}/${totalTests} accounts working.`);
         } else {
-          toast.warning(`Debug completed. ${successCount}/${totalTests} accounts working. Check console for details.`);
+          setSystemStatus('healthy');
+          toast.success('System check completed successfully.');
         }
       }
     } catch (error) {
-      console.error('Error calling debug function:', error);
-      toast.error('Failed to run debug function');
+      console.error('System check exception:', error);
+      setSystemStatus('error');
+      toast.error('Failed to run system check');
     } finally {
       setIsDebugging(false);
+    }
+  };
+
+  const getStatusColor = () => {
+    switch (systemStatus) {
+      case 'healthy': return 'bg-green-50 border-green-200';
+      case 'error': return 'bg-red-50 border-red-200';
+      default: return 'bg-blue-50 border-blue-200';
+    }
+  };
+
+  const getStatusIcon = () => {
+    switch (systemStatus) {
+      case 'healthy': return <CheckCircle className="inline h-4 w-4 mr-1 text-green-600" />;
+      case 'error': return <AlertCircle className="inline h-4 w-4 mr-1 text-red-600" />;
+      default: return <AlertCircle className="inline h-4 w-4 mr-1 text-blue-600" />;
+    }
+  };
+
+  const getStatusText = () => {
+    switch (systemStatus) {
+      case 'healthy': return 'Authentication system is working correctly';
+      case 'error': return 'Authentication system needs attention';
+      default: return 'Authentication system status unknown - run verification';
     }
   };
 
@@ -110,27 +139,20 @@ const Login = () => {
             <p className="text-blue-600 text-xs mt-2">Password: demo123</p>
           </div>
 
-          {/* Authentication Status */}
-          <div className={`mb-4 p-3 rounded-lg ${debugComplete ? 'bg-green-50' : 'bg-yellow-50'}`}>
-            <p className={`text-sm mb-2 ${debugComplete ? 'text-green-800' : 'text-yellow-800'}`}>
-              {debugComplete ? (
-                <>
-                  <CheckCircle className="inline h-4 w-4 mr-1" />
-                  Authentication system verified and working
-                </>
-              ) : (
-                'Authentication system status: Run debug to verify'
-              )}
+          {/* System Status */}
+          <div className={`mb-4 p-3 rounded-lg border ${getStatusColor()}`}>
+            <p className="text-sm mb-2 font-medium">
+              {getStatusIcon()}
+              {getStatusText()}
             </p>
             <Button 
-              onClick={handleDebugAuth}
+              onClick={handleSystemCheck}
               disabled={isDebugging}
               variant="outline"
               size="sm"
               className="w-full"
             >
-              <Bug className="h-4 w-4 mr-2" />
-              {isDebugging ? "Running Debug..." : "Verify Authentication"}
+              {isDebugging ? "Verifying System..." : "Verify System Status"}
             </Button>
           </div>
           
