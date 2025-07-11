@@ -1,4 +1,5 @@
 
+
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
@@ -59,17 +60,7 @@ Deno.serve(async (req) => {
     for (const userData of demoUsers) {
       console.log(`Creating user: ${userData.email}`)
       
-      // First check if user already exists
-      const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers()
-      const existingUser = existingUsers.users.find(u => u.email === userData.email)
-      
-      if (existingUser) {
-        console.log(`User ${userData.email} already exists, skipping...`)
-        results.push({ email: userData.email, status: 'already_exists' })
-        continue
-      }
-      
-      // Create the user
+      // Try to create the user directly - if it exists, we'll get an error
       const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
         email: userData.email,
         password: userData.password,
@@ -78,12 +69,18 @@ Deno.serve(async (req) => {
       })
 
       if (authError) {
-        console.error(`Failed to create user ${userData.email}:`, authError)
-        results.push({ 
-          email: userData.email, 
-          status: 'error', 
-          error: authError.message 
-        })
+        // Check if it's a duplicate email error
+        if (authError.message.includes('already registered') || authError.message.includes('already been taken')) {
+          console.log(`User ${userData.email} already exists, skipping...`)
+          results.push({ email: userData.email, status: 'already_exists' })
+        } else {
+          console.error(`Failed to create user ${userData.email}:`, authError)
+          results.push({ 
+            email: userData.email, 
+            status: 'error', 
+            error: authError.message 
+          })
+        }
         continue
       }
 
@@ -126,3 +123,4 @@ Deno.serve(async (req) => {
     )
   }
 })
+
