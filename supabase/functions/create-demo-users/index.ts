@@ -1,5 +1,4 @@
 
-
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
@@ -60,36 +59,46 @@ Deno.serve(async (req) => {
     for (const userData of demoUsers) {
       console.log(`Creating user: ${userData.email}`)
       
-      // Try to create the user directly - if it exists, we'll get an error
-      const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
-        email: userData.email,
-        password: userData.password,
-        email_confirm: true,
-        user_metadata: userData.user_metadata
-      })
+      try {
+        // Try to create the user with email confirmation disabled
+        const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+          email: userData.email,
+          password: userData.password,
+          email_confirm: true, // Auto-confirm email to avoid confirmation issues
+          user_metadata: userData.user_metadata
+        })
 
-      if (authError) {
-        // Check if it's a duplicate email error
-        if (authError.message.includes('already registered') || authError.message.includes('already been taken')) {
-          console.log(`User ${userData.email} already exists, skipping...`)
-          results.push({ email: userData.email, status: 'already_exists' })
-        } else {
-          console.error(`Failed to create user ${userData.email}:`, authError)
-          results.push({ 
-            email: userData.email, 
-            status: 'error', 
-            error: authError.message 
-          })
+        if (authError) {
+          // Check if it's a user already exists error
+          if (authError.message.includes('already') || authError.code === 'user_already_exists') {
+            console.log(`User ${userData.email} already exists, skipping...`)
+            results.push({ email: userData.email, status: 'already_exists' })
+          } else {
+            console.error(`Failed to create user ${userData.email}:`, authError)
+            results.push({ 
+              email: userData.email, 
+              status: 'error', 
+              error: authError.message || 'Unknown error'
+            })
+          }
+          continue
         }
-        continue
-      }
 
-      console.log(`Successfully created user: ${userData.email}`)
-      results.push({ 
-        email: userData.email, 
-        status: 'created',
-        id: authData.user?.id
-      })
+        console.log(`Successfully created user: ${userData.email}`)
+        results.push({ 
+          email: userData.email, 
+          status: 'created',
+          id: authData.user?.id
+        })
+
+      } catch (err) {
+        console.error(`Exception creating user ${userData.email}:`, err)
+        results.push({ 
+          email: userData.email, 
+          status: 'error', 
+          error: err.message || 'Exception occurred'
+        })
+      }
     }
 
     return new Response(
@@ -111,7 +120,7 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message 
+        error: error.message || 'Unknown error occurred'
       }),
       { 
         status: 500, 
@@ -123,4 +132,3 @@ Deno.serve(async (req) => {
     )
   }
 })
-
