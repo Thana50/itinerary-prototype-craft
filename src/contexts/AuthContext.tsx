@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
@@ -151,11 +152,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       if (error) {
         console.error('Login error:', error);
-        // Provide more specific error messages
+        // Provide more specific error messages based on the error type
         if (error.message.includes('Invalid login credentials')) {
           throw new Error('Invalid email or password. Please check your credentials.');
         } else if (error.message.includes('Database error')) {
           throw new Error('Authentication system error. Please try again or contact support.');
+        } else if (error.message.includes('confirmation_token')) {
+          throw new Error('Authentication database issue. Please contact support.');
         } else {
           throw error;
         }

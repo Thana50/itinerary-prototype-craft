@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      auth_schema_fixes: {
+        Row: {
+          affected_rows: number | null
+          column_name: string
+          created_at: string | null
+          description: string
+          id: number
+          operation: string
+          status: string
+          table_name: string
+        }
+        Insert: {
+          affected_rows?: number | null
+          column_name: string
+          created_at?: string | null
+          description: string
+          id?: never
+          operation: string
+          status: string
+          table_name: string
+        }
+        Update: {
+          affected_rows?: number | null
+          column_name?: string
+          created_at?: string | null
+          description?: string
+          id?: never
+          operation?: string
+          status?: string
+          table_name?: string
+        }
+        Relationships: []
+      }
       itineraries: {
         Row: {
           agent_id: string
@@ -170,7 +203,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      check_auth_schema_health: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          table_name: string
+          column_name: string
+          null_count: number
+          total_rows: number
+          health_status: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
