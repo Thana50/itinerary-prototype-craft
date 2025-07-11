@@ -9,7 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export const useCreateItinerary = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { user, isAuthenticated, isLoading: authLoading, logout } = useAuth();
   
   const [formData, setFormData] = useState({
     itineraryName: "",
@@ -25,7 +25,7 @@ export const useCreateItinerary = () => {
 
   useEffect(() => {
     if (!authLoading && (!isAuthenticated || user?.role !== 'agent')) {
-      navigate("/login");
+      navigate("/");
     }
   }, [isAuthenticated, user, authLoading, navigate]);
 
@@ -128,9 +128,8 @@ export const useCreateItinerary = () => {
 
   const handleLogout = async () => {
     try {
-      const { logout } = useAuth();
       await logout();
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       console.error('Logout error:', error);
     }

@@ -9,22 +9,21 @@ import { toast } from "@/hooks/use-toast";
 import { Send, DollarSign, Check, X, ArrowLeft, Clock, MessageSquare } from "lucide-react";
 import { negotiationService } from "@/services/negotiationService";
 import { aiService } from "@/services/aiService";
-import { authService } from "@/services/authService";
+import { useAuth } from "@/contexts/AuthContext";
 import type { Negotiation } from "@/lib/supabase";
 
 const NegotiationRoom = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   
   const [negotiation, setNegotiation] = useState<Negotiation | null>(null);
-  const [currentUser, setCurrentUser] = useState<any>(null);
   const [newMessage, setNewMessage] = useState("");
   const [priceOffer, setPriceOffer] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    checkAuth();
     if (id) {
       loadNegotiation();
     }
@@ -33,20 +32,6 @@ const NegotiationRoom = () => {
   useEffect(() => {
     scrollToBottom();
   }, [negotiation?.messages]);
-
-  const checkAuth = async () => {
-    try {
-      const userData = await authService.getCurrentUser();
-      if (!userData) {
-        navigate("/login");
-        return;
-      }
-      setCurrentUser(userData);
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      navigate("/login");
-    }
-  };
 
   const loadNegotiation = async () => {
     try {
@@ -70,12 +55,12 @@ const NegotiationRoom = () => {
   };
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !negotiation || !currentUser) return;
+    if (!newMessage.trim() || !negotiation || !user) return;
 
     try {
       const message = {
-        sender_id: currentUser.user.id,
-        sender_role: currentUser.profile.role,
+        sender_id: user.id,
+        sender_role: user.role,
         message: newMessage,
         price_offer: priceOffer ? parseFloat(priceOffer) : undefined
       };
@@ -88,7 +73,7 @@ const NegotiationRoom = () => {
       // Get AI suggestion for response
       const aiSuggestion = await aiService.generateItineraryResponse(
         newMessage, 
-        currentUser.profile.role === 'agent' ? 'vendor' : 'agent'
+        user.role === 'agent' ? 'vendor' : 'agent'
       );
       
       toast({
@@ -107,12 +92,12 @@ const NegotiationRoom = () => {
   };
 
   const handleAcceptOffer = async () => {
-    if (!negotiation) return;
+    if (!negotiation || !user) return;
 
     try {
       await negotiationService.addMessage(negotiation.id, {
-        sender_id: currentUser.user.id,
-        sender_role: currentUser.profile.role,
+        sender_id: user.id,
+        sender_role: user.role,
         message: "Offer accepted! Proceeding with booking."
       });
 
@@ -122,7 +107,7 @@ const NegotiationRoom = () => {
       });
 
       // Navigate based on user role
-      navigate(currentUser.profile.role === 'agent' ? '/agent-dashboard' : '/vendor-dashboard');
+      navigate(user.role === 'agent' ? '/agent-dashboard' : '/vendor-dashboard');
 
     } catch (error) {
       console.error('Failed to accept offer:', error);
@@ -130,7 +115,7 @@ const NegotiationRoom = () => {
   };
 
   const handleBackNavigation = () => {
-    if (currentUser?.profile.role === 'vendor') {
+    if (user?.role === 'vendor') {
       navigate('/vendor-dashboard');
     } else {
       navigate('/agent-dashboard');
@@ -217,23 +202,23 @@ const NegotiationRoom = () => {
               {negotiation?.messages && negotiation.messages.map((message) => (
                 <div 
                   key={message.id}
-                  className={`flex ${message.sender_id === currentUser?.user.id ? "justify-end" : "justify-start"}`}
+                  className={`flex ${message.sender_id === user?.id ? "justify-end" : "justify-start"}`}
                 >
                   <div 
                     className={`max-w-[70%] rounded-lg p-4 shadow-sm ${
-                      message.sender_id === currentUser?.user.id
+                      message.sender_id === user?.id
                         ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white" 
                         : "bg-gradient-to-r from-white to-gray-50 text-gray-800 border border-gray-200"
                     }`}
                   >
                     <div className="flex items-center mb-2">
                       <span className={`text-xs font-medium ${
-                        message.sender_id === currentUser?.user.id ? 'text-blue-100' : 'text-gray-600'
+                        message.sender_id === user?.id ? 'text-blue-100' : 'text-gray-600'
                       }`}>
                         {message.sender_role === 'agent' ? 'Travel Agent' : 'Vendor'}
                       </span>
                       <span className={`text-xs ml-auto ${
-                        message.sender_id === currentUser?.user.id ? 'text-blue-100 opacity-70' : 'text-gray-500'
+                        message.sender_id === user?.id ? 'text-blue-100 opacity-70' : 'text-gray-500'
                       }`}>
                         {new Date(message.created_at).toLocaleTimeString()}
                       </span>
@@ -241,7 +226,7 @@ const NegotiationRoom = () => {
                     <p className="text-sm leading-relaxed">{message.message}</p>
                     {message.price_offer && (
                       <div className={`mt-3 p-3 rounded-lg text-sm font-medium ${
-                        message.sender_id === currentUser?.user.id 
+                        message.sender_id === user?.id 
                           ? 'bg-white/20 text-white' 
                           : 'bg-blue-50 text-blue-800 border border-blue-200'
                       }`}>
@@ -279,7 +264,7 @@ const NegotiationRoom = () => {
                 </Button>
               </div>
 
-              {currentUser?.profile.role === 'agent' && (
+              {user?.role === 'agent' && (
                 <div className="flex gap-3 pt-2">
                   <Button 
                     onClick={handleAcceptOffer} 
@@ -298,7 +283,7 @@ const NegotiationRoom = () => {
                 </div>
               )}
 
-              {currentUser?.profile.role === 'vendor' && (
+              {user?.role === 'vendor' && (
                 <div className="flex gap-3 pt-2">
                   <Button 
                     onClick={handleAcceptOffer} 

@@ -38,7 +38,7 @@ const SharedItinerary = () => {
         description: "Invalid or expired itinerary link.",
         variant: "destructive"
       });
-      navigate("/login");
+      navigate("/");
     } finally {
       setIsLoading(false);
     }
