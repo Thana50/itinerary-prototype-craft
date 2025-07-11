@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { User, Lock, CheckCircle, AlertCircle } from "lucide-react";
+import { User, Lock, CheckCircle, AlertCircle, RefreshCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -17,7 +17,8 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDebugging, setIsDebugging] = useState(false);
-  const [systemStatus, setSystemStatus] = useState<'unknown' | 'healthy' | 'error'>('unknown');
+  const [systemStatus, setSystemStatus] = useState<'unknown' | 'healthy' | 'warning' | 'error'>('unknown');
+  const [statusMessage, setStatusMessage] = useState('System status unknown - run verification to check');
   const navigate = useNavigate();
   const { login, isAuthenticated, user } = useAuth();
 
@@ -38,12 +39,25 @@ const Login = () => {
     setIsLoading(true);
 
     try {
+      console.log('Login: Attempting login for:', email);
       await login(email, password);
       toast.success("Login successful! Redirecting...");
       // Navigation will be handled by the useEffect above
     } catch (error: any) {
-      console.error('Login error:', error);
-      toast.error(error.message || "Login failed. Please try again.");
+      console.error('Login: Login failed:', error);
+      
+      // Provide specific error messages based on error type
+      if (error.message?.includes('Invalid login credentials')) {
+        toast.error('Invalid email or password. Please check your credentials and try again.');
+      } else if (error.message?.includes('Email not confirmed')) {
+        toast.error('Please check your email and click the confirmation link before signing in.');
+      } else if (error.message?.includes('Database error')) {
+        toast.error('Authentication system error. Please try the system verification first.');
+        setSystemStatus('error');
+        setStatusMessage('Database error detected - authentication system needs attention');
+      } else {
+        toast.error(error.message || "Login failed. Please try again or run system verification.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -51,38 +65,68 @@ const Login = () => {
 
   const handleSystemCheck = async () => {
     setIsDebugging(true);
-    console.log('Running system verification...');
+    setSystemStatus('unknown');
+    setStatusMessage('Running comprehensive system verification...');
+    console.log('Login: Starting comprehensive system verification...');
     
     try {
+      // First check the health function
+      console.log('Login: Checking auth schema health...');
+      const { data: healthData, error: healthError } = await supabase.rpc('check_auth_schema_health');
+      
+      if (healthError) {
+        console.error('Login: Health check failed:', healthError);
+        setSystemStatus('error');
+        setStatusMessage('Health check failed: ' + healthError.message);
+        toast.error('System health check failed: ' + healthError.message);
+        return;
+      }
+      
+      console.log('Login: Health check result:', healthData);
+      
+      // Then run the comprehensive demo users check
+      console.log('Login: Running demo users verification...');
       const { data, error } = await supabase.functions.invoke('fix-demo-users');
       
       if (error) {
-        console.error('System check error:', error);
+        console.error('Login: Demo users check error:', error);
         setSystemStatus('error');
-        toast.error('System check failed: ' + error.message);
-      } else {
-        console.log('System check result:', data);
-        
-        // Check if auth tests passed
-        const authResults = data?.authTestResults || [];
-        const successCount = authResults.filter((r: any) => r.status === 'SUCCESS').length;
-        const totalTests = authResults.length;
-        
-        if (successCount === totalTests && totalTests > 0) {
-          setSystemStatus('healthy');
-          toast.success(`Authentication system verified! All ${totalTests} demo accounts working.`);
-        } else if (totalTests > 0) {
-          setSystemStatus('error');
-          toast.warning(`System check completed. ${successCount}/${totalTests} accounts working.`);
-        } else {
-          setSystemStatus('healthy');
-          toast.success('System check completed successfully.');
-        }
+        setStatusMessage('Demo users verification failed: ' + error.message);
+        toast.error('System verification failed: ' + error.message);
+        return;
       }
-    } catch (error) {
-      console.error('System check exception:', error);
+      
+      console.log('Login: Demo users check result:', data);
+      
+      // Analyze results
+      const authResults = data?.authTestResults || [];
+      const successCount = authResults.filter((r: any) => r.status === 'SUCCESS').length;
+      const totalTests = authResults.length;
+      const publicUsersCount = data?.publicUsers || 0;
+      
+      if (totalTests === 0) {
+        setSystemStatus('warning');
+        setStatusMessage('No demo accounts found for testing');
+        toast.warning('System verification completed but no demo accounts were tested.');
+      } else if (successCount === totalTests) {
+        setSystemStatus('healthy');
+        setStatusMessage(`All systems operational! ${totalTests} demo accounts verified, ${publicUsersCount} users in database.`);
+        toast.success(`✅ Authentication system fully operational! All ${totalTests} demo accounts working perfectly.`);
+      } else if (successCount > 0) {
+        setSystemStatus('warning');
+        setStatusMessage(`Partial functionality: ${successCount}/${totalTests} accounts working. ${publicUsersCount} users in database.`);
+        toast.warning(`⚠️ System partially working: ${successCount}/${totalTests} demo accounts functional.`);
+      } else {
+        setSystemStatus('error');
+        setStatusMessage(`Authentication system failure: 0/${totalTests} accounts working.`);
+        toast.error(`❌ Authentication system failure: No demo accounts are working.`);
+      }
+      
+    } catch (error: any) {
+      console.error('Login: System verification exception:', error);
       setSystemStatus('error');
-      toast.error('Failed to run system check');
+      setStatusMessage('System verification failed with exception: ' + error.message);
+      toast.error('Failed to run system verification: ' + error.message);
     } finally {
       setIsDebugging(false);
     }
@@ -91,24 +135,22 @@ const Login = () => {
   const getStatusColor = () => {
     switch (systemStatus) {
       case 'healthy': return 'bg-green-50 border-green-200';
+      case 'warning': return 'bg-yellow-50 border-yellow-200';
       case 'error': return 'bg-red-50 border-red-200';
       default: return 'bg-blue-50 border-blue-200';
     }
   };
 
   const getStatusIcon = () => {
+    if (isDebugging) {
+      return <RefreshCw className="inline h-4 w-4 mr-1 text-blue-600 animate-spin" />;
+    }
+    
     switch (systemStatus) {
       case 'healthy': return <CheckCircle className="inline h-4 w-4 mr-1 text-green-600" />;
+      case 'warning': return <AlertCircle className="inline h-4 w-4 mr-1 text-yellow-600" />;
       case 'error': return <AlertCircle className="inline h-4 w-4 mr-1 text-red-600" />;
       default: return <AlertCircle className="inline h-4 w-4 mr-1 text-blue-600" />;
-    }
-  };
-
-  const getStatusText = () => {
-    switch (systemStatus) {
-      case 'healthy': return 'Authentication system is working correctly';
-      case 'error': return 'Authentication system needs attention';
-      default: return 'Authentication system status unknown - run verification';
     }
   };
 
@@ -139,12 +181,19 @@ const Login = () => {
             <p className="text-blue-600 text-xs mt-2">Password: demo123</p>
           </div>
 
-          {/* System Status */}
+          {/* Enhanced System Status */}
           <div className={`mb-4 p-3 rounded-lg border ${getStatusColor()}`}>
-            <p className="text-sm mb-2 font-medium">
+            <div className="flex items-start gap-2 mb-2">
               {getStatusIcon()}
-              {getStatusText()}
-            </p>
+              <div className="flex-1">
+                <p className="text-sm font-medium mb-1">
+                  {isDebugging ? 'Running System Verification...' : 'Authentication System Status'}
+                </p>
+                <p className="text-xs opacity-75">
+                  {statusMessage}
+                </p>
+              </div>
+            </div>
             <Button 
               onClick={handleSystemCheck}
               disabled={isDebugging}
@@ -152,7 +201,14 @@ const Login = () => {
               size="sm"
               className="w-full"
             >
-              {isDebugging ? "Verifying System..." : "Verify System Status"}
+              {isDebugging ? (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  Verifying System...
+                </>
+              ) : (
+                "Run System Verification"
+              )}
             </Button>
           </div>
           
