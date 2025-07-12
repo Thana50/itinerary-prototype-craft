@@ -1,6 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import type { Negotiation, NegotiationMessage } from '@/lib/supabase';
+import { notificationService } from './notificationService';
 
 export const negotiationService = {
   async createNegotiation(negotiation: Omit<Negotiation, 'id' | 'created_at' | 'updated_at' | 'messages'> & {
@@ -18,6 +19,17 @@ export const negotiationService = {
       .single();
     
     if (error) throw error;
+    
+    // Send notification to vendor
+    try {
+      await notificationService.notifyNegotiationStarted(
+        negotiation.vendor_id, 
+        data.id, 
+        negotiation.description
+      );
+    } catch (notificationError) {
+      console.error('Failed to send negotiation notification:', notificationError);
+    }
     
     return {
       ...data,
@@ -128,6 +140,27 @@ export const negotiationService = {
       .single();
     
     if (error) throw error;
+    
+    // Send notifications based on status update
+    try {
+      if (updates.status === 'accepted' && updates.final_price) {
+        await notificationService.notifyNegotiationAccepted(
+          data.vendor_id, 
+          data.id, 
+          updates.final_price
+        );
+      } else if (updates.status === 'rejected') {
+        await notificationService.notifyNegotiationRejected(data.vendor_id, data.id);
+      } else if (updates.status === 'negotiating') {
+        await notificationService.notifyNegotiationResponse(
+          data.agent_id, 
+          data.id, 
+          'Vendor'
+        );
+      }
+    } catch (notificationError) {
+      console.error('Failed to send status update notification:', notificationError);
+    }
     
     return {
       ...data,

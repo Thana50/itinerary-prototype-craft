@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Award } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { negotiationService } from "@/services/negotiationService";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 const VendorDashboardHeader = () => {
   const { user } = useAuth();
@@ -50,7 +51,8 @@ const VendorDashboardHeader = () => {
               </div>
             </div>
           </div>
-          <div className="text-right">
+          <div className="flex items-center gap-4">
+            <NotificationBell />
             <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border border-blue-200">
               <p className="text-sm text-gray-600">Live Stats</p>
               <p className="font-semibold text-lg text-gray-800">{stats.pending} pending requests</p>

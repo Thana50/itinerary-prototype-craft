@@ -1,6 +1,7 @@
 
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { notificationService } from "@/services/notificationService";
 
 export const useClientPortalActions = () => {
   const { toast } = useToast();
@@ -20,10 +21,14 @@ export const useClientPortalActions = () => {
         const parseResult = await itineraryParsingService.autoParseApprovedItinerary(itineraryId);
         
         if (parseResult.success) {
-          // Create notification for agent about the approved itinerary
-          const { notificationService } = await import("@/services/notificationService");
-          // Note: In a real app, we'd get the agent_id from the itinerary
-          // For now, we'll show success message to traveler
+          // Get itinerary details and send notification to agent
+          const itinerary = await itineraryService.getItinerary(itineraryId);
+          
+          await notificationService.notifyItineraryApproved(
+            itinerary.agent_id,
+            itineraryId,
+            itinerary.name
+          );
           
           toast({
             title: "Itinerary Approved!",

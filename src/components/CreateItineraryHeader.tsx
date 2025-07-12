@@ -2,6 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, LogOut, Share } from "lucide-react";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 interface CreateItineraryHeaderProps {
   currentUser: any;
@@ -34,6 +35,7 @@ const CreateItineraryHeader: React.FC<CreateItineraryHeaderProps> = ({
           </div>
           <div className="flex items-center space-x-4">
             <span className="text-gray-600 text-sm">Welcome, {currentUser?.profile?.name || 'Agent'}!</span>
+            <NotificationBell />
             <Button variant="ghost" size="sm" onClick={onLogout}>
               <LogOut className="h-4 w-4 mr-2" />
               Logout
