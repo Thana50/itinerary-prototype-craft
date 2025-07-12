@@ -1,4 +1,3 @@
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
@@ -13,6 +12,7 @@ import EnhancedClientDashboard from "@/pages/EnhancedClientDashboard";
 import NegotiationRoom from "@/pages/NegotiationRoom";
 import NegotiationDetail from "@/pages/NegotiationDetail";
 import NotFound from "@/pages/NotFound";
+import SystemOptimizationDashboard from "@/pages/SystemOptimizationDashboard";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +69,18 @@ function App() {
                   <ProtectedRoute>
                     <RoleGuard allowedRoles={['traveler']}>
                       <EnhancedClientDashboard />
+                    </RoleGuard>
+                  </ProtectedRoute>
+                } 
+              />
+
+              {/* System Optimization Dashboard */}
+              <Route 
+                path="/system-optimization" 
+                element={
+                  <ProtectedRoute>
+                    <RoleGuard allowedRoles={['agent']}>
+                      <SystemOptimizationDashboard />
                     </RoleGuard>
                   </ProtectedRoute>
                 } 
