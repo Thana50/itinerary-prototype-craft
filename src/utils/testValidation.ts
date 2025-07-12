@@ -117,7 +117,8 @@ export const runComprehensiveTests = async (): Promise<TestResult[]> => {
           agent_id: user.id,
           vendor_id: user.id, // Using same user for demo
           service_type: 'Test Service',
-          description: 'Testing negotiation service layer'
+          description: 'Testing negotiation service layer',
+          status: 'pending' as const
         };
 
         const createdNegotiation = await negotiationService.createNegotiation(testNegotiation);
