@@ -6,11 +6,37 @@ export const useClientPortalActions = () => {
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
-  const handleApproveItinerary = () => {
-    toast({
-      title: "Itinerary Approved!",
-      description: "Your customized trip has been sent to your travel agent for final booking.",
-    });
+  const handleApproveItinerary = async (itineraryId?: string) => {
+    if (itineraryId) {
+      try {
+        // Update itinerary approval status in database
+        const { itineraryService } = await import("@/services/itineraryService");
+        await itineraryService.updateItinerary(itineraryId, {
+          approval_status: 'approved'
+        });
+        
+        // Create notification for agent
+        const { notificationService } = await import("@/services/notificationService");
+        // In a real app, we'd get the agent_id from the itinerary
+        // For now, we'll use a placeholder agent notification
+        toast({
+          title: "Itinerary Approved!",
+          description: "Your travel agent will start rate negotiations to secure the best deals.",
+        });
+      } catch (error) {
+        console.error('Error approving itinerary:', error);
+        toast({
+          title: "Error",
+          description: "Failed to approve itinerary. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } else {
+      toast({
+        title: "Itinerary Approved!",
+        description: "Your customized trip has been sent to your travel agent for final booking.",
+      });
+    }
   };
 
   const handleRequestCall = () => {

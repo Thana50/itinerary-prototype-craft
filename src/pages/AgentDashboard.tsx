@@ -69,6 +69,7 @@ const AgentDashboard = () => {
 
   // Calculate stats from real data
   const activeItineraries = itineraries.filter(i => i.status === 'draft' || i.status === 'shared').length;
+  const approvedItineraries = itineraries.filter(i => i.approval_status === 'approved' && i.status !== 'confirmed').length;
   const pendingNegotiations = negotiations.filter(n => n.status === 'pending').length;
   const totalRevenue = itineraries
     .filter(i => i.status === 'confirmed')
@@ -79,6 +80,11 @@ const AgentDashboard = () => {
   const conversionRate = itineraries.length > 0 
     ? Math.round((itineraries.filter(i => i.status === 'confirmed').length / itineraries.length) * 100)
     : 0;
+
+  // Get approved itineraries for negotiation
+  const approvedForNegotiation = itineraries.filter(i => 
+    i.approval_status === 'approved' && i.status !== 'confirmed'
+  ).slice(0, 5);
   
   // Get recent itineraries for templates section
   const recentItineraries = itineraries
@@ -214,6 +220,62 @@ const AgentDashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Approved Itineraries Section */}
+        {approvedItineraries > 0 && (
+          <div className="mb-8">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold text-gray-900">
+                Approved Itineraries Awaiting Negotiation
+                <span className="ml-2 px-2 py-1 bg-orange-100 text-orange-800 text-sm rounded-full">
+                  {approvedItineraries} pending
+                </span>
+              </h2>
+              <Button 
+                variant="outline" 
+                onClick={() => navigate("/rate-negotiation")}
+                className="text-orange-600 border-orange-600 hover:bg-orange-50"
+              >
+                View All Negotiations
+              </Button>
+            </div>
+            
+            <Card className="bg-gradient-to-r from-orange-50 to-amber-50 border-orange-200">
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  {approvedForNegotiation.map((itinerary) => (
+                    <div key={itinerary.id} className="flex items-center justify-between p-4 bg-white rounded-lg border border-orange-200 shadow-sm">
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-semibold text-gray-900">{itinerary.name}</h3>
+                          <div className="text-right">
+                            <p className="text-sm text-gray-600">
+                              {itinerary.number_of_travelers} travelers • {itinerary.days.length} days
+                            </p>
+                            <p className="text-xs text-orange-600 font-medium">
+                              Approved {new Date(itinerary.updated_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-1">
+                          📍 {itinerary.destination} • {itinerary.start_date} to {itinerary.end_date}
+                        </p>
+                      </div>
+                      <div className="ml-4">
+                        <Button 
+                          onClick={() => navigate(`/itinerary/${itinerary.id}/negotiate`)}
+                          className="bg-orange-600 hover:bg-orange-700 text-white"
+                        >
+                          Start Negotiations
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Template Library Section */}
         <div className="mb-8">

@@ -24,6 +24,7 @@ import ClientAIPortal from "./pages/ClientAIPortal";
 import TemplateRepository from "./pages/TemplateRepository";
 import NotFound from "./pages/NotFound";
 import TemplateAnalyticsDashboard from "./pages/TemplateAnalyticsDashboard";
+import ItineraryNegotiation from "./pages/ItineraryNegotiation";
 
 const queryClient = new QueryClient();
 
@@ -71,6 +72,13 @@ function App() {
                 <ProtectedRoute>
                   <RoleGuard allowedRoles={['agent']}>
                     <TemplateAnalyticsDashboard />
+                  </RoleGuard>
+                </ProtectedRoute>
+              } />
+              <Route path="/itinerary/:id/negotiate" element={
+                <ProtectedRoute>
+                  <RoleGuard allowedRoles={['agent']}>
+                    <ItineraryNegotiation />
                   </RoleGuard>
                 </ProtectedRoute>
               } />

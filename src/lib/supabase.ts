@@ -24,6 +24,7 @@ export interface Itinerary {
   number_of_travelers: number;
   preferences: string;
   status: 'draft' | 'shared' | 'confirmed' | 'modified';
+  approval_status?: string;
   days: ItineraryDay[];
   share_token?: string;
   created_at: string;

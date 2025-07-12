@@ -16,6 +16,7 @@ export interface ItineraryData {
   startDate?: string;
   endDate?: string;
   status: 'draft' | 'review' | 'approved' | 'confirmed' | 'shared' | 'modified';
+  approval_status?: string;
   client?: string;
   travelers: number;
   totalPrice?: number;
