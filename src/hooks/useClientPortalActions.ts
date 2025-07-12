@@ -15,14 +15,26 @@ export const useClientPortalActions = () => {
           approval_status: 'approved'
         });
         
-        // Create notification for agent
-        const { notificationService } = await import("@/services/notificationService");
-        // In a real app, we'd get the agent_id from the itinerary
-        // For now, we'll use a placeholder agent notification
-        toast({
-          title: "Itinerary Approved!",
-          description: "Your travel agent will start rate negotiations to secure the best deals.",
-        });
+        // Auto-parse itinerary into negotiable items
+        const { itineraryParsingService } = await import("@/services/itineraryParsingService");
+        const parseResult = await itineraryParsingService.autoParseApprovedItinerary(itineraryId);
+        
+        if (parseResult.success) {
+          // Create notification for agent about the approved itinerary
+          const { notificationService } = await import("@/services/notificationService");
+          // Note: In a real app, we'd get the agent_id from the itinerary
+          // For now, we'll show success message to traveler
+          
+          toast({
+            title: "Itinerary Approved!",
+            description: `Your travel agent will start rate negotiations for ${parseResult.itemsCreated} services (Est. value: $${parseResult.estimatedValue.toLocaleString()})`,
+          });
+        } else {
+          toast({
+            title: "Itinerary Approved!",
+            description: "Your travel agent will start rate negotiations to secure the best deals.",
+          });
+        }
       } catch (error) {
         console.error('Error approving itinerary:', error);
         toast({

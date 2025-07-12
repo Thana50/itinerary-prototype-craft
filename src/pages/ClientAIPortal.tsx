@@ -104,6 +104,7 @@ const ClientAIPortal = () => {
             <ModificationTracking modifications={modifications} />
             
             <ApprovalWorkflow 
+              itineraryId="demo-itinerary-id" // In real app, this would come from URL params or state
               onApproveItinerary={handleApproveItinerary}
               onRequestCall={handleRequestCall}
               onSaveChanges={handleSaveChanges}

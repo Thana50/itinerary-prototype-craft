@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, Phone, Save, Share2, Printer } from "lucide-react";
 
 interface ApprovalWorkflowProps {
-  onApproveItinerary: () => void;
+  itineraryId?: string;
+  onApproveItinerary: (itineraryId?: string) => void;
   onRequestCall: () => void;
   onSaveChanges: () => void;
   onShareItinerary: () => void;
@@ -13,6 +14,7 @@ interface ApprovalWorkflowProps {
 }
 
 const ApprovalWorkflow = ({
+  itineraryId,
   onApproveItinerary,
   onRequestCall,
   onSaveChanges,
@@ -25,7 +27,7 @@ const ApprovalWorkflow = ({
       <Card>
         <CardContent className="p-4 space-y-3">
           <Button 
-            onClick={onApproveItinerary} 
+            onClick={() => onApproveItinerary(itineraryId)} 
             className="w-full bg-green-600 hover:bg-green-700"
             size="lg"
           >
