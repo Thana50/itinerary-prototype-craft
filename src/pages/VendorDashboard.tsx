@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { Negotiation } from "@/lib/supabase";
 import VendorDashboardHeader from "@/components/vendor-dashboard/VendorDashboardHeader";
 import VendorStatsCards from "@/components/vendor-dashboard/VendorStatsCards";
-import VendorNegotiationInterface from "@/components/vendor-dashboard/VendorNegotiationInterface";
+import NegotiationRequestCard from "@/components/vendor-dashboard/NegotiationRequestCard";
 import VendorSimulationCenter from "@/components/vendor-dashboard/VendorSimulationCenter";
 import VendorSimulationInterface from "@/components/vendor-dashboard/VendorSimulationInterface";
 import VendorAnalyticsDashboard from "@/components/vendor-dashboard/VendorAnalyticsDashboard";
@@ -243,44 +243,25 @@ const VendorDashboard = () => {
                   </TabsList>
 
                   <TabsContent value="active" className="space-y-4">
-                    {activeNegotiations.length > 0 ? activeNegotiations.map((negotiation) => (
-                      <div key={negotiation.id} className="border rounded-lg p-6 bg-gradient-to-r from-white to-blue-50 hover:shadow-md transition-shadow">
-                        <div className="flex flex-col md:flex-row md:items-start justify-between mb-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h3 className="font-semibold text-lg text-gray-800">{negotiation.service_type}</h3>
-                              <Badge className={`${
-                                negotiation.status === 'pending' ? 'bg-red-500 hover:bg-red-600' :
-                                negotiation.status === 'negotiating' ? 'bg-yellow-500 hover:bg-yellow-600' :
-                                'bg-blue-500 hover:bg-blue-600'
-                              } text-white`}>
-                                {negotiation.status}
-                              </Badge>
-                            </div>
-                            <p className="text-gray-600 mb-3">{negotiation.description}</p>
-                            <p className="text-sm text-gray-500">
-                              Created: {new Date(negotiation.created_at).toLocaleDateString()}
-                            </p>
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-wrap gap-3">
-                          <Button 
-                            onClick={() => handleRespondNow(negotiation.id)}
-                            className="bg-blue-600 hover:bg-blue-700 text-white"
-                          >
-                            <Eye className="h-4 w-4 mr-2" />
-                            View Details
-                          </Button>
-                          <Button variant="outline" className="border-gray-200 text-gray-600 hover:bg-gray-50">
-                            <MessageSquare className="h-4 w-4 mr-2" />
-                            Message Agent
-                          </Button>
-                        </div>
+                    {isLoading ? (
+                      <div className="flex items-center justify-center py-12">
+                        <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                        <span>Loading negotiations...</span>
                       </div>
-                    )) : (
-                      <div className="text-center py-8 text-gray-500">
-                        <p>No active negotiations.</p>
+                    ) : negotiations.filter(n => n.status === 'pending' || n.status === 'negotiating').length > 0 ? (
+                      negotiations
+                        .filter(n => n.status === 'pending' || n.status === 'negotiating')
+                        .map((negotiation) => (
+                          <NegotiationRequestCard 
+                            key={negotiation.id} 
+                            negotiation={negotiation}
+                            onResponse={loadNegotiations}
+                          />
+                        ))
+                    ) : (
+                      <div className="text-center py-12 text-gray-500">
+                        <p className="text-lg mb-4">No active negotiation requests</p>
+                        <p>New requests will appear here when agents initiate negotiations.</p>
                       </div>
                     )}
                     

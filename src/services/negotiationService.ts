@@ -108,5 +108,31 @@ export const negotiationService = {
       status: item.status as 'pending' | 'negotiating' | 'accepted' | 'rejected',
       messages: Array.isArray(item.messages) ? (item.messages as unknown as NegotiationMessage[]) : []
     })) as Negotiation[];
+  },
+
+  async updateNegotiation(id: string, updates: {
+    status?: 'pending' | 'negotiating' | 'accepted' | 'rejected';
+    final_price?: number;
+    updated_at?: string;
+  }) {
+    const updateData = {
+      ...updates,
+      updated_at: new Date().toISOString()
+    };
+    
+    const { data, error } = await supabase
+      .from('negotiations')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    
+    return {
+      ...data,
+      status: data.status as 'pending' | 'negotiating' | 'accepted' | 'rejected',
+      messages: Array.isArray(data.messages) ? (data.messages as unknown as NegotiationMessage[]) : []
+    } as Negotiation;
   }
 };

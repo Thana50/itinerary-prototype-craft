@@ -1,9 +1,33 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Award } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { negotiationService } from "@/services/negotiationService";
 
 const VendorDashboardHeader = () => {
+  const { user } = useAuth();
+  const [stats, setStats] = useState({ pending: 0, completed: 0 });
+
+  useEffect(() => {
+    if (user) {
+      loadStats();
+    }
+  }, [user]);
+
+  const loadStats = async () => {
+    if (!user) return;
+    
+    try {
+      const negotiations = await negotiationService.getVendorNegotiations(user.id);
+      const pending = negotiations.filter(n => n.status === 'pending' || n.status === 'negotiating').length;
+      const completed = negotiations.filter(n => n.status === 'accepted' || n.status === 'rejected').length;
+      setStats({ pending, completed });
+    } catch (error) {
+      console.error('Error loading vendor stats:', error);
+    }
+  };
+
   return (
     <div className="bg-white/80 backdrop-blur-sm border-b shadow-lg">
       <div className="container mx-auto px-4 py-6">
@@ -28,9 +52,9 @@ const VendorDashboardHeader = () => {
           </div>
           <div className="text-right">
             <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border border-blue-200">
-              <p className="text-sm text-gray-600">Quick Stats</p>
-              <p className="font-semibold text-lg text-gray-800">3 pending requests</p>
-              <p className="text-sm text-gray-600">12 completed this month</p>
+              <p className="text-sm text-gray-600">Live Stats</p>
+              <p className="font-semibold text-lg text-gray-800">{stats.pending} pending requests</p>
+              <p className="text-sm text-gray-600">{stats.completed} completed this month</p>
             </div>
           </div>
         </div>
