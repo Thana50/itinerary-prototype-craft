@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { negotiationService } from './negotiationService';
 
 export async function seedNegotiationTestData() {
   try {
@@ -229,6 +230,71 @@ export async function seedNegotiationTestData() {
   }
 }
 
+export async function createSampleNegotiations(itineraryId: string, agentId: string = '00000000-0000-0000-0000-000000000001') {
+  try {
+    console.log('Creating sample negotiations...');
+
+    // Create some sample negotiations based on the parsed items
+    const { data: items } = await supabase
+      .from('itinerary_items')
+      .select('*')
+      .eq('itinerary_id', itineraryId)
+      .limit(3); // Just a few for demonstration
+
+    if (!items || items.length === 0) {
+      console.log('No itinerary items found to create negotiations');
+      return { success: false, error: 'No items found' };
+    }
+
+    const negotiations = [];
+    const vendorIds = [
+      '00000000-0000-0000-0000-000000000010',
+      '00000000-0000-0000-0000-000000000011'
+    ];
+
+    for (let i = 0; i < Math.min(items.length, 3); i++) {
+      const item = items[i];
+      const vendorId = vendorIds[i % vendorIds.length];
+      
+      const negotiation = await negotiationService.createNegotiation({
+        itinerary_id: itineraryId,
+        itinerary_item_id: item.id,
+        agent_id: agentId,
+        vendor_id: vendorId,
+        service_type: item.item_type,
+        description: item.service_name,
+        status: i === 0 ? 'negotiating' : 'pending',
+        original_price: item.estimated_price,
+        target_price: Math.round((item.estimated_price || 0) * 0.8), // 20% discount target
+        negotiation_priority: (item.negotiation_priority as 'low' | 'medium' | 'high') || 'medium'
+      });
+
+      negotiations.push(negotiation);
+      
+      // Add a sample message for the first negotiation
+      if (i === 0) {
+        await negotiationService.addMessage(negotiation.id, {
+          sender_id: agentId,
+          sender_role: 'agent',
+          message: `Hello! We're interested in ${item.service_name}. Can you provide a competitive rate for ${item.participants} people?`,
+          price_offer: Math.round((item.estimated_price || 0) * 0.85) // 15% discount offer
+        });
+      }
+    }
+
+    console.log(`✅ Created ${negotiations.length} sample negotiations`);
+    return { 
+      success: true, 
+      negotiationsCreated: negotiations.length,
+      negotiations: negotiations
+    };
+
+  } catch (error) {
+    console.error('Error creating sample negotiations:', error);
+    return { success: false, error: error.message };
+  }
+}
+
 export async function testApprovalWorkflow() {
   console.log('🧪 Testing approval workflow...');
   
@@ -239,11 +305,19 @@ export async function testApprovalWorkflow() {
     console.log(`📋 Test itinerary ID: ${result.itineraryId}`);
     console.log(`🔧 Parsed items: ${result.parseResult?.itemsCreated || 0}`);
     console.log(`💰 Estimated value: $${result.parseResult?.estimatedValue || 0}`);
+    
+    // Create sample negotiations
+    const negotiationResult = await createSampleNegotiations(result.itineraryId);
+    if (negotiationResult.success) {
+      console.log(`🤝 Created ${negotiationResult.negotiationsCreated} sample negotiations`);
+    }
+    
     console.log('');
     console.log('📍 Next steps:');
     console.log('1. Check the Agent Dashboard for the approved itinerary');
     console.log('2. Click "Start Negotiations" to see parsed items');
-    console.log('3. Navigate through the negotiation workflow');
+    console.log('3. Navigate to Rate Negotiation AI to see active negotiations');
+    console.log('4. Navigate through the negotiation workflow');
   } else {
     console.error('❌ Test failed:', result.error);
   }

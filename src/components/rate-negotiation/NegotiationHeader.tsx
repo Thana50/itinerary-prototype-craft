@@ -2,14 +2,7 @@
 import React from "react";
 import { CardDescription, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-interface ActiveNegotiation {
-  id: number;
-  provider: string;
-  service: string;
-  status: string;
-  statusColor: string;
-}
+import type { ActiveNegotiation } from "@/types/negotiation";
 
 interface NegotiationHeaderProps {
   negotiation: ActiveNegotiation;

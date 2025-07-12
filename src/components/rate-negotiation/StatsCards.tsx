@@ -3,30 +3,42 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Briefcase, CheckCircle, DollarSign, Percent } from "lucide-react";
 
-const StatsCards = () => {
+interface StatsCardsProps {
+  totalNegotiations?: number;
+  activeNegotiations?: number;
+  completedNegotiations?: number;
+  averageSavings?: number;
+}
+
+const StatsCards = ({ 
+  totalNegotiations = 0, 
+  activeNegotiations = 0, 
+  completedNegotiations = 0, 
+  averageSavings = 0 
+}: StatsCardsProps) => {
   const stats = [
     {
       title: "Active Negotiations",
-      value: "3",
+      value: activeNegotiations.toString(),
       icon: Briefcase,
       color: "purple"
     },
     {
-      title: "Completed This Week",
-      value: "12",
+      title: "Completed Negotiations",
+      value: completedNegotiations.toString(),
       icon: CheckCircle,
       color: "green"
     },
     {
-      title: "Total Savings",
-      value: "$1,847",
-      icon: DollarSign,
+      title: "Average Savings",
+      value: `${averageSavings}%`,
+      icon: Percent,
       color: "blue"
     },
     {
-      title: "Success Rate",
-      value: "89%",
-      icon: Percent,
+      title: "Total Negotiations",
+      value: totalNegotiations.toString(),
+      icon: DollarSign,
       color: "indigo"
     }
   ];

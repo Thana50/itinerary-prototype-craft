@@ -1,6 +1,6 @@
 
 export interface NegotiationContext {
-  serviceType: 'hotel' | 'tour' | 'transfer';
+  serviceType: 'hotel' | 'tour' | 'transfer' | 'restaurant' | 'activity';
   originalRate: number;
   targetRate: number;
   currentOffer: number;

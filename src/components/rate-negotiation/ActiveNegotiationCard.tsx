@@ -11,21 +11,7 @@ import NegotiationHeader from "./NegotiationHeader";
 import NegotiationDetails from "./NegotiationDetails";
 import AIAnalysisPanel from "./AIAnalysisPanel";
 import NegotiationActions from "./NegotiationActions";
-
-interface ActiveNegotiation {
-  id: number;
-  provider: string;
-  service: string;
-  serviceType: "hotel" | "tour" | "transfer";
-  originalRate: number;
-  targetRate: number;
-  currentOffer: number;
-  status: string;
-  statusColor: string;
-  lastUpdate: string;
-  groupSize: number;
-  duration: number;
-}
+import type { ActiveNegotiation } from "@/types/negotiation";
 
 interface ActiveNegotiationCardProps {
   negotiation: ActiveNegotiation;

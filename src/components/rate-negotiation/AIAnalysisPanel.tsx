@@ -3,17 +3,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Brain, Copy, Check } from "lucide-react";
 import { aiNegotiationService, type NegotiationContext } from "@/services/aiNegotiationService";
-
-interface ActiveNegotiation {
-  serviceType: "hotel" | "tour" | "transfer";
-  originalRate: number;
-  targetRate: number;
-  currentOffer: number;
-  provider: string;
-  service: string;
-  groupSize: number;
-  duration: number;
-}
+import type { ActiveNegotiation } from "@/types/negotiation";
 
 interface AIAnalysisPanelProps {
   negotiation: ActiveNegotiation;

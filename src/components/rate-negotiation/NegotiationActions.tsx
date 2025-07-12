@@ -2,9 +2,10 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Calendar, Zap } from "lucide-react";
+import type { ActiveNegotiation } from "@/types/negotiation";
 
 interface NegotiationActionsProps {
-  negotiation: any;
+  negotiation: ActiveNegotiation;
   onShowCommunicationTimeline: () => void;
   onShowNegotiationTimeline: () => void;
   onShowSimulator: () => void;

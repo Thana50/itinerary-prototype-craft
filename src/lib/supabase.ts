@@ -40,11 +40,18 @@ export interface ItineraryDay {
 export interface Negotiation {
   id: string;
   itinerary_id: string;
+  itinerary_item_id?: string;
   agent_id: string;
   vendor_id: string;
   service_type: string;
   description: string;
   status: 'pending' | 'negotiating' | 'accepted' | 'rejected';
+  original_price?: number;
+  target_price?: number;
+  final_price?: number;
+  auto_approval_threshold?: number;
+  negotiation_priority?: string;
+  negotiation_deadline?: string;
   messages: NegotiationMessage[];
   created_at: string;
   updated_at: string;

@@ -1,12 +1,6 @@
 
 import React from "react";
-
-interface ActiveNegotiation {
-  serviceType: "hotel" | "tour" | "transfer";
-  originalRate: number;
-  targetRate: number;
-  currentOffer: number;
-}
+import type { ActiveNegotiation } from "@/types/negotiation";
 
 interface NegotiationDetailsProps {
   negotiation: ActiveNegotiation;
@@ -15,7 +9,9 @@ interface NegotiationDetailsProps {
 const NegotiationDetails = ({ negotiation }: NegotiationDetailsProps) => {
   const getRateUnit = () => {
     return negotiation.serviceType === 'hotel' ? '/night' : 
-           negotiation.serviceType === 'tour' ? ' total' : '';
+           negotiation.serviceType === 'tour' ? ' total' : 
+           negotiation.serviceType === 'restaurant' ? '/person' :
+           negotiation.serviceType === 'activity' ? ' total' : '';
   };
 
   return (
