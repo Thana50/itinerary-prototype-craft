@@ -15,6 +15,7 @@ import NegotiationRequestCard from "@/components/vendor-dashboard/NegotiationReq
 import VendorSimulationCenter from "@/components/vendor-dashboard/VendorSimulationCenter";
 import VendorSimulationInterface from "@/components/vendor-dashboard/VendorSimulationInterface";
 import VendorAnalyticsDashboard from "@/components/vendor-dashboard/VendorAnalyticsDashboard";
+import AdvancedVendorTab from "@/components/vendor-dashboard/AdvancedVendorTab";
 
 const VendorDashboard = () => {
   const navigate = useNavigate();
@@ -227,7 +228,7 @@ const VendorDashboard = () => {
               </CardHeader>
               <CardContent>
                 <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-                  <TabsList className="grid w-full grid-cols-4 mb-6">
+                  <TabsList className="grid w-full grid-cols-5 mb-6">
                     <TabsTrigger value="active" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">
                       Active Requests (3)
                     </TabsTrigger>
@@ -239,6 +240,9 @@ const VendorDashboard = () => {
                     </TabsTrigger>
                     <TabsTrigger value="analytics" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white">
                       Performance Analytics
+                    </TabsTrigger>
+                    <TabsTrigger value="advanced" className="data-[state=active]:bg-indigo-500 data-[state=active]:text-white">
+                      Advanced Features
                     </TabsTrigger>
                   </TabsList>
 
@@ -391,6 +395,13 @@ const VendorDashboard = () => {
 
                   <TabsContent value="practice">
                     <VendorSimulationCenter onStartSimulation={handleStartSimulation} />
+                  </TabsContent>
+
+                  <TabsContent value="advanced">
+                    <AdvancedVendorTab 
+                      vendorId={user?.id || ''} 
+                      activeNegotiations={mockActiveNegotiations}
+                    />
                   </TabsContent>
 
                   <TabsContent value="analytics">
