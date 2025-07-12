@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 export interface PerformanceMetric {
@@ -46,9 +45,17 @@ class PerformanceMonitoringService {
         const observer = new PerformanceObserver((list) => {
           const entries = list.getEntries();
           entries.forEach((entry) => {
+            // Handle different types of performance entries
+            let value = entry.duration || 0;
+            
+            // Check if it's a resource timing entry and has transferSize
+            if ('transferSize' in entry) {
+              value = (entry as PerformanceResourceTiming).transferSize;
+            }
+
             this.recordMetric({
               metric_name: entry.entryType,
-              value: entry.duration || entry.transferSize || 0,
+              value: value,
               component_name: entry.name,
               metadata: {
                 type: entry.entryType,

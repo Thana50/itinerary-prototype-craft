@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { performanceMonitoringService, SystemHealth } from '@/services/performanceMonitoringService';
 import { cacheService, CacheStats } from '@/services/cacheService';
@@ -9,6 +8,15 @@ export interface OptimizationMetrics {
   cacheEfficiency: number;
   errorRate: number;
   apiResponseTime: number;
+}
+
+// Extend Performance interface to include memory for Chrome browsers
+interface PerformanceWithMemory extends Performance {
+  memory?: {
+    usedJSHeapSize: number;
+    totalJSHeapSize: number;
+    jsHeapSizeLimit: number;
+  };
 }
 
 export const useSystemOptimization = () => {
@@ -57,10 +65,16 @@ export const useSystemOptimization = () => {
       setSystemHealth(health);
       setCacheStats(cache);
       
+      // Safely get memory usage with type guard
+      const getMemoryUsage = (): number => {
+        const perf = performance as PerformanceWithMemory;
+        return perf.memory?.usedJSHeapSize || 0;
+      };
+      
       // Update optimization metrics
       setMetrics({
         loadTime: performanceMetrics.avgLoadTime,
-        memoryUsage: performance.memory ? (performance.memory as any).usedJSHeapSize : 0,
+        memoryUsage: getMemoryUsage(),
         cacheEfficiency: cache.hitRate,
         errorRate: performanceMetrics.errorRate,
         apiResponseTime: Math.random() * 200 + 100 // Simulated
