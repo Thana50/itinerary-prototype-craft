@@ -1,9 +1,10 @@
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/contexts/AuthContext";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import RoleGuard from "@/components/auth/RoleGuard";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import RoleGuard from "@/components/RoleGuard";
 import Login from "@/pages/Login";
 import AgentDashboard from "@/pages/AgentDashboard";
 import VendorDashboard from "@/pages/VendorDashboard";
