@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
@@ -12,19 +12,121 @@ import {
   Briefcase,
   BookTemplate,
   Star,
-  Clock
+  Clock,
+  Loader2
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { itineraryService } from "@/services/itineraryService";
+import { negotiationService } from "@/services/negotiationService";
+import type { Itinerary, Negotiation } from "@/lib/supabase";
+import { useToast } from "@/hooks/use-toast";
+import SeedDataButton from "@/components/SeedDataButton";
 
 const AgentDashboard = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { toast } = useToast();
+  
+  const [itineraries, setItineraries] = useState<Itinerary[]>([]);
+  const [negotiations, setNegotiations] = useState<Negotiation[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    if (user) {
+      loadDashboardData();
+    }
+  }, [user]);
+
+  const loadDashboardData = async () => {
+    if (!user) return;
+    
+    try {
+      setIsLoading(true);
+      const [itinerariesData, negotiationsData] = await Promise.all([
+        itineraryService.getAgentItineraries(user.id),
+        negotiationService.getAgentNegotiations(user.id)
+      ]);
+      
+      setItineraries(itinerariesData);
+      setNegotiations(negotiationsData);
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load dashboard data. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
   
   const handleLogout = async () => {
     await logout();
     navigate("/", { replace: true });
   };
+
+  // Calculate stats from real data
+  const activeItineraries = itineraries.filter(i => i.status === 'draft' || i.status === 'shared').length;
+  const pendingNegotiations = negotiations.filter(n => n.status === 'pending').length;
+  const totalRevenue = itineraries
+    .filter(i => i.status === 'confirmed')
+    .reduce((sum, itinerary) => {
+      // Estimate revenue based on itinerary complexity (this would be real revenue data in production)
+      return sum + (itinerary.days.length * itinerary.number_of_travelers * 200);
+    }, 0);
+  const conversionRate = itineraries.length > 0 
+    ? Math.round((itineraries.filter(i => i.status === 'confirmed').length / itineraries.length) * 100)
+    : 0;
+  
+  // Get recent itineraries for templates section
+  const recentItineraries = itineraries
+    .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+    .slice(0, 3);
+  
+  // Get top performing itineraries (confirmed ones)
+  const topPerformingItineraries = itineraries
+    .filter(i => i.status === 'confirmed')
+    .slice(0, 3);
+
+  // Get recent activity from itineraries and negotiations
+  const getRecentActivity = () => {
+    const activities: Array<{type: string, message: string, time: string, color: string}> = [];
+    
+    // Add recent itineraries
+    itineraries.slice(0, 2).forEach(itinerary => {
+      activities.push({
+        type: 'itinerary',
+        message: `Itinerary created for '${itinerary.name}'`,
+        time: new Date(itinerary.created_at).toLocaleString(),
+        color: 'bg-green-500'
+      });
+    });
+    
+    // Add recent negotiations
+    negotiations.slice(0, 2).forEach(negotiation => {
+      activities.push({
+        type: 'negotiation',
+        message: `Rate negotiation ${negotiation.status} for '${negotiation.service_type}'`,
+        time: new Date(negotiation.created_at).toLocaleString(),
+        color: negotiation.status === 'pending' ? 'bg-orange-500' : 'bg-blue-500'
+      });
+    });
+    
+    return activities.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 3);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex items-center space-x-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span>Loading dashboard...</span>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="min-h-screen bg-gray-50">
@@ -40,6 +142,7 @@ const AgentDashboard = () => {
           </div>
           <div className="flex items-center space-x-4">
             <span className="text-gray-600">Welcome, {user?.name || 'Agent'}!</span>
+            {itineraries.length === 0 && <SeedDataButton />}
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="h-4 w-4 mr-2" />
               Logout
@@ -63,7 +166,7 @@ const AgentDashboard = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-500">Active Itineraries</p>
-                  <p className="text-3xl font-bold text-blue-600">5</p>
+                  <p className="text-3xl font-bold text-blue-600">{activeItineraries}</p>
                 </div>
               </div>
             </CardContent>
@@ -77,7 +180,7 @@ const AgentDashboard = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-500">Pending Negotiations</p>
-                  <p className="text-3xl font-bold text-orange-600">3</p>
+                  <p className="text-3xl font-bold text-orange-600">{pendingNegotiations}</p>
                 </div>
               </div>
             </CardContent>
@@ -91,7 +194,7 @@ const AgentDashboard = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-500">Conversion Rate</p>
-                  <p className="text-3xl font-bold text-green-600">35%</p>
+                  <p className="text-3xl font-bold text-green-600">{conversionRate}%</p>
                 </div>
               </div>
             </CardContent>
@@ -104,8 +207,8 @@ const AgentDashboard = () => {
                   <DollarSign className="h-6 w-6 text-purple-600" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Total Revenue (Month)</p>
-                  <p className="text-3xl font-bold text-purple-600">$12,500</p>
+                  <p className="text-sm font-medium text-gray-500">Estimated Revenue</p>
+                  <p className="text-3xl font-bold text-purple-600">${totalRevenue.toLocaleString()}</p>
                 </div>
               </div>
             </CardContent>
@@ -115,13 +218,13 @@ const AgentDashboard = () => {
         {/* Template Library Section */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">Template Library</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Recent Itineraries</h2>
             <Button 
               variant="outline" 
               onClick={() => navigate("/template-repository")}
               className="text-blue-600 border-blue-600 hover:bg-blue-50"
             >
-              View All Templates
+              View Template Repository
             </Button>
           </div>
           
@@ -134,8 +237,8 @@ const AgentDashboard = () => {
                     <BookTemplate className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Templates Created</p>
-                    <p className="text-2xl font-bold text-blue-700">23</p>
+                    <p className="text-sm font-medium text-gray-600">Itineraries Created</p>
+                    <p className="text-2xl font-bold text-blue-700">{itineraries.length}</p>
                   </div>
                 </div>
               </CardContent>
@@ -148,8 +251,8 @@ const AgentDashboard = () => {
                     <Star className="h-6 w-6 text-green-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Average Success Rate</p>
-                    <p className="text-2xl font-bold text-green-700">94%</p>
+                    <p className="text-sm font-medium text-gray-600">Success Rate</p>
+                    <p className="text-2xl font-bold text-green-700">{conversionRate}%</p>
                   </div>
                 </div>
               </CardContent>
@@ -162,89 +265,87 @@ const AgentDashboard = () => {
                     <Clock className="h-6 w-6 text-purple-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Time Saved</p>
-                    <p className="text-2xl font-bold text-purple-700">67%</p>
+                    <p className="text-sm font-medium text-gray-600">Active Projects</p>
+                    <p className="text-2xl font-bold text-purple-700">{activeItineraries}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Recent Templates and Quick Actions */}
+          {/* Recent and Top Performing Itineraries */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Recent Templates Used</CardTitle>
-                <CardDescription>Your most recently accessed templates</CardDescription>
+                <CardTitle className="text-lg">Recent Itineraries</CardTitle>
+                <CardDescription>Your most recently created itineraries</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
-                      <p className="font-medium text-gray-900">Phuket Beach Paradise</p>
-                      <p className="text-sm text-gray-600">7 days • 4.8★ • Used 2 hours ago</p>
+                  {recentItineraries.length > 0 ? recentItineraries.map((itinerary) => (
+                    <div key={itinerary.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="font-medium text-gray-900">{itinerary.name}</p>
+                        <p className="text-sm text-gray-600">
+                          {itinerary.destination} • {itinerary.days.length} days • {itinerary.status}
+                        </p>
+                      </div>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => navigate(`/itinerary/${itinerary.id}`)}
+                      >
+                        View
+                      </Button>
                     </div>
-                    <Button size="sm" variant="outline">Use</Button>
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
-                      <p className="font-medium text-gray-900">Singapore Family Adventure</p>
-                      <p className="text-sm text-gray-600">5 days • 4.6★ • Used yesterday</p>
+                  )) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <p>No itineraries created yet.</p>
+                      <Button 
+                        className="mt-2" 
+                        onClick={() => navigate("/create-itinerary")}
+                      >
+                        Create Your First Itinerary
+                      </Button>
                     </div>
-                    <Button size="sm" variant="outline">Use</Button>
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
-                      <p className="font-medium text-gray-900">Bali Cultural Immersion</p>
-                      <p className="text-sm text-gray-600">6 days • 4.7★ • Used 3 days ago</p>
-                    </div>
-                    <Button size="sm" variant="outline">Use</Button>
-                  </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Top Performing Templates</CardTitle>
-                <CardDescription>Your most successful templates this month</CardDescription>
+                <CardTitle className="text-lg">Top Performing Itineraries</CardTitle>
+                <CardDescription>Your most successful confirmed itineraries</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
-                    <div>
-                      <p className="font-medium text-gray-900">Dubai Luxury Escape</p>
-                      <p className="text-sm text-green-700">100% success rate • 8 bookings</p>
+                  {topPerformingItineraries.length > 0 ? topPerformingItineraries.map((itinerary, index) => (
+                    <div key={itinerary.id} className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                      <div>
+                        <p className="font-medium text-gray-900">{itinerary.name}</p>
+                        <p className="text-sm text-green-700">
+                          Confirmed • {itinerary.number_of_travelers} travelers
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-medium text-green-700">
+                          {index === 0 ? '🏆 #1' : index === 1 ? '🥈 #2' : '🥉 #3'}
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-green-700">🏆 #1</p>
+                  )) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <p>No confirmed itineraries yet.</p>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
-                    <div>
-                      <p className="font-medium text-gray-900">Tokyo Cultural Journey</p>
-                      <p className="text-sm text-blue-700">96% success rate • 12 bookings</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-blue-700">🥈 #2</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-200">
-                    <div>
-                      <p className="font-medium text-gray-900">Morocco Adventure</p>
-                      <p className="text-sm text-orange-700">94% success rate • 6 bookings</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-orange-700">🥉 #3</p>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
           </div>
         </div>
 
-        {/* Core Tools Section - Updated to 2x2 grid */}
+        {/* Core Tools Section */}
         <div className="mb-8">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Core Tools</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -301,35 +402,19 @@ const AgentDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex items-center justify-between py-3 border-b border-gray-100">
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                  <span className="text-gray-900">New itinerary created for 'Paris Getaway'</span>
+              {getRecentActivity().length > 0 ? getRecentActivity().map((activity, index) => (
+                <div key={index} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
+                  <div className="flex items-center">
+                    <div className={`w-2 h-2 ${activity.color} rounded-full mr-3`}></div>
+                    <span className="text-gray-900">{activity.message}</span>
+                  </div>
+                  <span className="text-gray-500 text-sm">{activity.time}</span>
                 </div>
-                <span className="text-gray-500 text-sm">2h ago</span>
-              </div>
-              
-              <div className="flex items-center justify-between py-3 border-b border-gray-100">
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full mr-3"></div>
-                  <span className="text-gray-900">Rate negotiation started for 'Bali Adventure'</span>
+              )) : (
+                <div className="text-center py-8 text-gray-500">
+                  <p>No recent activity.</p>
                 </div>
-                <span className="text-gray-500 text-sm">5h ago</span>
-              </div>
-              
-              <div className="flex items-center justify-between py-3">
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                  <span className="text-gray-900">Client 'John Doe' approved 'Rome Holiday'</span>
-                </div>
-                <span className="text-gray-500 text-sm">1 day ago</span>
-              </div>
-            </div>
-            
-            <div className="mt-6">
-              <Button variant="link" className="text-blue-500 p-0">
-                View all activity →
-              </Button>
+              )}
             </div>
           </CardContent>
         </Card>
