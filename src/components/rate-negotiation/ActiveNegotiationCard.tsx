@@ -82,7 +82,7 @@ const ActiveNegotiationCard = ({ negotiation }: ActiveNegotiationCardProps) => {
             </CollapsibleTrigger>
             <CollapsibleContent className="mt-4">
               <PredictiveAnalyticsPanel 
-                negotiationId={negotiation.id}
+                negotiationId={String(negotiation.id)}
                 context={{
                   serviceType: negotiation.serviceType,
                   originalRate: negotiation.originalRate,
