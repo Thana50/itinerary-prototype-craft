@@ -16,23 +16,28 @@ export const useClientPortalActions = () => {
           approval_status: 'approved'
         });
         
-        // Auto-parse itinerary into negotiable items
-        const { itineraryParsingService } = await import("@/services/itineraryParsingService");
-        const parseResult = await itineraryParsingService.autoParseApprovedItinerary(itineraryId);
+        // Get itinerary details first for notifications
+        const itinerary = await itineraryService.getItinerary(itineraryId);
         
-        if (parseResult.success) {
-          // Get itinerary details and send notification to agent
-          const itinerary = await itineraryService.getItinerary(itineraryId);
-          
-          await notificationService.notifyItineraryApproved(
-            itinerary.agent_id,
-            itineraryId,
-            itinerary.name
-          );
-          
+        // Send initial approval notification
+        await notificationService.notifyItineraryApproved(
+          itinerary.agent_id,
+          itineraryId,
+          itinerary.name
+        );
+        
+        // Trigger post-approval workflow orchestration
+        const { postApprovalOrchestrator } = await import("@/services/postApprovalOrchestrator");
+        const workflowResult = await postApprovalOrchestrator.initiatePostApprovalWorkflow(
+          itineraryId,
+          itinerary.agent_id,
+          'medium' // Default priority
+        );
+        
+        if (workflowResult.success) {
           toast({
             title: "Itinerary Approved!",
-            description: `Your travel agent will start rate negotiations for ${parseResult.itemsCreated} services (Est. value: $${parseResult.estimatedValue.toLocaleString()})`,
+            description: `Starting ${workflowResult.negotiationsInitiated} negotiations for ${workflowResult.itemsParsed} services. Est. savings: $${workflowResult.estimatedSavings.toLocaleString()}`,
           });
         } else {
           toast({

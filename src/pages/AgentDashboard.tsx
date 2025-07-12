@@ -22,6 +22,7 @@ import { negotiationService } from "@/services/negotiationService";
 import type { Itinerary, Negotiation } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import SeedDataButton from "@/components/SeedDataButton";
+import { PostApprovalDashboard } from "@/components/PostApprovalDashboard";
 
 const AgentDashboard = () => {
   const navigate = useNavigate();
@@ -221,6 +222,16 @@ const AgentDashboard = () => {
           </Card>
         </div>
 
+        {/* Post-Approval Workflow Dashboards */}
+        {approvedForNegotiation.map((itinerary) => (
+          <div key={`workflow-${itinerary.id}`} className="mb-8">
+            <PostApprovalDashboard 
+              itineraryId={itinerary.id}
+              className="border-l-4 border-l-orange-500"
+            />
+          </div>
+        ))}
+
         {/* Approved Itineraries Section */}
         {approvedItineraries > 0 && (
           <div className="mb-8">
@@ -233,7 +244,7 @@ const AgentDashboard = () => {
               </h2>
               <Button 
                 variant="outline" 
-                onClick={() => navigate("/rate-negotiation")}
+                onClick={() => navigate("/rate-negotiation-ai")}
                 className="text-orange-600 border-orange-600 hover:bg-orange-50"
               >
                 View All Negotiations
@@ -261,12 +272,19 @@ const AgentDashboard = () => {
                           📍 {itinerary.destination} • {itinerary.start_date} to {itinerary.end_date}
                         </p>
                       </div>
-                      <div className="ml-4">
+                      <div className="ml-4 space-x-2">
+                        <Button 
+                          variant="outline"
+                          size="sm"
+                          onClick={() => navigate(`/rate-negotiation-ai?itinerary=${itinerary.id}`)}
+                        >
+                          View Progress
+                        </Button>
                         <Button 
                           onClick={() => navigate(`/itinerary/${itinerary.id}/negotiate`)}
                           className="bg-orange-600 hover:bg-orange-700 text-white"
                         >
-                          Start Negotiations
+                          Manual Override
                         </Button>
                       </div>
                     </div>

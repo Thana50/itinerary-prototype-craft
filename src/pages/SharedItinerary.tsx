@@ -7,6 +7,8 @@ import { toast } from "@/hooks/use-toast";
 import { Check, Edit, MessageSquare } from "lucide-react";
 import ItineraryPreview from "@/components/ItineraryPreview";
 import AIAssistant, { AIAssistantRef } from "@/components/AIAssistant";
+import { WorkflowProgressTracker } from "@/components/WorkflowProgressTracker";
+import { useClientPortalActions } from "@/hooks/useClientPortalActions";
 import { itineraryService } from "@/services/itineraryService";
 import { aiService } from "@/services/aiService";
 import type { Itinerary } from "@/lib/supabase";
@@ -15,6 +17,7 @@ const SharedItinerary = () => {
   const { token } = useParams();
   const navigate = useNavigate();
   const aiAssistantRef = useRef<AIAssistantRef>(null);
+  const { handleApproveItinerary } = useClientPortalActions();
   
   const [itinerary, setItinerary] = useState<Itinerary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -67,18 +70,15 @@ const SharedItinerary = () => {
     if (!itinerary) return;
     
     try {
-      await itineraryService.updateItinerary(itinerary.id, {
-        status: 'confirmed',
-        preferences: itinerary.preferences + (modifications ? `\n\nTraveler Modifications:\n${modifications}` : "")
-      });
+      // Update with modifications first
+      if (modifications) {
+        await itineraryService.updateItinerary(itinerary.id, {
+          preferences: itinerary.preferences + `\n\nTraveler Modifications:\n${modifications}`
+        });
+      }
       
-      toast({
-        title: "Success",
-        description: "Itinerary confirmed! Your travel agent will be notified.",
-      });
-      
-      // In a real app, this would send notification to agent
-      console.log('Itinerary confirmed by traveler');
+      // Trigger the approval workflow
+      await handleApproveItinerary(itinerary.id);
       
     } catch (error) {
       console.error('Confirm error:', error);
@@ -130,12 +130,15 @@ const SharedItinerary = () => {
           </div>
           <Button onClick={handleConfirmItinerary} className="bg-green-600 hover:bg-green-700">
             <Check className="mr-2 h-4 w-4" />
-            Confirm Itinerary
+            Approve Itinerary
           </Button>
         </div>
       </header>
 
       <div className="container mx-auto px-6 py-8">
+        {/* Workflow Progress Tracker */}
+        <WorkflowProgressTracker itineraryId={itinerary.id} className="mb-6" />
+        
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Itinerary Details */}
           <div className="lg:col-span-2 space-y-6">
