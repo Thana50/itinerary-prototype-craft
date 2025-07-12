@@ -55,7 +55,7 @@ export const itineraryService = {
     } as Itinerary;
   },
 
-  async updateItinerary(id: string, updates: Partial<Itinerary>) {
+  async updateItinerary(id: string, updates: Partial<Itinerary> & { approval_status?: string }) {
     const updateData: any = {
       ...updates,
       updated_at: new Date().toISOString()

@@ -3,7 +3,14 @@ import { supabase } from '@/integrations/supabase/client';
 import type { Negotiation, NegotiationMessage } from '@/lib/supabase';
 
 export const negotiationService = {
-  async createNegotiation(negotiation: Omit<Negotiation, 'id' | 'created_at' | 'updated_at' | 'messages'>) {
+  async createNegotiation(negotiation: Omit<Negotiation, 'id' | 'created_at' | 'updated_at' | 'messages'> & {
+    itinerary_item_id?: string;
+    original_price?: number;
+    target_price?: number;
+    negotiation_priority?: 'low' | 'medium' | 'high';
+    auto_approval_threshold?: number;
+    negotiation_deadline?: string;
+  }) {
     const { data, error } = await supabase
       .from('negotiations')
       .insert({ ...negotiation, messages: [] })
