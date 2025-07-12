@@ -1,16 +1,20 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Database, Loader2, TestTube, CheckCircle, AlertTriangle } from "lucide-react";
+import { Database, Loader2, TestTube, CheckCircle, AlertTriangle, Route } from "lucide-react";
 import { createSeedData, testCRUDOperations } from "@/utils/seedData";
 import { runComprehensiveTests, validateDataConsistency } from "@/utils/testValidation";
+import { runAllJourneyTests, formatTestResults } from "@/utils/journeyVerification";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const SeedDataButton: React.FC = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const handleCreateSeedData = async () => {
     setIsCreating(true);
@@ -135,7 +139,45 @@ const SeedDataButton: React.FC = () => {
     }
   };
 
-  const isAnyOperationRunning = isCreating || isTesting || isValidating;
+  const handleJourneyVerification = async () => {
+    if (!user) return;
+    
+    setIsVerifying(true);
+    try {
+      const results = await runAllJourneyTests(user.id, user.role);
+      const formattedResults = formatTestResults(results);
+      
+      console.log(formattedResults);
+      
+      const passed = results.filter(r => r.status === 'passed').length;
+      const failed = results.filter(r => r.status === 'failed').length;
+      const total = results.length;
+      
+      if (failed === 0) {
+        toast({
+          title: "All Journeys Verified! 🎉",
+          description: `${passed}/${total} user journeys working correctly`,
+          variant: "default"
+        });
+      } else {
+        toast({
+          title: "Journey Issues Found",
+          description: `${passed}/${total} journeys passed. Check console for details.`,
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Verification Error",
+        description: "Failed to verify user journeys",
+        variant: "destructive"
+      });
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const isAnyOperationRunning = isCreating || isTesting || isValidating || isVerifying;
 
   return (
     <div className="flex items-center gap-2">
@@ -182,6 +224,21 @@ const SeedDataButton: React.FC = () => {
           <CheckCircle className="h-4 w-4" />
         )}
         {isValidating ? "Validating..." : "Full Test Suite"}
+      </Button>
+
+      <Button
+        onClick={handleJourneyVerification}
+        disabled={isAnyOperationRunning}
+        variant="outline"
+        size="sm"
+        className="flex items-center gap-2"
+      >
+        {isVerifying ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Route className="h-4 w-4" />
+        )}
+        {isVerifying ? "Verifying..." : "Verify Journeys"}
       </Button>
     </div>
   );

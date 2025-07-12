@@ -1,18 +1,21 @@
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Share, Download, Phone } from "lucide-react";
+import { ArrowLeft, Share, Download, Phone, Loader2 } from "lucide-react";
 import ClientItineraryDisplay from "@/components/ClientItineraryDisplay";
 import AIAssistant, { AIAssistantRef } from "@/components/AIAssistant";
 import ApprovalWorkflow from "@/components/ApprovalWorkflow";
 import ModificationTracking from "@/components/ModificationTracking";
 import PricingUpdates from "@/components/PricingUpdates";
 import { aiService } from "@/services/aiService";
+import { itineraryService } from "@/services/itineraryService";
 import { useItineraryState } from "@/hooks/useItineraryState";
 import { useClientPortalActions } from "@/hooks/useClientPortalActions";
 import { detectModification } from "@/utils/modificationDetector";
+import { useToast } from "@/hooks/use-toast";
 import type { ItineraryData } from "@/types/itinerary";
+import type { Itinerary } from "@/lib/supabase";
 
 const UnifiedItineraryDetail = () => {
   const { id } = useParams();
@@ -21,9 +24,11 @@ const UnifiedItineraryDetail = () => {
   const userRole = searchParams.get('role') as 'agent' | 'traveler' || 'traveler';
   const aiAssistantRef = useRef<AIAssistantRef>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [itinerary, setItinerary] = useState<Itinerary | null>(null);
+  const [isLoadingItinerary, setIsLoadingItinerary] = useState(true);
+  const { toast } = useToast();
 
   const {
-    itinerary,
     totalPrice,
     modifications,
     customizationProgress,
@@ -39,63 +44,53 @@ const UnifiedItineraryDetail = () => {
     handlePrintItinerary
   } = useClientPortalActions();
 
-  // Mock data - in real app this would come from API based on ID
-  const mockItinerary: ItineraryData = {
-    id: id || '1',
-    title: "European Adventure",
-    destination: "France, Italy, Spain",
-    dates: "June 15 - June 30, 2025",
-    startDate: "June 15, 2025",
-    endDate: "June 30, 2025",
-    status: "review",
-    client: "John & Sarah Smith",
-    travelers: 2,
-    totalPrice: 8900,
-    days: [
-      {
-        day: 1,
-        title: "Arrival in Paris",
-        activities: [
-          "🛬 Airport pickup and transfer to hotel",
-          "🏨 Check-in at Grand Hotel Paris",
-          "🍽️ Welcome dinner at Le Bistrot",
-          "🌃 Evening stroll along the Seine"
-        ],
-        date: "June 15, 2025",
-        location: "Paris, France",
-        accommodation: "Grand Hotel Paris"
-      },
-      {
-        day: 2,
-        title: "Paris Exploration",
-        activities: [
-          "🗼 Visit Eiffel Tower with skip-the-line tickets",
-          "☕ Coffee break at Café Madeleine",
-          "🎨 Guided tour of Montmartre district",
-          "🍷 Dinner and wine tasting in Le Marais"
-        ],
-        date: "June 16, 2025",
-        location: "Paris, France",
-        accommodation: "Grand Hotel Paris"
-      },
-      {
-        day: 3,
-        title: "Travel to Rome",
-        activities: [
-          "✈️ Morning flight to Rome",
-          "🏨 Check-in at Roma Luxe Hotel",
-          "🍝 Lunch at authentic Roman trattoria",
-          "🏛️ Evening walk through Trastevere"
-        ],
-        date: "June 17, 2025",
-        location: "Rome, Italy",
-        accommodation: "Roma Luxe Hotel"
-      }
-    ],
-    preferences: "Family-friendly activities, halal food options when possible",
-    modificationRequests: 2,
-    negotiations: 1
+  // Load real itinerary data
+  useEffect(() => {
+    if (id) {
+      loadItinerary();
+    }
+  }, [id]);
+
+  const loadItinerary = async () => {
+    try {
+      setIsLoadingItinerary(true);
+      const data = await itineraryService.getItinerary(id!);
+      setItinerary(data);
+    } catch (error) {
+      console.error('Error loading itinerary:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load itinerary details.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoadingItinerary(false);
+    }
   };
+
+  // Convert database itinerary to display format
+  const getDisplayItinerary = (): ItineraryData | null => {
+    if (!itinerary) return null;
+    
+    return {
+      id: itinerary.id,
+      title: itinerary.name,
+      destination: itinerary.destination,
+      dates: `${new Date(itinerary.start_date).toLocaleDateString()} - ${new Date(itinerary.end_date).toLocaleDateString()}`,
+      startDate: new Date(itinerary.start_date).toLocaleDateString(),
+      endDate: new Date(itinerary.end_date).toLocaleDateString(),
+      status: itinerary.status,
+      client: "Client", // Could be enhanced with user data
+      travelers: itinerary.number_of_travelers,
+      totalPrice: 0, // Would be calculated from actual pricing data
+      days: Array.isArray(itinerary.days) ? itinerary.days as any[] : [],
+      preferences: itinerary.preferences || "",
+      modificationRequests: 0,
+      negotiations: 0
+    };
+  };
+
+  const displayItinerary = getDisplayItinerary();
 
   const handleMessageSend = async (message: string) => {
     setIsLoading(true);
@@ -126,13 +121,46 @@ const UnifiedItineraryDetail = () => {
     handleMessageSend(message);
   };
 
+  const handleBackNavigation = () => {
+    if (userRole === 'agent') {
+      navigate('/agent-dashboard');
+    } else {
+      navigate('/traveler-dashboard');
+    }
+  };
+
+  if (isLoadingItinerary) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center">
+        <div className="flex items-center space-x-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span>Loading itinerary...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!itinerary || !displayItinerary) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Itinerary not found</h2>
+          <Button onClick={handleBackNavigation}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Dashboard
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
       {/* Enhanced Header */}
       <header className="bg-white/90 backdrop-blur-sm border-b border-gray-200 px-6 py-4 shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <Button variant="ghost" onClick={() => navigate(-1)} className="mr-4 hover:bg-gray-100">
+            <Button variant="ghost" onClick={handleBackNavigation} className="mr-4 hover:bg-gray-100">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
@@ -143,8 +171,8 @@ const UnifiedItineraryDetail = () => {
                 className="h-10 w-auto"
               />
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">{mockItinerary.title}</h1>
-                <p className="text-sm text-gray-600">{mockItinerary.destination} • {mockItinerary.dates}</p>
+                <h1 className="text-xl font-semibold text-gray-900">{displayItinerary.title}</h1>
+                <p className="text-sm text-gray-600">{displayItinerary.destination} • {displayItinerary.dates}</p>
               </div>
             </div>
           </div>
@@ -179,7 +207,7 @@ const UnifiedItineraryDetail = () => {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           {/* Left Side - Itinerary Display */}
           <div className="lg:col-span-3 space-y-6">
-            <ClientItineraryDisplay itinerary={mockItinerary.days} />
+            <ClientItineraryDisplay itinerary={displayItinerary.days} />
             
             {userRole === 'traveler' && (
               <>
@@ -191,27 +219,31 @@ const UnifiedItineraryDetail = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-sm text-gray-600">Travelers</p>
-                      <p className="font-medium text-gray-900">{mockItinerary.travelers} people</p>
+                      <p className="font-medium text-gray-900">{displayItinerary.travelers} people</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Duration</p>
-                      <p className="font-medium text-gray-900">15 days</p>
+                      <p className="font-medium text-gray-900">{displayItinerary.days.length} days</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Status</p>
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                        Under Review
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        displayItinerary.status === 'confirmed' ? 'bg-green-100 text-green-800' :
+                        displayItinerary.status === 'shared' ? 'bg-blue-100 text-blue-800' :
+                        'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {displayItinerary.status}
                       </span>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Total Price</p>
-                      <p className="font-semibold text-green-600 text-lg">${mockItinerary.totalPrice?.toLocaleString()}</p>
+                      <p className="font-semibold text-green-600 text-lg">TBD</p>
                     </div>
                   </div>
-                  {mockItinerary.preferences && (
+                  {displayItinerary.preferences && (
                     <div className="mt-4 pt-4 border-t border-gray-200">
                       <p className="text-sm text-gray-600 mb-2">Special Preferences</p>
-                      <p className="text-sm text-gray-900 bg-gray-50 rounded-lg p-3">{mockItinerary.preferences}</p>
+                      <p className="text-sm text-gray-900 bg-gray-50 rounded-lg p-3">{displayItinerary.preferences}</p>
                     </div>
                   )}
                 </div>

@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, Clock, Calendar, MessageSquare, Eye, CheckCircle, AlertCircle, TrendingUp, Trophy, Timer, Award, LogOut } from "lucide-react";
+import { DollarSign, Clock, Calendar, MessageSquare, Eye, CheckCircle, AlertCircle, TrendingUp, Trophy, Timer, Award, LogOut, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { negotiationService } from "@/services/negotiationService";
+import { useToast } from "@/hooks/use-toast";
+import type { Negotiation } from "@/lib/supabase";
 import VendorDashboardHeader from "@/components/vendor-dashboard/VendorDashboardHeader";
 import VendorStatsCards from "@/components/vendor-dashboard/VendorStatsCards";
 import VendorNegotiationInterface from "@/components/vendor-dashboard/VendorNegotiationInterface";
@@ -16,16 +19,49 @@ import VendorAnalyticsDashboard from "@/components/vendor-dashboard/VendorAnalyt
 const VendorDashboard = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { toast } = useToast();
   const [selectedTab, setSelectedTab] = useState("active");
   const [selectedNegotiation, setSelectedNegotiation] = useState<string | null>(null);
   const [selectedSimulation, setSelectedSimulation] = useState<string | null>(null);
+  const [negotiations, setNegotiations] = useState<Negotiation[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      loadNegotiations();
+    }
+  }, [user]);
+
+  const loadNegotiations = async () => {
+    if (!user) return;
+    
+    try {
+      setIsLoading(true);
+      const data = await negotiationService.getVendorNegotiations(user.id);
+      setNegotiations(data);
+    } catch (error) {
+      console.error('Error loading negotiations:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load negotiations. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleLogout = async () => {
     await logout();
     navigate("/", { replace: true });
   };
 
-  const activeNegotiations = [
+  // Filter real negotiations
+  const activeNegotiations = negotiations.filter(n => n.status === 'pending' || n.status === 'negotiating');
+  const realCompletedNegotiations = negotiations.filter(n => n.status === 'accepted' || n.status === 'rejected');
+
+  // Mock data structure for display compatibility
+  const mockActiveNegotiations = [
     {
       id: "TRV-2025-001",
       agency: "Travia Travel",
@@ -117,7 +153,7 @@ const VendorDashboard = () => {
   };
 
   const handleRespondNow = (negotiationId: string) => {
-    setSelectedNegotiation(negotiationId);
+    navigate(`/negotiation-room/${negotiationId}`);
   };
 
   const handleStartSimulation = (scenarioId: string) => {
@@ -133,13 +169,14 @@ const VendorDashboard = () => {
     );
   }
 
-  if (selectedNegotiation) {
-    const negotiation = activeNegotiations.find(n => n.id === selectedNegotiation);
+  if (isLoading) {
     return (
-      <VendorNegotiationInterface 
-        negotiation={negotiation!}
-        onBack={() => setSelectedNegotiation(null)}
-      />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+        <div className="flex items-center space-x-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span>Loading dashboard...</span>
+        </div>
+      </div>
     );
   }
 
@@ -198,7 +235,49 @@ const VendorDashboard = () => {
                   </TabsList>
 
                   <TabsContent value="active" className="space-y-4">
-                    {activeNegotiations.map((negotiation) => (
+                    {activeNegotiations.length > 0 ? activeNegotiations.map((negotiation) => (
+                      <div key={negotiation.id} className="border rounded-lg p-6 bg-gradient-to-r from-white to-blue-50 hover:shadow-md transition-shadow">
+                        <div className="flex flex-col md:flex-row md:items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h3 className="font-semibold text-lg text-gray-800">{negotiation.service_type}</h3>
+                              <Badge className={`${
+                                negotiation.status === 'pending' ? 'bg-red-500 hover:bg-red-600' :
+                                negotiation.status === 'negotiating' ? 'bg-yellow-500 hover:bg-yellow-600' :
+                                'bg-blue-500 hover:bg-blue-600'
+                              } text-white`}>
+                                {negotiation.status}
+                              </Badge>
+                            </div>
+                            <p className="text-gray-600 mb-3">{negotiation.description}</p>
+                            <p className="text-sm text-gray-500">
+                              Created: {new Date(negotiation.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex flex-wrap gap-3">
+                          <Button 
+                            onClick={() => handleRespondNow(negotiation.id)}
+                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                          >
+                            <Eye className="h-4 w-4 mr-2" />
+                            View Details
+                          </Button>
+                          <Button variant="outline" className="border-gray-200 text-gray-600 hover:bg-gray-50">
+                            <MessageSquare className="h-4 w-4 mr-2" />
+                            Message Agent
+                          </Button>
+                        </div>
+                      </div>
+                    )) : (
+                      <div className="text-center py-8 text-gray-500">
+                        <p>No active negotiations.</p>
+                      </div>
+                    )}
+                    
+                    {/* Keep mock data for demo purposes */}
+                    {mockActiveNegotiations.map((negotiation) => (
                       <div key={negotiation.id} className={`border rounded-lg p-6 ${negotiation.urgent ? 'bg-gradient-to-r from-red-50 to-orange-50 border-red-200' : 'bg-gradient-to-r from-white to-blue-50'} hover:shadow-md transition-shadow`}>
                         <div className="flex flex-col md:flex-row md:items-start justify-between mb-4">
                           <div className="flex-1">
@@ -262,7 +341,42 @@ const VendorDashboard = () => {
                   </TabsContent>
 
                   <TabsContent value="completed" className="space-y-4">
-                    {completedNegotiations.map((negotiation) => (
+                    {realCompletedNegotiations.length > 0 ? realCompletedNegotiations.map((negotiation) => (
+                      <div key={negotiation.id} className="border rounded-lg p-6 bg-gradient-to-r from-white to-green-50">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="flex items-center gap-3 mb-2">
+                              <h3 className="font-semibold text-lg text-gray-800">{negotiation.service_type}</h3>
+                              <CheckCircle className="h-5 w-5 text-green-500" />
+                              <Badge className="bg-green-500 hover:bg-green-600 text-white">
+                                {negotiation.status}
+                              </Badge>
+                            </div>
+                            <p className="text-gray-600">
+                              Completed: {new Date(negotiation.updated_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )) : (
+                      <div className="text-center py-8 text-gray-500">
+                        <p>No completed negotiations yet.</p>
+                      </div>
+                    )}
+                    
+                    {/* Mock completed data for demo */}
+                    {[
+                      {
+                        id: "TRV-2025-004",
+                        agency: "Wanderlust Adventures",
+                        service: "Premium Suite",
+                        finalRate: 200,
+                        originalRate: 240,
+                        savings: 40,
+                        status: "Accepted",
+                        completedDate: "March 8, 2025"
+                      }
+                    ].map((negotiation) => (
                       <div key={negotiation.id} className="border rounded-lg p-6 bg-gradient-to-r from-white to-green-50">
                         <div className="flex items-center justify-between">
                           <div>
