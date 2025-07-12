@@ -153,7 +153,15 @@ const VendorDashboard = () => {
   };
 
   const handleRespondNow = (negotiationId: string) => {
-    navigate(`/negotiation-room/${negotiationId}`);
+    // Check if this is a real database ID (UUID format) or mock data
+    const isRealNegotiation = negotiations.some(n => n.id === negotiationId);
+    
+    if (isRealNegotiation) {
+      navigate(`/negotiation-room/${negotiationId}`);
+    } else {
+      // For mock data, navigate to mock negotiation detail page
+      navigate(`/negotiation/${negotiationId}`);
+    }
   };
 
   const handleStartSimulation = (scenarioId: string) => {
