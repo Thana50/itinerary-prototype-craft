@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -6,16 +5,45 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Brain, Settings, Target } from "lucide-react";
+import EnhancedAIDecisionEngine from "./EnhancedAIDecisionEngine";
 
 const AIDecisionEngine = () => {
+  const [showEnhancedMode, setShowEnhancedMode] = useState(false);
   const [negotiationStyle, setNegotiationStyle] = useState("balanced");
   const [autoAcceptThreshold, setAutoAcceptThreshold] = useState([95]);
   const [autoRejectThreshold, setAutoRejectThreshold] = useState([150]);
   const [humanReviewRange, setHumanReviewRange] = useState([80, 94]);
   const [trainingMode, setTrainingMode] = useState(true);
 
+  if (showEnhancedMode) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">Enhanced AI Decision Engine</h2>
+          <button
+            onClick={() => setShowEnhancedMode(false)}
+            className="text-sm text-blue-600 hover:text-blue-800"
+          >
+            ← Back to Basic Mode
+          </button>
+        </div>
+        <EnhancedAIDecisionEngine />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold">Basic AI Decision Engine</h2>
+        <button
+          onClick={() => setShowEnhancedMode(true)}
+          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm"
+        >
+          Switch to Enhanced Mode
+        </button>
+      </div>
+
       <Card>
         <CardHeader>
           <div className="flex items-center">
