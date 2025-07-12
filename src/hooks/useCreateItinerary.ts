@@ -88,6 +88,25 @@ export const useCreateItinerary = () => {
       });
       return;
     }
+
+    // Validate required fields
+    if (!formData.destination) {
+      toast({
+        title: "Error",
+        description: "Please enter a destination.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!formData.startDate || !formData.endDate) {
+      toast({
+        title: "Error", 
+        description: "Please select start and end dates.",
+        variant: "destructive"
+      });
+      return;
+    }
     
     try {
       setIsLoading(true);
