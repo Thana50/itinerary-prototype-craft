@@ -163,18 +163,16 @@ const AgentDashboard = () => {
           <h1 className="text-3xl font-bold text-gray-900">Agent Dashboard</h1>
         </div>
 
-        {/* PoC Demo Data Initializer - Show prominently if no data exists */}
-        {itineraries.length === 0 && (
-          <div className="mb-8">
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-6">
-              <h2 className="text-lg font-semibold text-orange-900 mb-4">Get Started with Demo Data</h2>
-              <p className="text-orange-700 mb-4">
-                Initialize comprehensive demo data to test the full PoC workflow including vendor profiles, services, and sample itineraries.
-              </p>
-              <PocDataInitializer />
-            </div>
+        {/* PoC Demo Data Initializer - Show prominently for easy access */}
+        <div className="mb-8">
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-6">
+            <h2 className="text-lg font-semibold text-orange-900 mb-4">PoC Demo Data Manager</h2>
+            <p className="text-orange-700 mb-4">
+              Initialize or refresh comprehensive demo data including vendor profiles, services, and sample itineraries.
+            </p>
+            <PocDataInitializer />
           </div>
-        )}
+        </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
