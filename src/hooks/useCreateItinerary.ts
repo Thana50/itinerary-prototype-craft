@@ -83,18 +83,28 @@ export const useCreateItinerary = () => {
 
   const getTravelerIdByEmail = async (email: string) => {
     try {
+      console.log('Looking up traveler by email:', email);
+      
       const { data, error } = await supabase
         .from('users')
-        .select('id')
+        .select('id, email, role, name')
         .eq('email', email)
         .single();
+      
+      console.log('Traveler lookup result:', { data, error });
       
       if (error) {
         console.error('Error finding traveler by email:', error);
         return null;
       }
       
-      return data?.id || null;
+      if (!data) {
+        console.error('No traveler found with email:', email);
+        return null;
+      }
+      
+      console.log('Found traveler:', data);
+      return data.id;
     } catch (error) {
       console.error('Error in getTravelerIdByEmail:', error);
       return null;
@@ -141,18 +151,22 @@ export const useCreateItinerary = () => {
     
     try {
       setIsLoading(true);
+      console.log('Attempting to save itinerary with traveler email:', formData.assignedTravelerEmail);
       
       // Get traveler ID by email
       const travelerId = await getTravelerIdByEmail(formData.assignedTravelerEmail);
       
       if (!travelerId) {
+        console.error('Could not find traveler ID for email:', formData.assignedTravelerEmail);
         toast({
           title: "Error",
-          description: "Selected client not found. Please try again.",
+          description: `Client with email ${formData.assignedTravelerEmail} not found. Please check if the client account exists.`,
           variant: "destructive"
         });
         return;
       }
+      
+      console.log('Successfully found traveler ID:', travelerId);
       
       const itineraryData = {
         agent_id: user.id,
@@ -167,7 +181,9 @@ export const useCreateItinerary = () => {
         days: sampleItinerary
       };
 
+      console.log('Creating itinerary with data:', itineraryData);
       const savedItinerary = await itineraryService.createItinerary(itineraryData);
+      console.log('Successfully created itinerary:', savedItinerary);
       
       toast({
         title: "Success",
