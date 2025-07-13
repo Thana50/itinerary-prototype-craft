@@ -6,6 +6,7 @@ import { parseTripDetails, generateSampleItinerary } from "@/utils/tripUtils";
 import { aiService } from "@/services/aiService";
 import { itineraryService } from "@/services/itineraryService";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 export const useCreateItinerary = () => {
   const navigate = useNavigate();
@@ -17,7 +18,8 @@ export const useCreateItinerary = () => {
     startDate: "",
     endDate: "",
     numberOfTravelers: "",
-    clientPreferences: ""
+    clientPreferences: "",
+    assignedTravelerEmail: "traveler@demo.com" // Default to demo traveler
   });
 
   const [sampleItinerary, setSampleItinerary] = useState<any[]>([]);
@@ -79,6 +81,26 @@ export const useCreateItinerary = () => {
     }
   };
 
+  const getTravelerIdByEmail = async (email: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', email)
+        .single();
+      
+      if (error) {
+        console.error('Error finding traveler by email:', error);
+        return null;
+      }
+      
+      return data?.id || null;
+    } catch (error) {
+      console.error('Error in getTravelerIdByEmail:', error);
+      return null;
+    }
+  };
+
   const handleSaveItinerary = async () => {
     if (!user) {
       toast({
@@ -107,12 +129,34 @@ export const useCreateItinerary = () => {
       });
       return;
     }
+
+    if (!formData.assignedTravelerEmail) {
+      toast({
+        title: "Error",
+        description: "Please assign this itinerary to a client.",
+        variant: "destructive"
+      });
+      return;
+    }
     
     try {
       setIsLoading(true);
       
+      // Get traveler ID by email
+      const travelerId = await getTravelerIdByEmail(formData.assignedTravelerEmail);
+      
+      if (!travelerId) {
+        toast({
+          title: "Error",
+          description: "Selected client not found. Please try again.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
       const itineraryData = {
         agent_id: user.id,
+        traveler_id: travelerId, // Assign the traveler
         name: formData.itineraryName || "Untitled Itinerary",
         destination: formData.destination,
         start_date: formData.startDate,
@@ -127,7 +171,7 @@ export const useCreateItinerary = () => {
       
       toast({
         title: "Success",
-        description: "Itinerary saved successfully!",
+        description: `Itinerary saved and assigned to ${formData.assignedTravelerEmail}!`,
       });
 
       // Navigate to itinerary detail page

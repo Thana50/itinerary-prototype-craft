@@ -5,8 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-import ItineraryPreview from "@/components/ItineraryPreview";
+import { User } from "lucide-react";
 
 interface TripOverviewFormProps {
   formData: {
@@ -16,11 +17,19 @@ interface TripOverviewFormProps {
     endDate: string;
     numberOfTravelers: string;
     clientPreferences: string;
+    assignedTravelerEmail: string;
   };
   onFormChange: (field: string, value: any) => void;
 }
 
 const TripOverviewForm: React.FC<TripOverviewFormProps> = ({ formData, onFormChange }) => {
+  // Demo users for PoC
+  const demoTravelers = [
+    { email: 'traveler@demo.com', name: 'Demo Traveler' },
+    { email: 'agent@demo.com', name: 'Demo Agent' },
+    { email: 'vendor@demo.com', name: 'Demo Vendor' }
+  ];
+
   const handleSaveUpdate = (e: React.FormEvent) => {
     e.preventDefault();
     toast({
@@ -115,6 +124,30 @@ const TripOverviewForm: React.FC<TripOverviewFormProps> = ({ formData, onFormCha
                 onChange={handleInputChange}
                 className="mt-1"
               />
+            </div>
+
+            <div>
+              <Label htmlFor="assignedTraveler" className="text-sm font-medium text-gray-700">
+                Assign to Client
+              </Label>
+              <div className="relative mt-1">
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 z-10" />
+                <Select 
+                  value={formData.assignedTravelerEmail} 
+                  onValueChange={(value) => onFormChange('assignedTravelerEmail', value)}
+                >
+                  <SelectTrigger className="pl-10">
+                    <SelectValue placeholder="Select a client..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {demoTravelers.map((traveler) => (
+                      <SelectItem key={traveler.email} value={traveler.email}>
+                        {traveler.name} ({traveler.email})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             
             <div>

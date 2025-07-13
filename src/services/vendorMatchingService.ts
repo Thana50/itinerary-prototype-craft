@@ -52,51 +52,99 @@ export const vendorMatchingService = {
       priority?: 'low' | 'medium' | 'high';
     } = {}
   ): Promise<VendorMatch[]> {
-    // Get vendor profiles with services
-    const { data: vendorData, error: vendorError } = await supabase
-      .from('vendor_profiles')
-      .select(`
-        *,
-        users!inner(id, name, email, role)
-      `)
-      .contains('service_specializations', [serviceType])
-      .contains('coverage_areas', [location]);
+    try {
+      // For PoC, get demo vendor by email first
+      const { data: demoVendorUser } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', 'vendor@demo.com')
+        .single();
 
-    if (vendorError) throw vendorError;
+      if (demoVendorUser) {
+        // Try to get the demo vendor's profile
+        const { data: demoVendorProfile } = await supabase
+          .from('vendor_profiles')
+          .select('*')
+          .eq('user_id', demoVendorUser.id)
+          .single();
 
-    // Get vendor services for the specific service type
-    const vendorIds = vendorData.map(v => v.user_id);
-    const { data: servicesData, error: servicesError } = await supabase
-      .from('vendor_services')
-      .select('*')
-      .in('vendor_id', vendorIds)
-      .eq('service_type', serviceType);
+        if (demoVendorProfile) {
+          // Get demo vendor's services
+          const { data: demoVendorServices } = await supabase
+            .from('vendor_services')
+            .select('*')
+            .eq('vendor_id', demoVendorUser.id);
 
-    if (servicesError) throw servicesError;
+          // Return demo vendor as primary match
+          const demoMatch: VendorMatch = {
+            vendor: demoVendorProfile as VendorProfile,
+            services: (demoVendorServices || []) as VendorService[],
+            match_score: 95, // High score for demo purposes
+            recommendation_reason: ['Demo vendor for PoC', 'Covers all service types', 'Fast response time'],
+            estimated_response_time: demoVendorProfile.response_time_avg_hours || 2,
+            success_probability: demoVendorProfile.success_rate || 90
+          };
 
-    // Calculate matches
-    const matches: VendorMatch[] = [];
+          console.log('Found demo vendor match:', demoMatch);
+          return [demoMatch];
+        }
+      }
 
-    for (const vendor of vendorData) {
-      const vendorServices = servicesData.filter(s => s.vendor_id === vendor.user_id);
-      
-      if (vendorServices.length === 0) continue;
+      // Fallback to original matching logic if demo vendor not found
+      const { data: vendorData, error: vendorError } = await supabase
+        .from('vendor_profiles')
+        .select(`
+          *,
+          users!inner(id, name, email, role)
+        `)
+        .contains('service_specializations', [serviceType])
+        .contains('coverage_areas', [location]);
 
-      const matchScore = this.calculateMatchScore(vendor, vendorServices, requirements);
-      const recommendationReasons = this.getRecommendationReasons(vendor, vendorServices, requirements);
+      if (vendorError) {
+        console.error('Vendor matching error:', vendorError);
+        return [];
+      }
 
-      matches.push({
-        vendor: vendor as VendorProfile,
-        services: vendorServices as VendorService[],
-        match_score: matchScore,
-        recommendation_reason: recommendationReasons,
-        estimated_response_time: vendor.response_time_avg_hours,
-        success_probability: vendor.success_rate
-      });
+      // Get vendor services for the specific service type
+      const vendorIds = vendorData.map(v => v.user_id);
+      const { data: servicesData, error: servicesError } = await supabase
+        .from('vendor_services')
+        .select('*')
+        .in('vendor_id', vendorIds)
+        .eq('service_type', serviceType);
+
+      if (servicesError) {
+        console.error('Services matching error:', servicesError);
+        return [];
+      }
+
+      // Calculate matches
+      const matches: VendorMatch[] = [];
+
+      for (const vendor of vendorData) {
+        const vendorServices = servicesData?.filter(s => s.vendor_id === vendor.user_id) || [];
+        
+        if (vendorServices.length === 0) continue;
+
+        const matchScore = this.calculateMatchScore(vendor, vendorServices, requirements);
+        const recommendationReasons = this.getRecommendationReasons(vendor, vendorServices, requirements);
+
+        matches.push({
+          vendor: vendor as VendorProfile,
+          services: vendorServices as VendorService[],
+          match_score: matchScore,
+          recommendation_reason: recommendationReasons,
+          estimated_response_time: vendor.response_time_avg_hours,
+          success_probability: vendor.success_rate
+        });
+      }
+
+      // Sort by match score descending
+      return matches.sort((a, b) => b.match_score - a.match_score);
+    } catch (error) {
+      console.error('Error in findMatchingVendors:', error);
+      return [];
     }
-
-    // Sort by match score descending
-    return matches.sort((a, b) => b.match_score - a.match_score);
   },
 
   calculateMatchScore(
@@ -244,5 +292,26 @@ export const vendorMatchingService = {
   ): Promise<VendorMatch[]> {
     const matches = await this.findMatchingVendors(serviceType, location);
     return matches.slice(0, limit);
+  },
+
+  // PoC Helper: Get demo vendor ID by email
+  async getDemoVendorId(): Promise<string | null> {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', 'vendor@demo.com')
+        .single();
+      
+      if (error) {
+        console.error('Error getting demo vendor ID:', error);
+        return null;
+      }
+      
+      return data?.id || null;
+    } catch (error) {
+      console.error('Error in getDemoVendorId:', error);
+      return null;
+    }
   }
 };
