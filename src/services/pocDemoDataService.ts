@@ -2,6 +2,69 @@
 import { supabase } from '@/integrations/supabase/client';
 
 export const pocDemoDataService = {
+  async createDemoUsersIfNeeded() {
+    try {
+      console.log('Checking and creating demo users...');
+      
+      const demoUsers = [
+        {
+          id: '550e8400-e29b-41d4-a716-446655440001', // Fixed UUID for agent
+          email: 'agent@demo.com',
+          role: 'agent',
+          name: 'Travel Agent Demo'
+        },
+        {
+          id: '550e8400-e29b-41d4-a716-446655440002', // Fixed UUID for traveler
+          email: 'traveler@demo.com',
+          role: 'traveler',
+          name: 'Traveler Demo'
+        },
+        {
+          id: '550e8400-e29b-41d4-a716-446655440003', // Fixed UUID for vendor
+          email: 'vendor@demo.com',
+          role: 'vendor',
+          name: 'Vendor Demo'
+        }
+      ];
+
+      for (const userData of demoUsers) {
+        // Check if user already exists
+        const { data: existingUser } = await supabase
+          .from('users')
+          .select('id')
+          .eq('email', userData.email)
+          .maybeSingle();
+
+        if (!existingUser) {
+          console.log(`Creating demo user: ${userData.email}`);
+          
+          // Insert the user into the public.users table
+          const { error: insertError } = await supabase
+            .from('users')
+            .insert({
+              id: userData.id,
+              email: userData.email,
+              role: userData.role,
+              name: userData.name
+            });
+
+          if (insertError) {
+            console.error(`Error creating user ${userData.email}:`, insertError);
+            return false;
+          }
+        } else {
+          console.log(`Demo user ${userData.email} already exists`);
+        }
+      }
+      
+      console.log('Demo users check/creation completed');
+      return true;
+    } catch (error) {
+      console.error('Error creating demo users:', error);
+      return false;
+    }
+  },
+
   async seedDemoVendorData() {
     try {
       // Get vendor@demo.com user ID
@@ -13,7 +76,7 @@ export const pocDemoDataService = {
 
       if (!vendorUser) {
         console.error('Demo vendor user not found');
-        return;
+        return false;
       }
 
       const vendorId = vendorUser.id;
@@ -65,7 +128,7 @@ export const pocDemoDataService = {
 
       if (profileError) {
         console.error('Error creating vendor profile:', profileError);
-        return;
+        return false;
       }
 
       // Create comprehensive vendor services
@@ -166,7 +229,7 @@ export const pocDemoDataService = {
 
       if (!users || users.length < 2) {
         console.error('Demo users not found');
-        return;
+        return false;
       }
 
       const agentId = users.find(u => u.email === 'agent@demo.com')?.id;
@@ -174,7 +237,7 @@ export const pocDemoDataService = {
 
       if (!agentId || !travelerId) {
         console.error('Required demo users not found');
-        return;
+        return false;
       }
 
       // Create sample itinerary
@@ -229,7 +292,7 @@ export const pocDemoDataService = {
 
       if (itineraryError) {
         console.error('Error creating sample itinerary:', itineraryError);
-        return;
+        return false;
       }
 
       console.log('Demo itinerary data seeded successfully');
@@ -242,6 +305,13 @@ export const pocDemoDataService = {
 
   async initializePocData() {
     console.log('Initializing PoC demo data...');
+    
+    // First create demo users if they don't exist
+    const usersResult = await this.createDemoUsersIfNeeded();
+    if (!usersResult) {
+      console.error('Failed to create demo users');
+      return false;
+    }
     
     const vendorResult = await this.seedDemoVendorData();
     const itineraryResult = await this.seedDemoItineraryData();
