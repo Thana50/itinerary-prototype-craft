@@ -74,13 +74,23 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     return null
   }
 
+  // Sanitize the id to prevent XSS attacks
+  // Only allow alphanumeric characters, hyphens, and underscores
+  const sanitizedId = id.replace(/[^a-zA-Z0-9\-_]/g, '')
+  
+  // Validate that we have a non-empty sanitized id
+  if (!sanitizedId) {
+    console.warn('Chart: Invalid or empty id provided, skipping style generation')
+    return null
+  }
+
   return (
     <style
       dangerouslySetInnerHTML={{
         __html: Object.entries(THEMES)
           .map(
             ([theme, prefix]) => `
-${prefix} [data-chart=${id}] {
+${prefix} [data-chart="${sanitizedId}"] {
 ${colorConfig
   .map(([key, itemConfig]) => {
     const color =

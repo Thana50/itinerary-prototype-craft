@@ -69,17 +69,6 @@ function App() {
               />
               
               <Route 
-                path="/rate-negotiation-ai" 
-                element={
-                  <ProtectedRoute>
-                    <RoleGuard allowedRoles={['agent']}>
-                      <RateNegotiationAI />
-                    </RoleGuard>
-                  </ProtectedRoute>
-                } 
-              />
-              
-              <Route 
                 path="/template-repository" 
                 element={
                   <ProtectedRoute>

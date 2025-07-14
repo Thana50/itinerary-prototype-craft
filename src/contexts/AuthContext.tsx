@@ -40,105 +40,102 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Centralized profile fetching function
+  const fetchUserProfile = async (userId: string): Promise<UserProfile | null> => {
+    try {
+      const { data: profile, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
+      
+      if (error) {
+        console.error('Error fetching user profile:', error);
+        if (error.code === 'PGRST116') {
+          console.log('No profile found in users table - this might be expected for new users');
+        } else {
+          console.error('Database error fetching profile:', error);
+        }
+        return null;
+      }
+      
+      if (profile) {
+        console.log('User profile fetched:', profile);
+        return {
+          id: profile.id,
+          email: profile.email,
+          role: profile.role as 'agent' | 'traveler' | 'vendor',
+          name: profile.name,
+          created_at: profile.created_at || new Date().toISOString()
+        };
+      } else {
+        console.log('No profile found for user');
+        return null;
+      }
+    } catch (error) {
+      console.error('Exception fetching user profile:', error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     console.log('AuthProvider: Setting up auth state listener...');
+    let isMounted = true;
     
-    // Set up auth state listener FIRST
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event, session?.user?.id);
+        if (!isMounted) return;
+        
         setSession(session);
         
         if (session?.user) {
           console.log('User authenticated, fetching profile...');
-          // Fetch user profile after auth state change
-          setTimeout(async () => {
-            try {
-              const { data: profile, error } = await supabase
-                .from('users')
-                .select('*')
-                .eq('id', session.user.id)
-                .maybeSingle();
-              
-              if (error) {
-                console.error('Error fetching user profile:', error);
-                if (error.code === 'PGRST116') {
-                  console.log('No profile found in users table - this might be expected for new users');
-                  setUser(null);
-                } else {
-                  console.error('Database error fetching profile:', error);
-                  setUser(null);
-                }
-                return;
-              }
-              
-              if (profile) {
-                console.log('User profile fetched:', profile);
-                setUser({
-                  id: profile.id,
-                  email: profile.email,
-                  role: profile.role as 'agent' | 'traveler' | 'vendor',
-                  name: profile.name,
-                  created_at: profile.created_at || new Date().toISOString()
-                });
-              } else {
-                console.log('No profile found for user');
-                setUser(null);
-              }
-            } catch (error) {
-              console.error('Exception fetching user profile:', error);
-              setUser(null);
-            }
-          }, 0);
+          const profile = await fetchUserProfile(session.user.id);
+          if (isMounted) {
+            setUser(profile);
+          }
         } else {
           console.log('User not authenticated');
-          setUser(null);
+          if (isMounted) {
+            setUser(null);
+          }
         }
         
-        if (event === 'INITIAL_SESSION') {
+        if (event === 'INITIAL_SESSION' && isMounted) {
           setIsLoading(false);
         }
       }
     );
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Check for existing session
+    const initializeAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       console.log('Initial session check:', session?.user?.id);
+      
+      if (!isMounted) return;
+      
       setSession(session);
+      
       if (session?.user) {
-        setTimeout(async () => {
-          try {
-            const { data: profile, error } = await supabase
-              .from('users')
-              .select('*')
-              .eq('id', session.user.id)
-              .maybeSingle();
-            
-            if (error) {
-              console.error('Error fetching initial user profile:', error);
-              setUser(null);
-            } else if (profile) {
-              console.log('Initial user profile fetched:', profile);
-              setUser({
-                id: profile.id,
-                email: profile.email,
-                role: profile.role as 'agent' | 'traveler' | 'vendor',
-                name: profile.name,
-                created_at: profile.created_at || new Date().toISOString()
-              });
-            }
-          } catch (error) {
-            console.error('Exception fetching initial user profile:', error);
-            setUser(null);
-          }
-          setIsLoading(false);
-        }, 0);
-      } else {
+        const profile = await fetchUserProfile(session.user.id);
+        if (isMounted) {
+          setUser(profile);
+        }
+      }
+      
+      if (isMounted) {
         setIsLoading(false);
       }
-    });
+    };
 
-    return () => subscription.unsubscribe();
+    initializeAuth();
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
