@@ -92,7 +92,7 @@ const PocDataInitializer: React.FC = () => {
               <>
                 <Database className="h-4 w-4 mr-2" />
                 Initialize Demo Data
-              </Button>
+              </>
             )}
           </Button>
           
