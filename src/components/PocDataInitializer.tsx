@@ -11,10 +11,12 @@ const PocDataInitializer: React.FC = () => {
   const [isInitialized, setIsInitialized] = useState(false);
 
   const handleInitializeData = async () => {
+    console.log('=== PoC Data Initialization Started ===');
     setIsInitializing(true);
     
     try {
       const success = await pocDemoDataService.initializePocData();
+      console.log('=== PoC Data Initialization Result ===', { success });
       
       if (success) {
         setIsInitialized(true);
@@ -22,15 +24,22 @@ const PocDataInitializer: React.FC = () => {
           title: "Success",
           description: "PoC demo data has been initialized successfully!",
         });
+        console.log('✅ PoC demo data initialization completed successfully');
       } else {
         toast({
           title: "Warning",
           description: "Some demo data may not have been initialized properly. Check console for details.",
           variant: "destructive"
         });
+        console.warn('⚠️ PoC demo data initialization completed with warnings');
       }
     } catch (error) {
-      console.error('Error initializing PoC data:', error);
+      console.error('❌ Error initializing PoC data:', error);
+      console.error('Error details:', {
+        message: error?.message,
+        stack: error?.stack,
+        name: error?.name
+      });
       toast({
         title: "Error",
         description: "Failed to initialize demo data. Please try again.",
@@ -38,6 +47,7 @@ const PocDataInitializer: React.FC = () => {
       });
     } finally {
       setIsInitializing(false);
+      console.log('=== PoC Data Initialization Ended ===');
     }
   };
 
@@ -82,7 +92,7 @@ const PocDataInitializer: React.FC = () => {
               <>
                 <Database className="h-4 w-4 mr-2" />
                 Initialize Demo Data
-              </>
+              </Button>
             )}
           </Button>
           

@@ -4,47 +4,60 @@ import { supabase } from '@/integrations/supabase/client';
 export const pocDemoDataService = {
   async seedDemoVendorData() {
     try {
-      console.log('Seeding demo vendor data...');
+      console.log('🔄 Starting demo vendor data seeding...');
       
       // First, let's see what users actually exist in the database
+      console.log('📋 Fetching all users from database...');
       const { data: allUsers, error: allUsersError } = await supabase
         .from('users')
         .select('id, email, role, name');
       
-      console.log('All users in database:', allUsers);
+      console.log('👥 All users in database:', allUsers);
       if (allUsersError) {
-        console.error('Error fetching all users:', allUsersError);
+        console.error('❌ Error fetching all users:', allUsersError);
+        return false;
       }
       
       // Get vendor@demo.com user ID from existing users
+      console.log('🔍 Looking for vendor@demo.com user...');
       const { data: vendorUser, error: vendorError } = await supabase
         .from('users')
         .select('id, email, role, name')
         .eq('email', 'vendor@demo.com')
         .maybeSingle();
 
-      console.log('Vendor user query result:', vendorUser);
-      console.log('Vendor user query error:', vendorError);
+      console.log('🏢 Vendor user query result:', vendorUser);
+      if (vendorError) {
+        console.error('❌ Vendor user query error:', vendorError);
+        return false;
+      }
 
       if (!vendorUser) {
-        console.error('Demo vendor user not found. Please ensure vendor@demo.com exists in the users table.');
-        console.log('Available users:', allUsers?.map(u => u.email).join(', '));
+        console.error('❌ Demo vendor user not found. Please ensure vendor@demo.com exists in the users table.');
+        console.log('📋 Available users:', allUsers?.map(u => u.email).join(', '));
         return false;
       }
 
       const vendorId = vendorUser.id;
-      console.log('Found vendor user with ID:', vendorId);
+      console.log('✅ Found vendor user with ID:', vendorId);
 
       // Check if vendor profile already exists
-      const { data: existingProfile } = await supabase
+      console.log('🔍 Checking for existing vendor profile...');
+      const { data: existingProfile, error: profileCheckError } = await supabase
         .from('vendor_profiles')
         .select('user_id')
         .eq('user_id', vendorId)
         .maybeSingle();
 
+      if (profileCheckError) {
+        console.error('❌ Error checking existing vendor profile:', profileCheckError);
+        return false;
+      }
+
       if (existingProfile) {
-        console.log('Vendor profile already exists, skipping creation');
+        console.log('ℹ️ Vendor profile already exists, skipping creation');
       } else {
+        console.log('🔄 Creating comprehensive vendor profile...');
         // Create comprehensive vendor profile
         const { error: profileError } = await supabase
           .from('vendor_profiles')
@@ -91,22 +104,29 @@ export const pocDemoDataService = {
           .single();
 
         if (profileError) {
-          console.error('Error creating vendor profile:', profileError);
+          console.error('❌ Error creating vendor profile:', profileError);
           return false;
         }
 
-        console.log('Vendor profile created successfully');
+        console.log('✅ Vendor profile created successfully');
       }
 
       // Check if vendor services already exist
-      const { data: existingServices } = await supabase
+      console.log('🔍 Checking for existing vendor services...');
+      const { data: existingServices, error: servicesCheckError } = await supabase
         .from('vendor_services')
         .select('id')
         .eq('vendor_id', vendorId);
 
+      if (servicesCheckError) {
+        console.error('❌ Error checking existing vendor services:', servicesCheckError);
+        return false;
+      }
+
       if (existingServices && existingServices.length > 0) {
-        console.log('Vendor services already exist, skipping creation');
+        console.log('ℹ️ Vendor services already exist, skipping creation');
       } else {
+        console.log('🔄 Creating comprehensive vendor services...');
         // Create comprehensive vendor services
         const services = [
           {
@@ -178,47 +198,58 @@ export const pocDemoDataService = {
 
         // Insert services
         for (const service of services) {
+          console.log(`🔄 Creating service: ${service.service_name}...`);
           const { error: serviceError } = await supabase
             .from('vendor_services')
             .upsert(service);
 
           if (serviceError) {
-            console.error('Error creating vendor service:', serviceError);
+            console.error(`❌ Error creating vendor service ${service.service_name}:`, serviceError);
+            return false;
           } else {
-            console.log(`Created service: ${service.service_name}`);
+            console.log(`✅ Created service: ${service.service_name}`);
           }
         }
       }
 
-      console.log('Demo vendor data seeded successfully');
+      console.log('✅ Demo vendor data seeded successfully');
       return true;
     } catch (error) {
-      console.error('Error seeding demo vendor data:', error);
+      console.error('❌ Unexpected error seeding demo vendor data:', error);
+      console.error('Error details:', {
+        message: error?.message,
+        stack: error?.stack,
+        name: error?.name
+      });
       return false;
     }
   },
 
   async seedDemoItineraryData() {
     try {
-      console.log('Seeding demo itinerary data...');
+      console.log('🔄 Starting demo itinerary data seeding...');
       
       // Get user IDs from existing users with detailed logging
+      console.log('📋 Fetching agent and traveler users...');
       const { data: users, error: usersError } = await supabase
         .from('users')
         .select('id, email, role, name')
         .in('email', ['agent@demo.com', 'traveler@demo.com']);
 
-      console.log('Users query result:', users);
-      console.log('Users query error:', usersError);
+      console.log('👥 Users query result:', users);
+      if (usersError) {
+        console.error('❌ Users query error:', usersError);
+        return false;
+      }
 
       if (!users || users.length < 2) {
-        console.error('Demo users not found. Please ensure agent@demo.com and traveler@demo.com exist in the users table.');
+        console.error('❌ Demo users not found. Please ensure agent@demo.com and traveler@demo.com exist in the users table.');
         
         // Let's see what users are actually available
         const { data: allUsers } = await supabase
           .from('users')
           .select('id, email, role, name');
-        console.log('All available users:', allUsers);
+        console.log('📋 All available users:', allUsers);
         
         return false;
       }
@@ -227,31 +258,38 @@ export const pocDemoDataService = {
       const travelerUser = users.find(u => u.email === 'traveler@demo.com');
 
       if (!agentUser || !travelerUser) {
-        console.error('Required demo users not found');
-        console.log('Found users:', users.map(u => u.email));
+        console.error('❌ Required demo users not found');
+        console.log('📋 Found users:', users.map(u => u.email));
         return false;
       }
 
       const agentId = agentUser.id;
       const travelerId = travelerUser.id;
 
-      console.log('Found agent ID:', agentId);
-      console.log('Found traveler ID:', travelerId);
+      console.log('✅ Found agent ID:', agentId);
+      console.log('✅ Found traveler ID:', travelerId);
 
       // Check if sample itinerary already exists
-      const { data: existingItinerary } = await supabase
+      console.log('🔍 Checking for existing sample itinerary...');
+      const { data: existingItinerary, error: itineraryCheckError } = await supabase
         .from('itineraries')
         .select('id')
         .eq('agent_id', agentId)
         .eq('name', 'Dream Paris Getaway')
         .maybeSingle();
 
+      if (itineraryCheckError) {
+        console.error('❌ Error checking existing itinerary:', itineraryCheckError);
+        return false;
+      }
+
       if (existingItinerary) {
-        console.log('Sample itinerary already exists, skipping creation');
+        console.log('ℹ️ Sample itinerary already exists, skipping creation');
         return true;
       }
 
       // Create sample itinerary
+      console.log('🔄 Creating sample itinerary...');
       const sampleItinerary = {
         agent_id: agentId,
         traveler_id: travelerId,
@@ -302,29 +340,35 @@ export const pocDemoDataService = {
         .upsert(sampleItinerary);
 
       if (itineraryError) {
-        console.error('Error creating sample itinerary:', itineraryError);
+        console.error('❌ Error creating sample itinerary:', itineraryError);
         return false;
       }
 
-      console.log('Demo itinerary data seeded successfully');
+      console.log('✅ Demo itinerary data seeded successfully');
       return true;
     } catch (error) {
-      console.error('Error seeding demo itinerary data:', error);
+      console.error('❌ Unexpected error seeding demo itinerary data:', error);
+      console.error('Error details:', {
+        message: error?.message,
+        stack: error?.stack,
+        name: error?.name
+      });
       return false;
     }
   },
 
   async initializePocData() {
-    console.log('Initializing PoC demo data...');
+    console.log('🚀 Initializing PoC demo data...');
     
     const vendorResult = await this.seedDemoVendorData();
     const itineraryResult = await this.seedDemoItineraryData();
     
     if (vendorResult && itineraryResult) {
-      console.log('PoC demo data initialized successfully');
+      console.log('🎉 PoC demo data initialized successfully');
       return true;
     } else {
-      console.error('Failed to initialize some PoC demo data');
+      console.error('⚠️ Failed to initialize some PoC demo data');
+      console.log('Results:', { vendorResult, itineraryResult });
       return false;
     }
   }
