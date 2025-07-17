@@ -44,7 +44,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       console.log('Fetching user profile for:', userId);
       
-      // Try using the service role key for this critical operation
       const { data: profile, error } = await supabase
         .from('users')
         .select('*')
@@ -53,22 +52,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       if (error) {
         console.error('Error fetching user profile:', error);
-        
-        // If we can't fetch from users table, try to get from user metadata
-        const { data: { user: authUser } } = await supabase.auth.getUser();
-        if (authUser?.user_metadata) {
-          console.log('Using user metadata as fallback');
-          const fallbackProfile: UserProfile = {
-            id: authUser.id,
-            email: authUser.email || '',
-            role: (authUser.user_metadata.role as 'agent' | 'traveler' | 'vendor') || 'traveler',
-            name: authUser.user_metadata.name || authUser.email?.split('@')[0] || 'User',
-            created_at: authUser.created_at || new Date().toISOString()
-          };
-          setUser(fallbackProfile);
-          return;
-        }
-        
         setUser(null);
         return;
       }
