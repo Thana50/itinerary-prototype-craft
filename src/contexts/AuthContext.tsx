@@ -40,6 +40,58 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      console.log('Fetching user profile for:', userId);
+      
+      // Try using the service role key for this critical operation
+      const { data: profile, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching user profile:', error);
+        
+        // If we can't fetch from users table, try to get from user metadata
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        if (authUser?.user_metadata) {
+          console.log('Using user metadata as fallback');
+          const fallbackProfile: UserProfile = {
+            id: authUser.id,
+            email: authUser.email || '',
+            role: (authUser.user_metadata.role as 'agent' | 'traveler' | 'vendor') || 'traveler',
+            name: authUser.user_metadata.name || authUser.email?.split('@')[0] || 'User',
+            created_at: authUser.created_at || new Date().toISOString()
+          };
+          setUser(fallbackProfile);
+          return;
+        }
+        
+        setUser(null);
+        return;
+      }
+      
+      if (profile) {
+        console.log('User profile fetched successfully:', profile);
+        setUser({
+          id: profile.id,
+          email: profile.email,
+          role: profile.role as 'agent' | 'traveler' | 'vendor',
+          name: profile.name,
+          created_at: profile.created_at || new Date().toISOString()
+        });
+      } else {
+        console.log('No profile found for user');
+        setUser(null);
+      }
+    } catch (error) {
+      console.error('Exception fetching user profile:', error);
+      setUser(null);
+    }
+  };
+
   useEffect(() => {
     console.log('AuthProvider: Setting up auth state listener...');
     
@@ -51,44 +103,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         
         if (session?.user) {
           console.log('User authenticated, fetching profile...');
-          // Fetch user profile after auth state change
-          setTimeout(async () => {
-            try {
-              const { data: profile, error } = await supabase
-                .from('users')
-                .select('*')
-                .eq('id', session.user.id)
-                .maybeSingle();
-              
-              if (error) {
-                console.error('Error fetching user profile:', error);
-                if (error.code === 'PGRST116') {
-                  console.log('No profile found in users table - this might be expected for new users');
-                  setUser(null);
-                } else {
-                  console.error('Database error fetching profile:', error);
-                  setUser(null);
-                }
-                return;
-              }
-              
-              if (profile) {
-                console.log('User profile fetched:', profile);
-                setUser({
-                  id: profile.id,
-                  email: profile.email,
-                  role: profile.role as 'agent' | 'traveler' | 'vendor',
-                  name: profile.name,
-                  created_at: profile.created_at || new Date().toISOString()
-                });
-              } else {
-                console.log('No profile found for user');
-                setUser(null);
-              }
-            } catch (error) {
-              console.error('Exception fetching user profile:', error);
-              setUser(null);
-            }
+          // Use setTimeout to avoid blocking the auth callback
+          setTimeout(() => {
+            fetchUserProfile(session.user.id);
           }, 0);
         } else {
           console.log('User not authenticated');
@@ -106,32 +123,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('Initial session check:', session?.user?.id);
       setSession(session);
       if (session?.user) {
-        setTimeout(async () => {
-          try {
-            const { data: profile, error } = await supabase
-              .from('users')
-              .select('*')
-              .eq('id', session.user.id)
-              .maybeSingle();
-            
-            if (error) {
-              console.error('Error fetching initial user profile:', error);
-              setUser(null);
-            } else if (profile) {
-              console.log('Initial user profile fetched:', profile);
-              setUser({
-                id: profile.id,
-                email: profile.email,
-                role: profile.role as 'agent' | 'traveler' | 'vendor',
-                name: profile.name,
-                created_at: profile.created_at || new Date().toISOString()
-              });
-            }
-          } catch (error) {
-            console.error('Exception fetching initial user profile:', error);
-            setUser(null);
-          }
-          setIsLoading(false);
+        setTimeout(() => {
+          fetchUserProfile(session.user.id);
         }, 0);
       } else {
         setIsLoading(false);
