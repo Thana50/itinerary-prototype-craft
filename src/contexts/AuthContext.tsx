@@ -114,7 +114,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         
         if (session?.user) {
           console.log('User authenticated, fetching/creating profile...');
-          await fetchOrCreateUserProfile(session.user);
+          // Use setTimeout to avoid blocking the auth callback
+          setTimeout(() => {
+            fetchOrCreateUserProfile(session.user);
+          }, 0);
         } else {
           console.log('User not authenticated');
           setUser(null);
@@ -129,7 +132,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('Initial session check:', session?.user?.id);
       setSession(session);
       if (session?.user) {
-        fetchOrCreateUserProfile(session.user);
+        setTimeout(() => {
+          fetchOrCreateUserProfile(session.user);
+        }, 0);
       } else {
         setIsLoading(false);
       }
