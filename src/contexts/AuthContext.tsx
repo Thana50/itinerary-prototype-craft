@@ -40,15 +40,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchUserProfile = async (userId: string) => {
+  const fetchOrCreateUserProfile = async (authUser: User) => {
     try {
-      console.log('Fetching user profile for:', userId);
+      console.log('Fetching user profile for:', authUser.id);
       
+      // First try to get existing profile
       const { data: profile, error } = await supabase
         .from('users')
         .select('*')
-        .eq('id', userId)
-        .single();
+        .eq('id', authUser.id)
+        .maybeSingle();
       
       if (error) {
         console.error('Error fetching user profile:', error);
@@ -57,7 +58,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       
       if (profile) {
-        console.log('User profile fetched successfully:', profile);
+        console.log('User profile found:', profile);
         setUser({
           id: profile.id,
           email: profile.email,
@@ -66,11 +67,38 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           created_at: profile.created_at || new Date().toISOString()
         });
       } else {
-        console.log('No profile found for user');
-        setUser(null);
+        // Profile doesn't exist, create it from auth metadata
+        console.log('No profile found, creating from auth metadata');
+        const role = authUser.user_metadata?.role || 'traveler';
+        const name = authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'User';
+        
+        const { data: newProfile, error: createError } = await supabase
+          .from('users')
+          .insert({
+            id: authUser.id,
+            email: authUser.email!,
+            role: role,
+            name: name
+          })
+          .select()
+          .single();
+        
+        if (createError) {
+          console.error('Error creating user profile:', createError);
+          setUser(null);
+        } else {
+          console.log('User profile created:', newProfile);
+          setUser({
+            id: newProfile.id,
+            email: newProfile.email,
+            role: newProfile.role as 'agent' | 'traveler' | 'vendor',
+            name: newProfile.name,
+            created_at: newProfile.created_at || new Date().toISOString()
+          });
+        }
       }
     } catch (error) {
-      console.error('Exception fetching user profile:', error);
+      console.error('Exception fetching/creating user profile:', error);
       setUser(null);
     }
   };
@@ -85,19 +113,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setSession(session);
         
         if (session?.user) {
-          console.log('User authenticated, fetching profile...');
-          // Use setTimeout to avoid blocking the auth callback
-          setTimeout(() => {
-            fetchUserProfile(session.user.id);
-          }, 0);
+          console.log('User authenticated, fetching/creating profile...');
+          await fetchOrCreateUserProfile(session.user);
         } else {
           console.log('User not authenticated');
           setUser(null);
         }
         
-        if (event === 'INITIAL_SESSION') {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
     );
 
@@ -106,9 +129,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('Initial session check:', session?.user?.id);
       setSession(session);
       if (session?.user) {
-        setTimeout(() => {
-          fetchUserProfile(session.user.id);
-        }, 0);
+        fetchOrCreateUserProfile(session.user);
       } else {
         setIsLoading(false);
       }
@@ -127,7 +148,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       if (error) {
         console.error('Login error:', error);
-        // Provide user-friendly error messages
         if (error.message.includes('Invalid login credentials')) {
           throw new Error('Invalid email or password. Please check your credentials.');
         } else if (error.message.includes('Email not confirmed')) {
