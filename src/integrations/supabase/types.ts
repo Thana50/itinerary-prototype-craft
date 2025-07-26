@@ -652,6 +652,10 @@ export type Database = {
           health_status: string
         }[]
       }
+      get_user_role_from_auth: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
