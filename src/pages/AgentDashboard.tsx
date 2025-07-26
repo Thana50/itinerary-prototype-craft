@@ -12,7 +12,8 @@ import {
   BookTemplate,
   Star,
   Clock,
-  Loader2
+  Loader2,
+  Database
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -32,6 +33,7 @@ const AgentDashboard = () => {
   const [itineraries, setItineraries] = useState<Itinerary[]>([]);
   const [negotiations, setNegotiations] = useState<Negotiation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showPocDataManager, setShowPocDataManager] = useState(false);
   
   useEffect(() => {
     if (user) {
@@ -149,6 +151,15 @@ const AgentDashboard = () => {
           </div>
           <div className="flex items-center space-x-4">
             <span className="text-gray-600">Welcome, {user?.name || 'Agent'}!</span>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowPocDataManager(!showPocDataManager)}
+              className="flex items-center gap-2"
+            >
+              <Database className="h-4 w-4" />
+              {showPocDataManager ? 'Hide' : 'Show'} Demo Data
+            </Button>
             {itineraries.length === 0 && <SeedDataButton />}
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="h-4 w-4 mr-2" />
@@ -163,16 +174,18 @@ const AgentDashboard = () => {
           <h1 className="text-3xl font-bold text-gray-900">Agent Dashboard</h1>
         </div>
 
-        {/* PoC Demo Data Initializer - Show prominently for easy access */}
-        <div className="mb-8">
-          <div className="bg-orange-50 border border-orange-200 rounded-lg p-6">
-            <h2 className="text-lg font-semibold text-orange-900 mb-4">PoC Demo Data Manager</h2>
-            <p className="text-orange-700 mb-4">
-              Initialize or refresh comprehensive demo data including vendor profiles, services, and sample itineraries.
-            </p>
-            <PocDataInitializer />
+        {/* PoC Demo Data Initializer - Show when toggled */}
+        {showPocDataManager && (
+          <div className="mb-8">
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-6">
+              <h2 className="text-lg font-semibold text-orange-900 mb-4">PoC Demo Data Manager</h2>
+              <p className="text-orange-700 mb-4">
+                Initialize or refresh comprehensive demo data including vendor profiles, services, and sample itineraries.
+              </p>
+              <PocDataInitializer />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
