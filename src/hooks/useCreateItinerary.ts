@@ -218,6 +218,10 @@ export const useCreateItinerary = () => {
     navigate("/agent-dashboard");
   };
 
+  const updateSampleItinerary = (newItinerary: any[]) => {
+    setSampleItinerary(newItinerary);
+  };
+
   return {
     currentUser: user,
     formData,
@@ -228,6 +232,7 @@ export const useCreateItinerary = () => {
     handleMessageSend,
     handleSaveItinerary,
     handleLogout,
-    handleBackToDashboard
+    handleBackToDashboard,
+    updateSampleItinerary
   };
 };

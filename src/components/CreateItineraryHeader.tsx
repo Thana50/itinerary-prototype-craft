@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, LogOut, Share } from "lucide-react";
+import { ArrowLeft, LogOut, Share, BookTemplate } from "lucide-react";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 interface CreateItineraryHeaderProps {
@@ -9,8 +9,10 @@ interface CreateItineraryHeaderProps {
   onLogout: () => void;
   onSaveItinerary: () => void;
   onBackToDashboard: () => void;
+  onToggleTemplateSidebar: () => void;
   isLoading: boolean;
   hasDestination: boolean;
+  showTemplateSidebar: boolean;
 }
 
 const CreateItineraryHeader: React.FC<CreateItineraryHeaderProps> = ({
@@ -18,8 +20,10 @@ const CreateItineraryHeader: React.FC<CreateItineraryHeaderProps> = ({
   onLogout,
   onSaveItinerary,
   onBackToDashboard,
+  onToggleTemplateSidebar,
   isLoading,
-  hasDestination
+  hasDestination,
+  showTemplateSidebar
 }) => {
   return (
     <>
@@ -49,6 +53,15 @@ const CreateItineraryHeader: React.FC<CreateItineraryHeaderProps> = ({
         <div className="flex justify-between items-center">
           <h1 className="text-xl font-semibold text-gray-900">Itinerary Builder</h1>
           <div className="flex gap-2">
+            <Button 
+              onClick={onToggleTemplateSidebar}
+              variant={showTemplateSidebar ? "default" : "outline"}
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <BookTemplate className="h-4 w-4" />
+              {showTemplateSidebar ? 'Hide' : 'Show'} Templates
+            </Button>
             <Button 
               onClick={onSaveItinerary} 
               disabled={isLoading || !hasDestination}
