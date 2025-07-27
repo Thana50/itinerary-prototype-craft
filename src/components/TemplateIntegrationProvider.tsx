@@ -14,6 +14,7 @@ interface TemplateIntegrationProviderProps {
   onTemplateConfirm: () => void;
   onTemplateCancel: () => void;
   onToggleSidebar: () => void;
+  onContinueWithoutTemplate?: () => void;
 }
 
 const TemplateIntegrationProvider: React.FC<TemplateIntegrationProviderProps> = ({
@@ -25,7 +26,8 @@ const TemplateIntegrationProvider: React.FC<TemplateIntegrationProviderProps> = 
   selectedTemplate,
   onTemplateConfirm,
   onTemplateCancel,
-  onToggleSidebar
+  onToggleSidebar,
+  onContinueWithoutTemplate
 }) => {
   return (
     <>
@@ -36,6 +38,7 @@ const TemplateIntegrationProvider: React.FC<TemplateIntegrationProviderProps> = 
         onSearchChange={onSearchChange}
         isVisible={showTemplateSidebar}
         onToggleSidebar={onToggleSidebar}
+        onContinueWithoutTemplate={onContinueWithoutTemplate}
       />
 
       {/* Template Confirmation Modal */}

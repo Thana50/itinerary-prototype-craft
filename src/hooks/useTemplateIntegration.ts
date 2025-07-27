@@ -8,13 +8,15 @@ export const useTemplateIntegration = () => {
   const [templateSearchQuery, setTemplateSearchQuery] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState<ItineraryTemplate | null>(null);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [userHasManuallyClosedSidebar, setUserHasManuallyClosedSidebar] = useState(false);
 
   // Auto-detect destination/trip details from form data
   const detectTemplateRelevance = (formData: any) => {
     const hasDestination = formData.destination && formData.destination.length > 3;
     const hasTripDetails = formData.numberOfTravelers || formData.startDate || formData.endDate;
     
-    if (hasDestination || hasTripDetails) {
+    // Only auto-show sidebar if user hasn't manually closed it and there's destination/trip info
+    if ((hasDestination || hasTripDetails) && !showTemplateSidebar && !userHasManuallyClosedSidebar) {
       setShowTemplateSidebar(true);
       if (hasDestination) {
         setTemplateSearchQuery(formData.destination);
@@ -41,7 +43,16 @@ export const useTemplateIntegration = () => {
   };
 
   const toggleTemplateSidebar = () => {
-    setShowTemplateSidebar(!showTemplateSidebar);
+    const newState = !showTemplateSidebar;
+    setShowTemplateSidebar(newState);
+    
+    // If user is closing the sidebar, mark that they manually closed it
+    if (!newState) {
+      setUserHasManuallyClosedSidebar(true);
+    } else {
+      // If user is opening it manually, reset the flag
+      setUserHasManuallyClosedSidebar(false);
+    }
   };
 
   const convertTemplateToItinerary = (template: ItineraryTemplate) => {

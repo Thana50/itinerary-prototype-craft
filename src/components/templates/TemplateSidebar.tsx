@@ -14,6 +14,7 @@ interface TemplateSidebarProps {
   onSearchChange: (query: string) => void;
   isVisible: boolean;
   onToggleSidebar: () => void;
+  onContinueWithoutTemplate?: () => void;
 }
 
 const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
@@ -21,7 +22,8 @@ const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
   onTemplateSelect,
   onSearchChange,
   isVisible,
-  onToggleSidebar
+  onToggleSidebar,
+  onContinueWithoutTemplate
 }) => {
   const [templates, setTemplates] = useState<ItineraryTemplate[]>([]);
   const [popularTemplates, setPopularTemplates] = useState<ItineraryTemplate[]>([]);
@@ -106,7 +108,18 @@ const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
         </div>
       </div>
 
-      <div className="p-4 border-t border-gray-200 bg-gray-50">
+      <div className="p-4 border-t border-gray-200 bg-gray-50 space-y-3">
+        {onContinueWithoutTemplate && (
+          <button
+            onClick={() => {
+              onContinueWithoutTemplate();
+              onToggleSidebar();
+            }}
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors"
+          >
+            Continue without template
+          </button>
+        )}
         <p className="text-xs text-center text-gray-500">
           <span className="font-medium">Travia</span> - Where Custom Trips Click
         </p>

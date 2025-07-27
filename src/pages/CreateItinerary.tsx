@@ -20,7 +20,8 @@ const CreateItinerary = () => {
     handleSaveItinerary,
     handleLogout,
     handleBackToDashboard,
-    updateSampleItinerary
+    updateSampleItinerary,
+    generateItineraryWithoutTemplate
   } = useCreateItinerary();
 
   const {
@@ -69,6 +70,16 @@ const CreateItinerary = () => {
     }
   };
 
+  // Handle continue without template
+  const handleContinueWithoutTemplate = () => {
+    if (formData.destination) {
+      const duration = formData.clientPreferences.includes('Duration:') 
+        ? formData.clientPreferences.split('Duration:')[1]?.split(',')[0]?.trim() || "7 days"
+        : "7 days";
+      generateItineraryWithoutTemplate(formData.destination, duration);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <CreateItineraryHeader
@@ -108,6 +119,7 @@ const CreateItinerary = () => {
         onTemplateConfirm={handleTemplateConfirmation}
         onTemplateCancel={handleTemplateCancel}
         onToggleSidebar={toggleTemplateSidebar}
+        onContinueWithoutTemplate={handleContinueWithoutTemplate}
       />
     </div>
   );

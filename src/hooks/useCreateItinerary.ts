@@ -49,10 +49,13 @@ export const useCreateItinerary = () => {
       ...(details.duration && { clientPreferences: prev.clientPreferences + (prev.clientPreferences ? ", " : "") + `Duration: ${details.duration}` })
     }));
 
-    if (details.destination) {
-      const itinerary = generateSampleItinerary(details.destination, details.duration || "7 days");
-      setSampleItinerary(itinerary);
-    }
+    // Don't auto-generate itinerary here - let template selection happen first
+    // The template integration will handle itinerary generation
+  };
+
+  const generateItineraryWithoutTemplate = (destination: string, duration: string = "7 days") => {
+    const itinerary = generateSampleItinerary(destination, duration);
+    setSampleItinerary(itinerary);
   };
 
   const handleMessageSend = async (message: string) => {
@@ -233,6 +236,7 @@ export const useCreateItinerary = () => {
     handleSaveItinerary,
     handleLogout,
     handleBackToDashboard,
-    updateSampleItinerary
+    updateSampleItinerary,
+    generateItineraryWithoutTemplate
   };
 };
