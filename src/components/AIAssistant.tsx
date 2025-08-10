@@ -14,16 +14,17 @@ interface ChatMessage {
 }
 
 interface AIAssistantProps {
-  onMessageSend: (message: string) => void;
+  onMessageSend: (message: string) => Promise<string | void>;
   userRole?: "agent" | "traveler" | "vendor";
   isLoading?: boolean;
+  autoAppendAIResponse?: boolean;
 }
 
 export interface AIAssistantRef {
   addAIMessage: (text: string) => void;
 }
 
-const AIAssistant = forwardRef<AIAssistantRef, AIAssistantProps>(({ onMessageSend, userRole = "agent", isLoading = false }, ref) => {
+const AIAssistant = forwardRef<AIAssistantRef, AIAssistantProps>(({ onMessageSend, userRole = "agent", isLoading = false, autoAppendAIResponse = false }, ref) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState("");
@@ -60,20 +61,30 @@ const AIAssistant = forwardRef<AIAssistantRef, AIAssistantProps>(({ onMessageSen
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleSendMessage = () => {
-    if (!chatInput.trim() || isLoading) return;
+const handleSendMessage = async () => {
+  if (!chatInput.trim() || isLoading) return;
 
-    const userMessage: ChatMessage = {
-      id: Date.now(),
-      text: chatInput,
-      sender: "user",
-      timestamp: new Date()
-    };
+  const currentInput = chatInput;
 
-    setChatMessages(prev => [...prev, userMessage]);
-    onMessageSend(chatInput);
-    setChatInput("");
+  const userMessage: ChatMessage = {
+    id: Date.now(),
+    text: currentInput,
+    sender: "user",
+    timestamp: new Date()
   };
+
+  setChatMessages(prev => [...prev, userMessage]);
+  setChatInput("");
+
+  try {
+    const aiText = await onMessageSend(currentInput);
+    if (autoAppendAIResponse && typeof aiText === 'string' && aiText.trim()) {
+      addAIMessage(aiText);
+    }
+  } catch (e) {
+    // error handled upstream
+  }
+};
 
   const addAIMessage = (text: string) => {
     const aiResponse: ChatMessage = {

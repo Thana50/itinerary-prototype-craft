@@ -235,6 +235,7 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
                 onMessageSend={onMessageSend}
                 userRole="agent"
                 isLoading={isLoading}
+                autoAppendAIResponse
               />
             </CardContent>
           </Card>
