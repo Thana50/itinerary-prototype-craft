@@ -80,6 +80,19 @@ const CreateItinerary = () => {
     }
   };
 
+  // Handle inline template selection from chat recommendations
+  const handleInlineTemplateSelect = (template: ItineraryTemplate) => {
+    const confirmedTemplate = handleTemplateConfirm(template);
+    if (confirmedTemplate) {
+      handleFormChange('itineraryName', confirmedTemplate.name);
+      handleFormChange('destination', confirmedTemplate.destination);
+      handleFormChange('numberOfTravelers', confirmedTemplate.duration?.toString() || '');
+      handleFormChange('clientPreferences', confirmedTemplate.preview || '');
+
+      const convertedItinerary = convertTemplateToItinerary(confirmedTemplate);
+      updateSampleItinerary(convertedItinerary);
+    }
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       <CreateItineraryHeader
@@ -99,6 +112,7 @@ const CreateItinerary = () => {
           onFormChange={handleFormChange}
           sampleItinerary={sampleItinerary}
           onMessageSend={handleMessageSend}
+          onChatTemplateSelect={handleInlineTemplateSelect}
           isLoading={isLoading}
         />
 

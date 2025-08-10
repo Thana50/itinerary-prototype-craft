@@ -5,10 +5,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, Users, MapPin, MessageSquare, Sparkles, User } from "lucide-react";
-import AIAssistant from "@/components/AIAssistant";
+import EnhancedChatInterface from "@/components/EnhancedChatInterface";
 import ItineraryPreview from "@/components/ItineraryPreview";
 import ItineraryMap from "@/components/ItineraryMap";
-
+import type { ItineraryTemplate } from "@/types/templates";
 interface CreateItineraryContentProps {
   formData: {
     itineraryName: string;
@@ -21,7 +21,8 @@ interface CreateItineraryContentProps {
   };
   onFormChange: (field: string, value: string) => void;
   sampleItinerary: any[];
-  onMessageSend: (message: string) => Promise<string>;
+  onMessageSend: (message: string) => Promise<string | void>;
+  onChatTemplateSelect: (template: ItineraryTemplate) => void;
   isLoading: boolean;
 }
 
@@ -30,6 +31,7 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
   onFormChange,
   sampleItinerary,
   onMessageSend,
+  onChatTemplateSelect,
   isLoading
 }) => {
   // Demo users for PoC
@@ -231,11 +233,10 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <AIAssistant
-                onMessageSend={onMessageSend}
-                userRole="agent"
+              <EnhancedChatInterface
+                onTemplateSelect={onChatTemplateSelect}
+                onMessageSend={(m) => { void onMessageSend(m); }}
                 isLoading={isLoading}
-                autoAppendAIResponse
               />
             </CardContent>
           </Card>
