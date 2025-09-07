@@ -40,13 +40,13 @@ export const itineraryService = {
   },
 
   async getItineraryByToken(token: string) {
+    // Use secure RPC instead of direct table access to respect RLS
     const { data, error } = await supabase
-      .from('itineraries')
-      .select('*')
-      .eq('share_token', token)
-      .single();
+      .rpc('get_itinerary_by_token', { _token: token })
+      .maybeSingle();
     
     if (error) throw error;
+    if (!data) throw new Error('Itinerary not found or not shared');
     
     return {
       ...data,

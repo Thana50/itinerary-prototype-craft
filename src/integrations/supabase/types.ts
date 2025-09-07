@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -645,11 +645,31 @@ export type Database = {
       check_auth_schema_health: {
         Args: Record<PropertyKey, never>
         Returns: {
-          table_name: string
           column_name: string
-          null_count: number
-          total_rows: number
           health_status: string
+          null_count: number
+          table_name: string
+          total_rows: number
+        }[]
+      }
+      get_itinerary_by_token: {
+        Args: { _token: string }
+        Returns: {
+          agent_id: string
+          approval_status: string | null
+          created_at: string | null
+          days: Json
+          destination: string
+          end_date: string
+          id: string
+          name: string
+          number_of_travelers: number
+          preferences: string | null
+          share_token: string | null
+          start_date: string
+          status: string
+          traveler_id: string | null
+          updated_at: string | null
         }[]
       }
       get_user_role_from_auth: {
