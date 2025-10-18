@@ -1,6 +1,6 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -195,6 +195,10 @@ function App() {
                   </ProtectedRoute>
                 } 
               />
+              
+              {/* Fallback routes */}
+              <Route path="/client-portal" element={<Navigate to="/client-portal/demo" />} />
+              <Route path="/analytics" element={<Navigate to="/template-analytics" />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>
