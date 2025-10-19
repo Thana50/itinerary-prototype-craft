@@ -54,8 +54,11 @@ export const useCreateItinerary = () => {
   };
 
   const generateItineraryWithoutTemplate = (destination: string, duration: string = "7 days") => {
+    console.log('🟡 [useCreateItinerary] generateItineraryWithoutTemplate called with:', { destination, duration });
     const itinerary = generateSampleItinerary(destination, duration);
+    console.log('🟡 [useCreateItinerary] Generated itinerary:', itinerary);
     setSampleItinerary(itinerary);
+    console.log('🟡 [useCreateItinerary] Sample itinerary state updated');
   };
 
   const handleMessageSend = async (message: string) => {

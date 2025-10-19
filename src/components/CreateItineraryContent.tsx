@@ -23,6 +23,7 @@ interface CreateItineraryContentProps {
   sampleItinerary: any[];
   onMessageSend: (message: string) => Promise<string | void>;
   onChatTemplateSelect: (template: ItineraryTemplate) => void;
+  onContinueWithoutTemplate: () => void;
   isLoading: boolean;
 }
 
@@ -32,6 +33,7 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
   sampleItinerary,
   onMessageSend,
   onChatTemplateSelect,
+  onContinueWithoutTemplate,
   isLoading
 }) => {
   // Demo users for PoC
@@ -236,6 +238,7 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
               <EnhancedChatInterface
                 onTemplateSelect={onChatTemplateSelect}
                 onMessageSend={(m) => { void onMessageSend(m); }}
+                onContinueWithoutTemplate={onContinueWithoutTemplate}
                 isLoading={isLoading}
               />
             </CardContent>

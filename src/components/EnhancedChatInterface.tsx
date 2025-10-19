@@ -27,12 +27,14 @@ interface TemplateRecommendation {
 interface EnhancedChatInterfaceProps {
   onTemplateSelect: (template: ItineraryTemplate) => void;
   onMessageSend: (message: string) => void;
+  onContinueWithoutTemplate: () => void;
   isLoading: boolean;
 }
 
 const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   onTemplateSelect,
   onMessageSend,
+  onContinueWithoutTemplate,
   isLoading
 }) => {
   const [messages, setMessages] = useState<Message[]>([
@@ -216,7 +218,11 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={() => setShowRecommendations(false)}
+                onClick={() => {
+                  console.log('🟢 [EnhancedChatInterface] Continue Without Template clicked');
+                  setShowRecommendations(false);
+                  onContinueWithoutTemplate();
+                }}
                 className="w-full"
               >
                 Continue Without Template

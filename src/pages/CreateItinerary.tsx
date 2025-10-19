@@ -72,11 +72,17 @@ const CreateItinerary = () => {
 
   // Handle continue without template
   const handleContinueWithoutTemplate = () => {
+    console.log('🔵 [CreateItinerary] handleContinueWithoutTemplate called');
+    console.log('🔵 [CreateItinerary] formData:', formData);
+    
     if (formData.destination) {
       const duration = formData.clientPreferences.includes('Duration:') 
         ? formData.clientPreferences.split('Duration:')[1]?.split(',')[0]?.trim() || "7 days"
         : "7 days";
+      console.log('🔵 [CreateItinerary] Generating itinerary for:', { destination: formData.destination, duration });
       generateItineraryWithoutTemplate(formData.destination, duration);
+    } else {
+      console.log('🔴 [CreateItinerary] No destination found, cannot generate itinerary');
     }
   };
 
@@ -113,6 +119,7 @@ const CreateItinerary = () => {
           sampleItinerary={sampleItinerary}
           onMessageSend={handleMessageSend}
           onChatTemplateSelect={handleInlineTemplateSelect}
+          onContinueWithoutTemplate={handleContinueWithoutTemplate}
           isLoading={isLoading}
         />
 

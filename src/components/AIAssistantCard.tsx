@@ -40,6 +40,7 @@ const AIAssistantCard: React.FC<AIAssistantCardProps> = ({
           <EnhancedChatInterface
             onTemplateSelect={onTemplateSelect}
             onMessageSend={onMessageSend}
+            onContinueWithoutTemplate={() => {}}
             isLoading={isLoading}
           />
         ) : (
