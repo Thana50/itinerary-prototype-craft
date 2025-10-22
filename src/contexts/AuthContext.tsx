@@ -42,8 +42,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const fetchOrCreateUserProfile = async (authUser: User) => {
     try {
-      console.log('Fetching user profile for:', authUser.id);
-      
       // First try to get existing profile
       const { data: profile, error } = await supabase
         .from('users')
@@ -52,13 +50,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         .maybeSingle();
       
       if (error) {
-        console.error('Error fetching user profile:', error);
         setUser(null);
         return;
       }
       
       if (profile) {
-        console.log('User profile found:', profile);
         setUser({
           id: profile.id,
           email: profile.email,
@@ -68,7 +64,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         });
       } else {
         // Profile doesn't exist, create it from auth metadata
-        console.log('No profile found, creating from auth metadata');
         const role = authUser.user_metadata?.role || 'traveler';
         const name = authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'User';
         
@@ -84,10 +79,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           .single();
         
         if (createError) {
-          console.error('Error creating user profile:', createError);
           setUser(null);
         } else {
-          console.log('User profile created:', newProfile);
           setUser({
             id: newProfile.id,
             email: newProfile.email,
@@ -98,28 +91,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       }
     } catch (error) {
-      console.error('Exception fetching/creating user profile:', error);
       setUser(null);
     }
   };
 
   useEffect(() => {
-    console.log('AuthProvider: Setting up auth state listener...');
-    
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.id);
         setSession(session);
         
         if (session?.user) {
-          console.log('User authenticated, fetching/creating profile...');
           // Use setTimeout to avoid blocking the auth callback
           setTimeout(() => {
             fetchOrCreateUserProfile(session.user);
           }, 0);
         } else {
-          console.log('User not authenticated');
           setUser(null);
         }
         
@@ -129,7 +116,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Initial session check:', session?.user?.id);
       setSession(session);
       if (session?.user) {
         setTimeout(() => {
@@ -145,14 +131,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      console.log('Attempting login for:', email);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       
       if (error) {
-        console.error('Login error:', error);
         if (error.message.includes('Invalid login credentials')) {
           throw new Error('Invalid email or password. Please check your credentials.');
         } else if (error.message.includes('Email not confirmed')) {
@@ -162,10 +146,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       }
       
-      console.log('Login successful:', data.user?.id);
       // User profile will be set via the auth state change listener
     } catch (error) {
-      console.error('Login error:', error);
       throw error;
     }
   };
@@ -197,15 +179,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async () => {
     try {
-      console.log('Logging out...');
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
       setUser(null);
       setSession(null);
-      console.log('Logout successful');
     } catch (error) {
-      console.error('Logout error:', error);
       throw error;
     }
   };

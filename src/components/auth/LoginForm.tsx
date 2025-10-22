@@ -7,6 +7,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { User, Lock } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { loginSchema, type LoginInput } from "@/lib/validationSchemas";
+import { ZodError } from "zod";
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -17,21 +19,34 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setValidationErrors({});
 
+    // Validate input before submission
     try {
-      console.log('Login: Attempting login for:', email);
-      await login(email, password);
+      const validatedData: LoginInput = loginSchema.parse({ email, password });
+      
+      setIsLoading(true);
+      
+      await login(validatedData.email, validatedData.password);
       toast.success("Login successful! Redirecting...");
       onSuccess?.();
     } catch (error: any) {
-      console.error('Login: Login failed:', error);
-      
-      if (error.message?.includes('Invalid login credentials')) {
+      if (error instanceof ZodError) {
+        // Handle validation errors
+        const errors: Record<string, string> = {};
+        error.errors.forEach((err) => {
+          if (err.path[0]) {
+            errors[err.path[0].toString()] = err.message;
+          }
+        });
+        setValidationErrors(errors);
+        toast.error("Please check your input");
+      } else if (error.message?.includes('Invalid login credentials')) {
         toast.error('Invalid email or password. Please check your credentials and try again.');
       } else if (error.message?.includes('Email not confirmed')) {
         toast.error('Please check your email and click the confirmation link before signing in.');
@@ -58,11 +73,17 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
             type="email" 
             placeholder="agent@demo.com" 
             value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            className="pl-10 h-12 bg-gray-50 border-gray-200 rounded-lg" 
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setValidationErrors((prev) => ({ ...prev, email: '' }));
+            }} 
+            className={`pl-10 h-12 bg-gray-50 border-gray-200 rounded-lg ${validationErrors.email ? 'border-red-500' : ''}`}
             required 
           />
         </div>
+        {validationErrors.email && (
+          <p className="text-sm text-red-500 mt-1">{validationErrors.email}</p>
+        )}
       </div>
       
       <div className="space-y-2">
@@ -76,11 +97,17 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
             type="password" 
             placeholder="demo123" 
             value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            className="pl-10 h-12 bg-gray-50 border-gray-200 rounded-lg" 
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setValidationErrors((prev) => ({ ...prev, password: '' }));
+            }} 
+            className={`pl-10 h-12 bg-gray-50 border-gray-200 rounded-lg ${validationErrors.password ? 'border-red-500' : ''}`}
             required 
           />
         </div>
+        {validationErrors.password && (
+          <p className="text-sm text-red-500 mt-1">{validationErrors.password}</p>
+        )}
       </div>
 
       <div className="flex items-center justify-between">
