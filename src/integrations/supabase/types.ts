@@ -643,7 +643,7 @@ export type Database = {
     }
     Functions: {
       check_auth_schema_health: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           column_name: string
           health_status: string
@@ -671,11 +671,14 @@ export type Database = {
           traveler_id: string | null
           updated_at: string | null
         }[]
+        SetofOptions: {
+          from: "*"
+          to: "itineraries"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
-      get_user_role_from_auth: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      get_user_role_from_auth: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
