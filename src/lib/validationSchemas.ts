@@ -10,7 +10,7 @@ export const loginSchema = z.object({
     .email({ message: "Invalid email address" })
     .max(255, { message: "Email must be less than 255 characters" }),
   password: z.string()
-    .min(8, { message: "Password must be at least 8 characters" })
+    .min(6, { message: "Password must be at least 6 characters" })
     .max(128, { message: "Password must be less than 128 characters" })
 });
 
@@ -20,7 +20,7 @@ export const signupSchema = z.object({
     .email({ message: "Invalid email address" })
     .max(255, { message: "Email must be less than 255 characters" }),
   password: z.string()
-    .min(8, { message: "Password must be at least 8 characters" })
+    .min(6, { message: "Password must be at least 6 characters" })
     .max(128, { message: "Password must be less than 128 characters" }),
   name: z.string()
     .trim()
