@@ -36,6 +36,11 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
       toast.success("Login successful! Redirecting...");
       onSuccess?.();
     } catch (error: any) {
+      // Add shake animation on error
+      const form = e.currentTarget as HTMLFormElement;
+      form.classList.add('animate-shake');
+      setTimeout(() => form.classList.remove('animate-shake'), 500);
+      
       if (error instanceof ZodError) {
         // Handle validation errors
         const errors: Record<string, string> = {};
@@ -77,7 +82,7 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
               setEmail(e.target.value);
               setValidationErrors((prev) => ({ ...prev, email: '' }));
             }} 
-            className={`pl-10 h-12 bg-gray-50 border-gray-200 rounded-lg ${validationErrors.email ? 'border-red-500' : ''}`}
+            className={`pl-10 h-12 bg-gray-50 border-gray-200 rounded-xl transition-all duration-300 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 ${validationErrors.email ? 'border-red-500' : ''}`}
             required 
           />
         </div>
@@ -101,7 +106,7 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
               setPassword(e.target.value);
               setValidationErrors((prev) => ({ ...prev, password: '' }));
             }} 
-            className={`pl-10 h-12 bg-gray-50 border-gray-200 rounded-lg ${validationErrors.password ? 'border-red-500' : ''}`}
+            className={`pl-10 h-12 bg-gray-50 border-gray-200 rounded-xl transition-all duration-300 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 ${validationErrors.password ? 'border-red-500' : ''}`}
             required 
           />
         </div>
@@ -126,9 +131,16 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
       <Button 
         type="submit" 
         disabled={isLoading} 
-        className="w-full h-12 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg"
+        className="w-full h-12 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isLoading ? "Signing In..." : "Sign In"}
+        {isLoading ? (
+          <span className="flex items-center gap-2">
+            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            Signing In...
+          </span>
+        ) : (
+          "Sign In"
+        )}
       </Button>
     </form>
   );
