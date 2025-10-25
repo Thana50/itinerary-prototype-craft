@@ -146,7 +146,7 @@ const AgentDashboard = () => {
             <img 
               src="/lovable-uploads/0eec4e7f-1447-475b-928f-96fbc0eca6e8.png" 
               alt="Travia Logo" 
-              className="h-14 w-auto mr-4"
+              className="h-[84px] w-auto mr-4"
             />
           </div>
           <div className="flex items-center space-x-4">
