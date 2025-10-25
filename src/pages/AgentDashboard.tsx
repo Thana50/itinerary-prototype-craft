@@ -138,9 +138,15 @@ const AgentDashboard = () => {
   }
   
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-[hsl(var(--gradient-start))] via-[hsl(var(--gradient-mid))] to-[hsl(var(--gradient-end))] relative overflow-hidden">
+      {/* Animated Background Shapes */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/20 rounded-full blur-3xl animate-float-delayed" />
+      </div>
+
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
+      <header className="glass-card border-b shadow-lg px-6 py-4 relative z-10">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <img 
@@ -169,9 +175,12 @@ const AgentDashboard = () => {
         </div>
       </header>
 
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-6 py-8 relative z-10">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Agent Dashboard</h1>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent animate-fade-in">
+            Agent Dashboard
+          </h1>
+          <p className="text-muted-foreground mt-2">Manage your itineraries and negotiations</p>
         </div>
 
         {/* PoC Demo Data Initializer - Show when toggled */}
@@ -188,8 +197,8 @@ const AgentDashboard = () => {
         )}
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-white">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-fade-in">
+          <Card className="glass-card border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
             <CardContent className="p-6">
               <div className="flex items-center">
                 <div className="p-3 bg-blue-100 rounded-lg mr-4">
@@ -203,10 +212,10 @@ const AgentDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-white">
+          <Card className="glass-card border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
             <CardContent className="p-6">
               <div className="flex items-center">
-                <div className="p-3 bg-orange-100 rounded-lg mr-4">
+                <div className="p-3 bg-orange-100/80 rounded-lg mr-4">
                   <Handshake className="h-6 w-6 text-orange-600" />
                 </div>
                 <div>
@@ -217,10 +226,10 @@ const AgentDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-white">
+          <Card className="glass-card border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
             <CardContent className="p-6">
               <div className="flex items-center">
-                <div className="p-3 bg-green-100 rounded-lg mr-4">
+                <div className="p-3 bg-green-100/80 rounded-lg mr-4">
                   <TrendingUp className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
@@ -231,10 +240,10 @@ const AgentDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-white">
+          <Card className="glass-card border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
             <CardContent className="p-6">
               <div className="flex items-center">
-                <div className="p-3 bg-purple-100 rounded-lg mr-4">
+                <div className="p-3 bg-purple-100/80 rounded-lg mr-4">
                   <DollarSign className="h-6 w-6 text-purple-600" />
                 </div>
                 <div>

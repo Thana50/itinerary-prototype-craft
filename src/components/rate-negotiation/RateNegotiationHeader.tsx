@@ -8,7 +8,7 @@ const RateNegotiationHeader = () => {
   const navigate = useNavigate();
 
   return (
-    <header className="bg-white border-b border-gray-200 px-6 py-4">
+    <header className="glass-card border-b shadow-lg px-6 py-4 relative z-10">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <Button
@@ -21,16 +21,20 @@ const RateNegotiationHeader = () => {
             Back to Dashboard
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Rate Negotiation AI - Where Custom Trips Click.</h1>
-            <p className="text-gray-600 mt-1">Automated negotiations with 85% time savings • Powered by SE Asian market intelligence</p>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              Rate Negotiation AI - Where Custom Trips Click.
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Automated negotiations with 85% time savings • Powered by SE Asian market intelligence
+            </p>
           </div>
         </div>
         <div className="flex items-center space-x-4">
-          <div className="flex items-center text-sm text-purple-600 bg-purple-50 px-3 py-1 rounded-full">
+          <div className="flex items-center text-sm text-primary bg-primary/10 px-3 py-1 rounded-full">
             <Brain className="h-4 w-4 mr-1" />
             AI Enhanced
           </div>
-          <span className="text-gray-600">Welcome, Agent!</span>
+          <span className="text-muted-foreground">Welcome, Agent!</span>
         </div>
       </div>
     </header>

@@ -28,7 +28,7 @@ const CreateItineraryHeader: React.FC<CreateItineraryHeaderProps> = ({
   return (
     <>
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-4">
+      <header className="glass-card border-b shadow-lg px-4 sm:px-6 py-4 relative z-10">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <img 
@@ -49,9 +49,11 @@ const CreateItineraryHeader: React.FC<CreateItineraryHeaderProps> = ({
       </header>
 
       {/* Page Header */}
-      <div className="bg-white border-b border-gray-100 px-4 sm:px-6 py-4">
+      <div className="glass-card border-b px-4 sm:px-6 py-4 relative z-10">
         <div className="flex justify-between items-center">
-          <h1 className="text-xl font-semibold text-gray-900">Itinerary Builder</h1>
+          <h1 className="text-xl font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            Itinerary Builder
+          </h1>
           <div className="flex gap-2">
             <Button 
               onClick={onToggleTemplateSidebar}

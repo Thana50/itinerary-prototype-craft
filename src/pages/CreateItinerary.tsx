@@ -100,7 +100,13 @@ const CreateItinerary = () => {
     }
   };
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-[hsl(var(--gradient-start))] via-[hsl(var(--gradient-mid))] to-[hsl(var(--gradient-end))] relative overflow-hidden">
+      {/* Animated Background Shapes */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/20 rounded-full blur-3xl animate-float-delayed" />
+      </div>
+
       <CreateItineraryHeader
         currentUser={currentUser}
         onLogout={handleLogout}
@@ -112,7 +118,7 @@ const CreateItinerary = () => {
         showTemplateSidebar={showTemplateSidebar}
       />
 
-      <div className="px-4 sm:px-6 lg:px-8 pb-8">
+      <div className="px-4 sm:px-6 lg:px-8 pb-8 relative z-10">
         <CreateItineraryContent
           formData={formData}
           onFormChange={handleFormChange}

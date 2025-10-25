@@ -8,7 +8,7 @@ const ProviderSidebar = () => {
   return (
     <div className="space-y-6">
       {/* Quick Actions */}
-      <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+      <Card className="glass-card shadow-xl border-0">
         <CardHeader>
           <CardTitle className="text-base text-gray-800">Quick Actions</CardTitle>
         </CardHeader>
