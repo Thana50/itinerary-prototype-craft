@@ -375,7 +375,7 @@ const AgentDashboard = () => {
         <div className="mb-10">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-2xl font-semibold">Itinerary Management</h2>
+              <h2 className="text-2xl font-semibold text-white">Itinerary Management</h2>
               <p className="text-muted-foreground mt-1">Recent projects and templates</p>
             </div>
             <Button 
