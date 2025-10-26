@@ -476,7 +476,7 @@ const AgentDashboard = () => {
         <div className="mb-10">
           <div className="flex items-center gap-3 mb-6">
             <div className="h-1 w-12 bg-gradient-to-r from-primary to-accent rounded-full"></div>
-            <h2 className="text-xl font-semibold">Quick Actions</h2>
+            <h2 className="text-xl font-semibold text-white">Quick Actions</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in">
             <Card 
