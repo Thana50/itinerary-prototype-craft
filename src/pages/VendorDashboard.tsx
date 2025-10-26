@@ -16,6 +16,7 @@ import VendorSimulationCenter from "@/components/vendor-dashboard/VendorSimulati
 import VendorSimulationInterface from "@/components/vendor-dashboard/VendorSimulationInterface";
 import VendorAnalyticsDashboard from "@/components/vendor-dashboard/VendorAnalyticsDashboard";
 import AdvancedVendorTab from "@/components/vendor-dashboard/AdvancedVendorTab";
+import UnifiedHeader from "@/components/common/UnifiedHeader";
 
 const VendorDashboard = () => {
   const navigate = useNavigate();
@@ -197,25 +198,13 @@ const VendorDashboard = () => {
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/20 rounded-full blur-3xl animate-float-delayed" />
       </div>
 
-      {/* Header with Logout */}
-      <header className="glass-card border-b shadow-lg px-6 py-4 relative z-10">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <img 
-              src="/lovable-uploads/0eec4e7f-1447-475b-928f-96fbc0eca6e8.png" 
-              alt="Travia Logo" 
-              className="h-14 w-auto mr-4"
-            />
-          </div>
-          <div className="flex items-center space-x-4">
-            <span className="text-gray-600">Welcome, {user?.name || 'Vendor'}!</span>
-            <Button variant="ghost" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
-          </div>
-        </div>
-      </header>
+      <UnifiedHeader 
+        showLogo={true}
+        showNotifications={false}
+        showLogout={true}
+        userName={user?.name || 'Vendor'}
+        onLogout={handleLogout}
+      />
 
       <VendorDashboardHeader />
 

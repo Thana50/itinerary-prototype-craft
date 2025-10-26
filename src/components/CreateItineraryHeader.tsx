@@ -1,8 +1,8 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, LogOut, Share, BookTemplate } from "lucide-react";
-import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { ArrowLeft, Share, BookTemplate } from "lucide-react";
+import UnifiedHeader from "@/components/common/UnifiedHeader";
 
 interface CreateItineraryHeaderProps {
   currentUser: any;
@@ -27,26 +27,14 @@ const CreateItineraryHeader: React.FC<CreateItineraryHeaderProps> = ({
 }) => {
   return (
     <>
-      {/* Header */}
-      <header className="glass-card border-b shadow-lg px-4 sm:px-6 py-4 relative z-10">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <img 
-              src="/lovable-uploads/0eec4e7f-1447-475b-928f-96fbc0eca6e8.png" 
-              alt="Travia Logo" 
-              className="h-12 w-auto mr-4"
-            />
-          </div>
-          <div className="flex items-center space-x-4">
-            <span className="text-gray-600 text-sm">Welcome, {currentUser?.profile?.name || 'Agent'}!</span>
-            <NotificationBell />
-            <Button variant="ghost" size="sm" onClick={onLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
-          </div>
-        </div>
-      </header>
+      {/* Main Header */}
+      <UnifiedHeader 
+        showLogo={true}
+        showNotifications={true}
+        showLogout={true}
+        userName={currentUser?.profile?.name || 'Agent'}
+        onLogout={onLogout}
+      />
 
       {/* Page Header */}
       <div className="glass-card border-b px-4 sm:px-6 py-4 relative z-10">

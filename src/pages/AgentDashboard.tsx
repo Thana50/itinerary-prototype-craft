@@ -34,6 +34,7 @@ import { useToast } from "@/hooks/use-toast";
 import SeedDataButton from "@/components/SeedDataButton";
 import { PostApprovalDashboard } from "@/components/PostApprovalDashboard";
 import PocDataInitializer from "@/components/PocDataInitializer";
+import UnifiedHeader from "@/components/common/UnifiedHeader";
 
 const AgentDashboard = () => {
   const navigate = useNavigate();
@@ -176,18 +177,14 @@ const AgentDashboard = () => {
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/20 rounded-full blur-3xl animate-float-delayed" />
       </div>
 
-      {/* Header */}
-      <header className="glass-card border-b shadow-lg px-6 py-4 relative z-10">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <img 
-              src="/lovable-uploads/0eec4e7f-1447-475b-928f-96fbc0eca6e8.png" 
-              alt="Travia Logo" 
-              className="h-14 w-auto mr-4"
-            />
-          </div>
-          <div className="flex items-center space-x-4">
-            <span className="text-gray-600">Welcome, {user?.name || 'Agent'}!</span>
+      <UnifiedHeader 
+        showLogo={true}
+        showNotifications={false}
+        showLogout={true}
+        userName={user?.name || 'Agent'}
+        onLogout={handleLogout}
+        rightContent={
+          <>
             <Button 
               variant="outline" 
               size="sm" 
@@ -198,13 +195,9 @@ const AgentDashboard = () => {
               {showPocDataManager ? 'Hide' : 'Show'} Demo Data
             </Button>
             {itineraries.length === 0 && <SeedDataButton />}
-            <Button variant="ghost" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
-          </div>
-        </div>
-      </header>
+          </>
+        }
+      />
 
       <div className="container mx-auto px-6 py-8 relative z-10">
         <div className="mb-8 flex justify-between items-center">
