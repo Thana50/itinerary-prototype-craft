@@ -193,212 +193,217 @@ const CreateItineraryWizard: React.FC<CreateItineraryWizardProps> = ({
       {/* Progress Bar */}
       <WizardProgress currentStep={currentStep} totalSteps={3} />
 
-      {/* AI Status */}
-      <AIStatusIndicator 
-        status={aiStatus} 
-        confidence={confidence}
-        message={showTypingIndicator ? "AI is thinking..." : undefined}
-      />
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column */}
-        <div className="lg:col-span-1 space-y-4">
-          {currentStep === 1 && (
-            <>
-              <Card className="shadow-lg">
-                <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
-                  <CardTitle className="flex items-center text-lg">
-                    <Calendar className="h-5 w-5 mr-2" />
-                    Trip Details
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6 space-y-4">
-                  <div>
-                    <Label htmlFor="itineraryName">Itinerary Name</Label>
-                    <Input
-                      id="itineraryName"
-                      value={formData.itineraryName}
-                      onChange={(e) => onFormChange('itineraryName', e.target.value)}
-                      placeholder="e.g., Romantic Paris Getaway"
-                      className="mt-1"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="destination">Destination</Label>
-                    <div className="relative mt-1">
-                      <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="destination"
-                        value={formData.destination}
-                        onChange={(e) => onFormChange('destination', e.target.value)}
-                        placeholder="e.g., Paris, France"
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label htmlFor="startDate">Start Date</Label>
-                      <Input
-                        id="startDate"
-                        type="date"
-                        value={formData.startDate}
-                        onChange={(e) => onFormChange('startDate', e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="endDate">End Date</Label>
-                      <Input
-                        id="endDate"
-                        type="date"
-                        value={formData.endDate}
-                        onChange={(e) => onFormChange('endDate', e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="numberOfTravelers">Number of Travelers</Label>
-                    <div className="relative mt-1">
-                      <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="numberOfTravelers"
-                        value={formData.numberOfTravelers}
-                        onChange={(e) => onFormChange('numberOfTravelers', e.target.value)}
-                        placeholder="e.g., 2 adults"
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="assignedTraveler">Assign to Client</Label>
-                    <div className="relative mt-1">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 z-10" />
-                      <Select 
-                        value={formData.assignedTravelerEmail} 
-                        onValueChange={(value) => onFormChange('assignedTravelerEmail', value)}
-                      >
-                        <SelectTrigger className="pl-10">
-                          <SelectValue placeholder="Select a client..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {demoTravelers.map((traveler) => (
-                            <SelectItem key={traveler.email} value={traveler.email}>
-                              {traveler.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="clientPreferences">Client Preferences</Label>
-                    <Textarea
-                      id="clientPreferences"
-                      value={formData.clientPreferences}
-                      onChange={(e) => onFormChange('clientPreferences', e.target.value)}
-                      placeholder="e.g., vegetarian meals, accessibility needs..."
-                      rows={4}
-                      className="mt-1"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <DemoModeToggle
-                isDemoMode={isDemoMode}
-                onToggleDemoMode={() => setIsDemoMode(!isDemoMode)}
-                onQuickDemo={handleQuickDemo}
-              />
-            </>
-          )}
-
-          {(currentStep === 2 || currentStep === 3) && (
-            <BusinessMetrics 
-              showTimer={currentStep === 2 || currentStep === 3}
-              startTime={generationStartTime}
-            />
-          )}
-        </div>
-
-        {/* Right Column */}
-        <div className="lg:col-span-2 space-y-6">
-          {currentStep === 2 && (
-            <Card className="shadow-lg">
-              <CardContent className="p-8 text-center">
-                <div className="flex flex-col items-center space-y-4">
-                  <div className="animate-pulse">
-                    <Sparkles className="h-16 w-16 text-purple-500" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900">AI Processing Your Request</h3>
-                  <p className="text-gray-600">
-                    Our advanced AI is analyzing your preferences and generating a personalized itinerary...
-                  </p>
-                  {showTypingIndicator && (
-                    <div className="flex space-x-2">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
-                      <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                      <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {currentStep === 3 && sampleItinerary.length > 0 && (
-            <>
-              {formData.destination && (
-                <ItineraryMap
-                  activities={getMapActivities()}
-                  destination={formData.destination}
-                  className="shadow-lg animate-fade-in"
+      {/* Step 1: Trip Details Form */}
+      {currentStep === 1 && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="shadow-lg">
+            <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+              <CardTitle className="flex items-center text-lg">
+                <Calendar className="h-5 w-5 mr-2" />
+                Trip Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6 space-y-4">
+              <div>
+                <Label htmlFor="itineraryName">Itinerary Name</Label>
+                <Input
+                  id="itineraryName"
+                  value={formData.itineraryName}
+                  onChange={(e) => onFormChange('itineraryName', e.target.value)}
+                  placeholder="e.g., Romantic Paris Getaway"
+                  className="mt-1"
                 />
-              )}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2">
-                  <ItineraryPreview sampleItinerary={sampleItinerary} />
-                </div>
-                <div className="lg:col-span-1">
-                  <Card className="shadow-lg border-green-200">
-                    <CardHeader className="bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-t-lg">
-                      <CardTitle className="flex items-center text-lg">
-                        <MessageSquare className="h-5 w-5 mr-2" />
-                        Customize Your Itinerary
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                      <div className="p-4 bg-blue-50 border-b">
-                        <p className="text-sm text-gray-700">
-                          💡 <strong>Try asking:</strong>
-                        </p>
-                        <ul className="text-xs text-gray-600 mt-2 space-y-1">
-                          <li>• "Add a Thai cooking class on day 3"</li>
-                          <li>• "Remove the beach day and add shopping"</li>
-                          <li>• "Add one more day to the trip"</li>
-                          <li>• "Change the hotel to a beachfront resort"</li>
-                        </ul>
-                      </div>
-                      <AIAssistant
-                        onMessageSend={onMessageSend}
-                        userRole="agent"
-                        isLoading={isLoading}
-                        autoAppendAIResponse={true}
-                      />
-                    </CardContent>
-                  </Card>
+              </div>
+
+              <div>
+                <Label htmlFor="destination">Destination</Label>
+                <div className="relative mt-1">
+                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="destination"
+                    value={formData.destination}
+                    onChange={(e) => onFormChange('destination', e.target.value)}
+                    placeholder="e.g., Paris, France"
+                    className="pl-10"
+                  />
                 </div>
               </div>
-            </>
-          )}
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="startDate">Start Date</Label>
+                  <Input
+                    id="startDate"
+                    type="date"
+                    value={formData.startDate}
+                    onChange={(e) => onFormChange('startDate', e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="endDate">End Date</Label>
+                  <Input
+                    id="endDate"
+                    type="date"
+                    value={formData.endDate}
+                    onChange={(e) => onFormChange('endDate', e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="numberOfTravelers">Number of Travelers</Label>
+                <div className="relative mt-1">
+                  <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="numberOfTravelers"
+                    value={formData.numberOfTravelers}
+                    onChange={(e) => onFormChange('numberOfTravelers', e.target.value)}
+                    placeholder="e.g., 2 adults"
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="assignedTraveler">Assign to Client</Label>
+                <div className="relative mt-1">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 z-10" />
+                  <Select 
+                    value={formData.assignedTravelerEmail} 
+                    onValueChange={(value) => onFormChange('assignedTravelerEmail', value)}
+                  >
+                    <SelectTrigger className="pl-10">
+                      <SelectValue placeholder="Select a client..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {demoTravelers.map((traveler) => (
+                        <SelectItem key={traveler.email} value={traveler.email}>
+                          {traveler.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="clientPreferences">Client Preferences</Label>
+                <Textarea
+                  id="clientPreferences"
+                  value={formData.clientPreferences}
+                  onChange={(e) => onFormChange('clientPreferences', e.target.value)}
+                  placeholder="e.g., vegetarian meals, accessibility needs..."
+                  rows={4}
+                  className="mt-1"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="space-y-4">
+            <DemoModeToggle
+              isDemoMode={isDemoMode}
+              onToggleDemoMode={() => setIsDemoMode(!isDemoMode)}
+              onQuickDemo={handleQuickDemo}
+            />
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Step 2: AI Processing */}
+      {currentStep === 2 && (
+        <div className="space-y-6">
+          <AIStatusIndicator 
+            status={aiStatus} 
+            confidence={confidence}
+            message={showTypingIndicator ? "AI is thinking..." : undefined}
+          />
+          
+          <Card className="shadow-lg">
+            <CardContent className="p-12 text-center">
+              <div className="flex flex-col items-center space-y-6">
+                <div className="animate-pulse">
+                  <Sparkles className="h-20 w-20 text-purple-500" />
+                </div>
+                <h3 className="text-3xl font-bold">AI Processing Your Request</h3>
+                <p className="text-lg text-muted-foreground max-w-2xl">
+                  Our advanced AI is analyzing your preferences and generating a personalized itinerary...
+                </p>
+                {showTypingIndicator && (
+                  <div className="flex space-x-2">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
+                    <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <BusinessMetrics 
+            showTimer={true}
+            startTime={generationStartTime}
+          />
+        </div>
+      )}
+
+      {/* Step 3: Review & Customize */}
+      {currentStep === 3 && sampleItinerary.length > 0 && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <AIStatusIndicator 
+              status={aiStatus} 
+              confidence={confidence}
+            />
+            <BusinessMetrics 
+              showTimer={true}
+              startTime={generationStartTime}
+            />
+          </div>
+
+          {formData.destination && (
+            <ItineraryMap
+              activities={getMapActivities()}
+              destination={formData.destination}
+              className="shadow-lg animate-fade-in"
+            />
+          )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ItineraryPreview sampleItinerary={sampleItinerary} />
+            
+            <Card className="shadow-lg border-green-200">
+              <CardHeader className="bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-t-lg">
+                <CardTitle className="flex items-center text-lg">
+                  <MessageSquare className="h-5 w-5 mr-2" />
+                  Customize Your Itinerary
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="p-4 bg-blue-50 border-b">
+                  <p className="text-sm text-gray-700">
+                    💡 <strong>Try asking:</strong>
+                  </p>
+                  <ul className="text-xs text-gray-600 mt-2 space-y-1">
+                    <li>• "Add a Thai cooking class on day 3"</li>
+                    <li>• "Remove the beach day and add shopping"</li>
+                    <li>• "Add one more day to the trip"</li>
+                    <li>• "Change the hotel to a beachfront resort"</li>
+                  </ul>
+                </div>
+                <AIAssistant
+                  onMessageSend={onMessageSend}
+                  userRole="agent"
+                  isLoading={isLoading}
+                  autoAppendAIResponse={true}
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
 
       {/* Navigation Buttons */}
       <div className="flex justify-between items-center pt-6 border-t">
