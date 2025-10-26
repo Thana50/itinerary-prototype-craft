@@ -4,10 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Users, MapPin, MessageSquare, Sparkles, User } from "lucide-react";
-import EnhancedChatInterface from "@/components/EnhancedChatInterface";
+import { Calendar, Users, MapPin, Sparkles, User } from "lucide-react";
 import ItineraryPreview from "@/components/ItineraryPreview";
 import ItineraryMap from "@/components/ItineraryMap";
+import QuerySamplesSection from "@/components/itinerary-builder/QuerySamplesSection";
+import EnhancedChatWithTyping from "@/components/itinerary-builder/EnhancedChatWithTyping";
+import TemplateSuggestionsPanel from "@/components/itinerary-builder/TemplateSuggestionsPanel";
+import ItineraryCustomizationTools from "@/components/itinerary-builder/ItineraryCustomizationTools";
 import type { ItineraryTemplate } from "@/types/templates";
 interface CreateItineraryContentProps {
   formData: {
@@ -101,19 +104,38 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
     return 'sightseeing';
   };
 
+  const handleAddDay = () => {
+    const newDay = sampleItinerary.length + 1;
+    const message = `Add day ${newDay} to the itinerary`;
+    void onMessageSend(message);
+  };
+
+  const handleRemoveDay = () => {
+    if (sampleItinerary.length <= 1) return;
+    const message = `Remove day ${sampleItinerary.length} from the itinerary`;
+    void onMessageSend(message);
+  };
+
+  const handleSampleClick = (sample: string) => {
+    void onMessageSend(sample);
+  };
+
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column - Trip Details Form */}
+    <div className="max-w-7xl mx-auto space-y-6">
+      {/* Query Samples Section */}
+      <QuerySamplesSection onSampleClick={handleSampleClick} />
+
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Left Column - Trip Details & Templates */}
         <div className="lg:col-span-1 space-y-6">
-          <Card className="shadow-lg border-blue-200">
-            <CardHeader className="bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-t-lg">
-              <CardTitle className="flex items-center text-lg">
+          <Card className="shadow-lg border-primary/20 bg-card">
+            <CardHeader className="bg-gradient-to-r from-primary to-accent text-primary-foreground rounded-t-lg">
+              <CardTitle className="flex items-center text-base">
                 <Calendar className="h-5 w-5 mr-2" />
                 Trip Details
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-6 space-y-4">
+            <CardContent className="p-4 space-y-4">
               <div>
                 <Label htmlFor="itineraryName" className="text-sm font-medium text-gray-700">
                   Itinerary Name
@@ -226,27 +248,41 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
             </CardContent>
           </Card>
 
-          {/* AI Assistant Card */}
-          <Card className="shadow-lg border-green-200">
-            <CardHeader className="bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-t-lg">
-              <CardTitle className="flex items-center text-lg">
+          {/* Template Suggestions */}
+          <TemplateSuggestionsPanel
+            destination={formData.destination}
+            onTemplateSelect={onChatTemplateSelect}
+          />
+        </div>
+
+        {/* Middle Column - AI Chat & Customization */}
+        <div className="lg:col-span-2 space-y-6">
+          <Card className="shadow-lg border-accent/20">
+            <CardHeader className="bg-gradient-to-r from-accent to-primary text-primary-foreground rounded-t-lg">
+              <CardTitle className="flex items-center text-base">
                 <Sparkles className="h-5 w-5 mr-2" />
                 AI Travel Assistant
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <EnhancedChatInterface
-                onTemplateSelect={onChatTemplateSelect}
-                onMessageSend={(m) => { void onMessageSend(m); }}
-                onContinueWithoutTemplate={onContinueWithoutTemplate}
+              <EnhancedChatWithTyping
+                onMessageSend={onMessageSend}
                 isLoading={isLoading}
               />
             </CardContent>
           </Card>
+
+          {sampleItinerary.length > 0 && (
+            <ItineraryCustomizationTools
+              onAddDay={handleAddDay}
+              onRemoveDay={handleRemoveDay}
+              currentDayCount={sampleItinerary.length}
+            />
+          )}
         </div>
 
         {/* Right Column - Itinerary Preview and Map */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-1 space-y-6">
           {formData.destination && sampleItinerary.length > 0 && (
             <ItineraryMap
               activities={getMapActivities()}
