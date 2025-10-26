@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import CreateItineraryHeader from "@/components/CreateItineraryHeader";
-import CreateItineraryWizard from "@/components/itinerary-wizard/CreateItineraryWizard";
+import CreateItineraryContent from "@/components/CreateItineraryContent";
 import TemplateIntegrationProvider from "@/components/TemplateIntegrationProvider";
 import { useCreateItinerary } from "@/hooks/useCreateItinerary";
 import { useTemplateIntegration } from "@/hooks/useTemplateIntegration";
@@ -119,7 +119,7 @@ const CreateItinerary = () => {
       />
 
       <div className="px-4 sm:px-6 lg:px-8 pb-8 relative z-10">
-        <CreateItineraryWizard
+        <CreateItineraryContent
           formData={formData}
           onFormChange={handleFormChange}
           sampleItinerary={sampleItinerary}
