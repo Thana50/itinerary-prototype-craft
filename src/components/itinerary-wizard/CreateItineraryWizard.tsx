@@ -5,9 +5,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Calendar, Users, MapPin, User, ArrowRight, ArrowLeft, Sparkles } from "lucide-react";
+import { Calendar, Users, MapPin, User, ArrowRight, ArrowLeft, Sparkles, MessageSquare } from "lucide-react";
 import ItineraryPreview from "@/components/ItineraryPreview";
 import ItineraryMap from "@/components/ItineraryMap";
+import AIAssistant from "@/components/AIAssistant";
 import AIStatusIndicator from "./AIStatusIndicator";
 import BusinessMetrics from "./BusinessMetrics";
 import WizardProgress from "./WizardProgress";
@@ -36,6 +37,7 @@ const CreateItineraryWizard: React.FC<CreateItineraryWizardProps> = ({
   formData,
   onFormChange,
   sampleItinerary,
+  onMessageSend,
   onContinueWithoutTemplate,
   isLoading
 }) => {
@@ -359,7 +361,40 @@ const CreateItineraryWizard: React.FC<CreateItineraryWizardProps> = ({
                   className="shadow-lg animate-fade-in"
                 />
               )}
-              <ItineraryPreview sampleItinerary={sampleItinerary} />
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2">
+                  <ItineraryPreview sampleItinerary={sampleItinerary} />
+                </div>
+                <div className="lg:col-span-1">
+                  <Card className="shadow-lg border-green-200">
+                    <CardHeader className="bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-t-lg">
+                      <CardTitle className="flex items-center text-lg">
+                        <MessageSquare className="h-5 w-5 mr-2" />
+                        Customize Your Itinerary
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                      <div className="p-4 bg-blue-50 border-b">
+                        <p className="text-sm text-gray-700">
+                          💡 <strong>Try asking:</strong>
+                        </p>
+                        <ul className="text-xs text-gray-600 mt-2 space-y-1">
+                          <li>• "Add a Thai cooking class on day 3"</li>
+                          <li>• "Remove the beach day and add shopping"</li>
+                          <li>• "Add one more day to the trip"</li>
+                          <li>• "Change the hotel to a beachfront resort"</li>
+                        </ul>
+                      </div>
+                      <AIAssistant
+                        onMessageSend={onMessageSend}
+                        userRole="agent"
+                        isLoading={isLoading}
+                        autoAppendAIResponse={true}
+                      />
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
             </>
           )}
         </div>
