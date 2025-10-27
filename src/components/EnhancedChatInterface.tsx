@@ -48,7 +48,14 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
   const [currentMessage, setCurrentMessage] = useState('');
   const [recommendations, setRecommendations] = useState<TemplateRecommendation[]>([]);
   const [showRecommendations, setShowRecommendations] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const suggestedPrompts = [
+    "7-day Phuket luxury trip for 4 people",
+    "Add snorkeling to Day 2",
+    "Make it 5 days instead of 7"
+  ];
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -86,8 +93,12 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
     // Send to parent for processing
     onMessageSend(currentMessage);
 
+    // Show typing indicator
+    setIsTyping(true);
+
     // Add AI response with inline suggestion if available
     setTimeout(() => {
+      setIsTyping(false);
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
         content: inlineRecommendation || "I'm analyzing your requirements and generating a custom itinerary for you...",
@@ -96,7 +107,7 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
         templateSuggestion: inlineRecommendation || undefined
       };
       setMessages(prev => [...prev, aiResponse]);
-    }, 1000);
+    }, 1500);
   };
 
   const handleTemplateSelect = (recommendation: TemplateRecommendation) => {
@@ -129,13 +140,14 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[80%] rounded-lg p-3 ${
+              className={`max-w-[80%] rounded-lg p-4 ${
                 message.isUser
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md'
                   : 'bg-white border shadow-sm'
               }`}
             >
-              <p className="text-sm">{message.content}</p>
+              {!message.isUser && <Sparkles className="h-4 w-4 inline-block mr-2 text-blue-600" />}
+              <p className="text-base inline">{message.content}</p>
               {message.templateSuggestion && (
                 <div className="mt-2 p-2 bg-blue-50 rounded border-l-4 border-blue-400">
                   <div className="flex items-center text-xs text-blue-700">
@@ -150,6 +162,22 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             </div>
           </div>
         ))}
+
+        {/* Typing Indicator */}
+        {isTyping && (
+          <div className="flex justify-start">
+            <div className="bg-white border shadow-sm rounded-lg p-4 max-w-[80%]">
+              <div className="flex items-center space-x-2">
+                <Sparkles className="h-4 w-4 text-blue-600" />
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Template Recommendations */}
         {showRecommendations && recommendations.length > 0 && (
@@ -237,12 +265,28 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
       <Separator />
 
       {/* Input Area */}
-      <div className="p-4 bg-white">
+      <div className="p-4 bg-white border-t">
+        {/* Suggested Prompts */}
+        <div className="flex flex-wrap gap-2 mb-3">
+          {suggestedPrompts.map((prompt, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                setCurrentMessage(prompt);
+                setTimeout(() => handleSendMessage(), 100);
+              }}
+              className="px-3 py-1.5 text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-full border border-blue-200 transition-colors"
+            >
+              {prompt}
+            </button>
+          ))}
+        </div>
+
         <div className="flex space-x-2">
           <Input
             value={currentMessage}
             onChange={(e) => setCurrentMessage(e.target.value)}
-            placeholder="Tell me about your trip requirements..."
+            placeholder="Describe your dream trip..."
             onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
             disabled={isLoading}
             className="flex-1"
@@ -255,9 +299,6 @@ const EnhancedChatInterface: React.FC<EnhancedChatInterfaceProps> = ({
             <Send className="h-4 w-4" />
           </Button>
         </div>
-        <p className="text-xs text-gray-500 mt-2">
-          💡 Try: "7-day Phuket trip for 4 people, luxury budget" or "Family-friendly Singapore adventure"
-        </p>
       </div>
     </div>
   );

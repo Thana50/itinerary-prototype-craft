@@ -1,13 +1,10 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Users, MapPin, MessageSquare, Sparkles, User } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import EnhancedChatInterface from "@/components/EnhancedChatInterface";
 import ItineraryPreview from "@/components/ItineraryPreview";
 import ItineraryMap from "@/components/ItineraryMap";
+import CollapsibleTripContext from "@/components/CollapsibleTripContext";
 import type { ItineraryTemplate } from "@/types/templates";
 interface CreateItineraryContentProps {
   formData: {
@@ -36,13 +33,6 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
   onContinueWithoutTemplate,
   isLoading
 }) => {
-  // Demo users for PoC
-  const demoTravelers = [
-    { email: 'traveler@demo.com', name: 'Demo Traveler' },
-    { email: 'agent@demo.com', name: 'Demo Agent' },
-    { email: 'vendor@demo.com', name: 'Demo Vendor' }
-  ];
-
   // Convert sample itinerary to map activities format
   const getMapActivities = () => {
     const activities: any[] = [];
@@ -103,128 +93,14 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column - Trip Details Form */}
-        <div className="lg:col-span-1 space-y-6">
-          <Card className="shadow-lg border-blue-200">
-            <CardHeader className="bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-t-lg">
-              <CardTitle className="flex items-center text-lg">
-                <Calendar className="h-5 w-5 mr-2" />
-                Trip Details
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6 space-y-4">
-              <div>
-                <Label htmlFor="itineraryName" className="text-sm font-medium text-gray-700">
-                  Itinerary Name
-                </Label>
-                <Input
-                  id="itineraryName"
-                  value={formData.itineraryName}
-                  onChange={(e) => onFormChange('itineraryName', e.target.value)}
-                  placeholder="e.g., Romantic Paris Getaway"
-                  className="mt-1"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="destination" className="text-sm font-medium text-gray-700">
-                  Destination
-                </Label>
-                <div className="relative mt-1">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="destination"
-                    value={formData.destination}
-                    onChange={(e) => onFormChange('destination', e.target.value)}
-                    placeholder="e.g., Paris, France"
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label htmlFor="startDate" className="text-sm font-medium text-gray-700">
-                    Start Date
-                  </Label>
-                  <Input
-                    id="startDate"
-                    type="date"
-                    value={formData.startDate}
-                    onChange={(e) => onFormChange('startDate', e.target.value)}
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="endDate" className="text-sm font-medium text-gray-700">
-                    End Date
-                  </Label>
-                  <Input
-                    id="endDate"
-                    type="date"
-                    value={formData.endDate}
-                    onChange={(e) => onFormChange('endDate', e.target.value)}
-                    className="mt-1"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="numberOfTravelers" className="text-sm font-medium text-gray-700">
-                  Number of Travelers
-                </Label>
-                <div className="relative mt-1">
-                  <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="numberOfTravelers"
-                    value={formData.numberOfTravelers}
-                    onChange={(e) => onFormChange('numberOfTravelers', e.target.value)}
-                    placeholder="e.g., 2 adults"
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="assignedTraveler" className="text-sm font-medium text-gray-700">
-                  Assign to Client
-                </Label>
-                <div className="relative mt-1">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 z-10" />
-                  <Select 
-                    value={formData.assignedTravelerEmail} 
-                    onValueChange={(value) => onFormChange('assignedTravelerEmail', value)}
-                  >
-                    <SelectTrigger className="pl-10">
-                      <SelectValue placeholder="Select a client..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {demoTravelers.map((traveler) => (
-                        <SelectItem key={traveler.email} value={traveler.email}>
-                          {traveler.name} ({traveler.email})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="clientPreferences" className="text-sm font-medium text-gray-700">
-                  Client Preferences & Special Requests
-                </Label>
-                <Textarea
-                  id="clientPreferences"
-                  value={formData.clientPreferences}
-                  onChange={(e) => onFormChange('clientPreferences', e.target.value)}
-                  placeholder="e.g., vegetarian meals, accessibility needs, budget constraints, interests..."
-                  rows={4}
-                  className="mt-1"
-                />
-              </div>
-            </CardContent>
-          </Card>
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Left Column - Chat (60% width) */}
+        <div className="lg:w-[60%] space-y-6">
+          {/* Collapsible Trip Context */}
+          <CollapsibleTripContext
+            formData={formData}
+            onFormChange={onFormChange}
+          />
 
           {/* AI Assistant Card */}
           <Card className="shadow-lg border-green-200">
@@ -245,8 +121,8 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
           </Card>
         </div>
 
-        {/* Right Column - Itinerary Preview and Map */}
-        <div className="lg:col-span-2 space-y-6">
+        {/* Right Column - Preview and Map (40% width) */}
+        <div className="lg:w-[40%] space-y-6">
           {formData.destination && sampleItinerary.length > 0 && (
             <ItineraryMap
               activities={getMapActivities()}

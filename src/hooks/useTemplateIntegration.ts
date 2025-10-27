@@ -4,7 +4,7 @@ import { ItineraryTemplate } from '@/types/templates';
 import { templateService } from '@/services/templateService';
 
 export const useTemplateIntegration = () => {
-  const [showTemplateSidebar, setShowTemplateSidebar] = useState(false);
+  const [showTemplateSidebar, setShowTemplateSidebar] = useState(true);
   const [templateSearchQuery, setTemplateSearchQuery] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState<ItineraryTemplate | null>(null);
   const [showTemplateModal, setShowTemplateModal] = useState(false);

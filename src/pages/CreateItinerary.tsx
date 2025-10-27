@@ -112,10 +112,8 @@ const CreateItinerary = () => {
         onLogout={handleLogout}
         onSaveItinerary={handleSaveItinerary}
         onBackToDashboard={handleBackToDashboard}
-        onToggleTemplateSidebar={toggleTemplateSidebar}
         isLoading={isLoading}
         hasDestination={!!formData.destination}
-        showTemplateSidebar={showTemplateSidebar}
       />
 
       <div className="px-4 sm:px-6 lg:px-8 pb-8 relative z-10">

@@ -21,8 +21,21 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({ sampleItinerary = [
           <CardTitle className="text-lg">Generated Itinerary Preview</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="bg-gray-50 rounded-lg p-8 text-center text-gray-500">
-            <p>Itinerary details will appear here as you build it with AI assistance...</p>
+          <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-12 text-center">
+            <div className="flex justify-center mb-4">
+              <div className="bg-white rounded-full p-4 shadow-md">
+                <MapPin className="h-8 w-8 text-blue-600" />
+              </div>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              👋 Ready to plan your trip?
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Tell me about your destination in the chat above!
+            </p>
+            <div className="inline-block px-4 py-2 bg-white rounded-lg shadow-sm text-sm text-gray-500">
+              💡 Try: "7-day Phuket trip for 4 people"
+            </div>
           </div>
         </CardContent>
       </Card>

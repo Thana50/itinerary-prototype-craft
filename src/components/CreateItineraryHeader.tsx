@@ -9,10 +9,8 @@ interface CreateItineraryHeaderProps {
   onLogout: () => void;
   onSaveItinerary: () => void;
   onBackToDashboard: () => void;
-  onToggleTemplateSidebar: () => void;
   isLoading: boolean;
   hasDestination: boolean;
-  showTemplateSidebar: boolean;
 }
 
 const CreateItineraryHeader: React.FC<CreateItineraryHeaderProps> = ({
@@ -20,10 +18,8 @@ const CreateItineraryHeader: React.FC<CreateItineraryHeaderProps> = ({
   onLogout,
   onSaveItinerary,
   onBackToDashboard,
-  onToggleTemplateSidebar,
   isLoading,
-  hasDestination,
-  showTemplateSidebar
+  hasDestination
 }) => {
   return (
     <>
@@ -43,15 +39,6 @@ const CreateItineraryHeader: React.FC<CreateItineraryHeaderProps> = ({
             Itinerary Builder
           </h1>
           <div className="flex gap-2">
-            <Button 
-              onClick={onToggleTemplateSidebar}
-              variant={showTemplateSidebar ? "default" : "outline"}
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <BookTemplate className="h-4 w-4" />
-              {showTemplateSidebar ? 'Hide' : 'Show'} Templates
-            </Button>
             <Button 
               onClick={onSaveItinerary} 
               disabled={isLoading || !hasDestination}

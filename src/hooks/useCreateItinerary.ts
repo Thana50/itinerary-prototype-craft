@@ -49,6 +49,13 @@ export const useCreateItinerary = () => {
       ...(details.duration && { clientPreferences: prev.clientPreferences + (prev.clientPreferences ? ", " : "") + `Duration: ${details.duration}` })
     }));
 
+    // Show toast notification for auto-fill
+    toast({
+      title: "✨ Updated trip details",
+      description: "Form fields updated from your message",
+      duration: 2000
+    });
+
     // Don't auto-generate itinerary here - let template selection happen first
     // The template integration will handle itinerary generation
   };
