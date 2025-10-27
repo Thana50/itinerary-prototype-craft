@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import CreateItineraryHeader from "@/components/CreateItineraryHeader";
 import CreateItineraryContent from "@/components/CreateItineraryContent";
-import TemplateIntegrationProvider from "@/components/TemplateIntegrationProvider";
+import TemplateConfirmationModal from "@/components/templates/TemplateConfirmationModal";
 import { useCreateItinerary } from "@/hooks/useCreateItinerary";
 import { useTemplateIntegration } from "@/hooks/useTemplateIntegration";
 import { ItineraryTemplate } from "@/types/templates";
@@ -25,17 +25,12 @@ const CreateItinerary = () => {
   } = useCreateItinerary();
 
   const {
-    showTemplateSidebar,
-    templateSearchQuery,
-    setTemplateSearchQuery,
     selectedTemplate,
     showTemplateModal,
     handleTemplateSelect,
     handleTemplateConfirm,
     handleTemplateCancel,
-    detectTemplateRelevance,
-    convertTemplateToItinerary,
-    toggleTemplateSidebar
+    convertTemplateToItinerary
   } = useTemplateIntegration();
 
   // Handle incoming template from navigation state (from Template Repository)
@@ -45,12 +40,7 @@ const CreateItinerary = () => {
       console.log('Received template from navigation:', incomingTemplate);
       handleTemplateSelect(incomingTemplate);
     }
-  }, [location.state, handleTemplateSelect]);
-
-  // Auto-detect template relevance when form data changes
-  useEffect(() => {
-    detectTemplateRelevance(formData);
-  }, [formData, detectTemplateRelevance]);
+  }, [location.state]);
 
   // Handle template confirmation and apply to itinerary
   const handleTemplateConfirmation = () => {
@@ -133,19 +123,14 @@ const CreateItinerary = () => {
         </footer>
       </div>
 
-      {/* Template Integration */}
-      <TemplateIntegrationProvider
-        showTemplateSidebar={showTemplateSidebar}
-        templateSearchQuery={templateSearchQuery}
-        onSearchChange={setTemplateSearchQuery}
-        onTemplateSelect={handleTemplateSelect}
-        showTemplateModal={showTemplateModal}
-        selectedTemplate={selectedTemplate}
-        onTemplateConfirm={handleTemplateConfirmation}
-        onTemplateCancel={handleTemplateCancel}
-        onToggleSidebar={toggleTemplateSidebar}
-        onContinueWithoutTemplate={handleContinueWithoutTemplate}
-      />
+      {/* Template Confirmation Modal */}
+      {showTemplateModal && selectedTemplate && (
+        <TemplateConfirmationModal
+          template={selectedTemplate}
+          onConfirm={handleTemplateConfirmation}
+          onCancel={handleTemplateCancel}
+        />
+      )}
     </div>
   );
 };
