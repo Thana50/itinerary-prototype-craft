@@ -63,6 +63,7 @@ export const useItineraryState = () => {
   ]);
 
   const updateItinerary = (modification: Modification) => {
+    // Scenario 1: Cooking class on Day 3
     if (modification.description.includes('cooking class')) {
       setItinerary(prev => prev.map(day => 
         day.day === 3 
@@ -76,18 +77,74 @@ export const useItineraryState = () => {
       setCustomizationProgress(prev => Math.min(prev + 15, 100));
     }
     
-    if (modification.description.includes('beach')) {
-      setItinerary(prev => [...prev, {
-        day: 5,
-        title: "Extended Beach Paradise",
-        activities: [
-          "🏖️ Full day at Kata Beach",
-          "🏄‍♂️ Water sports activities",
-          "🍹 Beachside lunch",
-          "🌅 Sunset photography session"
-        ]
-      }]);
+    // Scenario 2: Extended beach activities (adds new day)
+    if (modification.description.includes('Extended beach')) {
+      setItinerary(prev => {
+        const hasDay5 = prev.some(day => day.day === 5);
+        if (!hasDay5) {
+          return [...prev, {
+            day: 5,
+            title: "Extended Beach Paradise",
+            activities: [
+              "🏖️ Full day at Kata Beach",
+              "🏄‍♂️ Water sports activities",
+              "🍹 Beachside lunch",
+              "🌅 Sunset photography session"
+            ]
+          }];
+        }
+        return prev;
+      });
       setCustomizationProgress(prev => Math.min(prev + 20, 100));
+    }
+    
+    // Scenario 3: Spa treatment on Day 3
+    if (modification.description.includes('spa treatment')) {
+      setItinerary(prev => prev.map(day => 
+        day.day === 3 
+          ? {
+              ...day,
+              title: "Cultural Phuket & Wellness",
+              activities: [...day.activities.filter(a => !a.includes('massage')), "💆‍♀️ Luxury spa treatment (2 hours)"]
+            }
+          : day
+      ));
+      setCustomizationProgress(prev => Math.min(prev + 10, 100));
+    }
+    
+    // Scenario 4: Add another day
+    if (modification.description.includes('Added Day 5')) {
+      setItinerary(prev => {
+        const hasDay5 = prev.some(day => day.day === 5);
+        if (!hasDay5) {
+          return [...prev, {
+            day: 5,
+            title: "Island Discovery Day",
+            activities: [
+              "🏝️ James Bond Island tour",
+              "🛶 Sea kayaking adventure",
+              "🍽️ Halal seafood lunch",
+              "📸 Scenic viewpoints visit"
+            ]
+          }];
+        }
+        return prev;
+      });
+      setCustomizationProgress(prev => Math.min(prev + 20, 100));
+    }
+    
+    // Scenario 5: Snorkeling excursion on Day 2
+    if (modification.description.includes('snorkeling')) {
+      setItinerary(prev => prev.map(day => 
+        day.day === 2 
+          ? {
+              ...day,
+              title: "Phi Phi Islands & Snorkeling",
+              activities: [...day.activities, "🤿 Premium snorkeling gear rental"]
+            }
+          : day
+      ));
+      setCustomizationProgress(prev => Math.min(prev + 12, 100));
     }
   };
 
