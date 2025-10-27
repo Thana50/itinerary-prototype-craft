@@ -1,9 +1,8 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Share, BookTemplate, Check } from "lucide-react";
+import { ArrowLeft, Share, BookTemplate } from "lucide-react";
 import UnifiedHeader from "@/components/common/UnifiedHeader";
-import { toast } from "sonner";
 
 interface CreateItineraryHeaderProps {
   currentUser: any;
@@ -26,25 +25,6 @@ const CreateItineraryHeader: React.FC<CreateItineraryHeaderProps> = ({
   hasDestination,
   showTemplateSidebar
 }) => {
-  const [isSaving, setIsSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-
-  const handleSave = async () => {
-    setIsSaving(true);
-    try {
-      await onSaveItinerary();
-      setSaved(true);
-      toast.success("Itinerary saved successfully!", {
-        description: "Share link has been generated and added to your dashboard"
-      });
-      setTimeout(() => setSaved(false), 3000);
-    } catch (error) {
-      toast.error("Failed to save itinerary");
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   return (
     <>
       {/* Main Header */}
@@ -73,22 +53,13 @@ const CreateItineraryHeader: React.FC<CreateItineraryHeaderProps> = ({
               {showTemplateSidebar ? 'Hide' : 'Show'} Templates
             </Button>
             <Button 
-              onClick={handleSave} 
-              disabled={isLoading || !hasDestination || isSaving}
-              className={saved ? "bg-green-600" : "bg-primary hover:bg-primary/90"}
+              onClick={onSaveItinerary} 
+              disabled={isLoading || !hasDestination}
+              className="bg-green-600 hover:bg-green-700"
               size="sm"
             >
-              {saved ? (
-                <>
-                  <Check className="mr-2 h-4 w-4" />
-                  Saved!
-                </>
-              ) : (
-                <>
-                  <Share className="mr-2 h-4 w-4" />
-                  {isSaving ? "Saving..." : "Save & Share"}
-                </>
-              )}
+              <Share className="mr-2 h-4 w-4" />
+              Save & Share
             </Button>
             <Button variant="ghost" onClick={onBackToDashboard} size="sm">
               <ArrowLeft className="mr-2 h-4 w-4" />
