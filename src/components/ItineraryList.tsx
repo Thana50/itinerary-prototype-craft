@@ -166,7 +166,7 @@ const ItineraryList: React.FC<ItineraryListProps> = ({ role }) => {
               size="sm"
               onClick={() => handleViewItinerary(itinerary.id)}
             >
-              {role === "traveler" ? "Review & Modify" : "View"} Itinerary
+              {role === "traveler" && itinerary.status === "shared" ? "Suggest Changes" : role === "traveler" ? "Review & Modify" : "View"} Itinerary
             </Button>
             
             {role === "agent" && (
@@ -178,13 +178,6 @@ const ItineraryList: React.FC<ItineraryListProps> = ({ role }) => {
               >
                 <Share className="h-3.5 w-3.5 mr-1" />
                 {itinerary.status === 'shared' ? 'Shared' : 'Share'}
-              </Button>
-            )}
-            
-            {role === "traveler" && itinerary.status === "shared" && (
-              <Button size="sm">
-                <Edit className="h-3.5 w-3.5 mr-1" />
-                Suggest Changes
               </Button>
             )}
           </div>

@@ -101,16 +101,16 @@ function App() {
                 } 
               />
               
-              <Route 
-                path="/itinerary/:id" 
-                element={
-                  <ProtectedRoute>
-                    <RoleGuard allowedRoles={['agent']}>
-                      <UnifiedItineraryDetail />
-                    </RoleGuard>
-                  </ProtectedRoute>
-                } 
-              />
+            <Route 
+              path="/itinerary/:id" 
+              element={
+                <ProtectedRoute>
+                  <RoleGuard allowedRoles={['agent', 'traveler']}>
+                    <UnifiedItineraryDetail />
+                  </RoleGuard>
+                </ProtectedRoute>
+              } 
+            />
               
               <Route 
                 path="/itinerary/:id/negotiate" 
