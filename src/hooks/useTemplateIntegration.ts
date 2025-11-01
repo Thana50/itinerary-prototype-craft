@@ -1,7 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { ItineraryTemplate } from '@/types/templates';
 import { templateService } from '@/services/templateService';
+import { generateSampleItinerary } from '@/utils/itineraryGenerator';
 
 export const useTemplateIntegration = () => {
   const [showTemplateSidebar, setShowTemplateSidebar] = useState(true);
@@ -57,7 +57,7 @@ export const useTemplateIntegration = () => {
 
   const convertTemplateToItinerary = (template: ItineraryTemplate) => {
     // Convert template structure to the existing itinerary format
-    return template.activities.reduce((acc, activity) => {
+    const converted = template.activities.reduce((acc, activity) => {
       const existingDay = acc.find(day => day.day === activity.day);
       if (existingDay) {
         existingDay.activities.push(`${activity.time}: ${activity.title} - ${activity.description}`);
@@ -70,6 +70,14 @@ export const useTemplateIntegration = () => {
       }
       return acc;
     }, [] as any[]).sort((a, b) => a.day - b.day);
+    
+    // Fallback: If template has fewer days than duration, use sample itinerary generator
+    if (converted.length < template.duration) {
+      console.warn(`Template "${template.name}" has incomplete activities (${converted.length}/${template.duration} days). Using fallback generator.`);
+      return generateSampleItinerary(template.destination, `${template.duration} days`);
+    }
+    
+    return converted;
   };
 
   return {

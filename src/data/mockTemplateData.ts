@@ -35,6 +35,86 @@ export const mockTemplates: ItineraryTemplate[] = [
         duration: '8 hours',
         isCustomizable: true,
         alternatives: ['James Bond Island Tour', 'Coral Island Tour']
+      },
+      {
+        day: 3,
+        time: '09:00',
+        title: 'Big Buddha & Wat Chalong',
+        description: 'Visit iconic landmarks and learn about Thai Buddhism',
+        type: 'cultural',
+        duration: '4 hours',
+        isCustomizable: true,
+        alternatives: ['Old Town Walking Tour', 'Thai Cooking Class']
+      },
+      {
+        day: 3,
+        time: '15:00',
+        title: 'Karon Viewpoint & Beach Time',
+        description: 'Panoramic views and relaxation at Karon Beach',
+        type: 'relaxation',
+        duration: '3 hours',
+        isCustomizable: false,
+        alternatives: []
+      },
+      {
+        day: 4,
+        time: '10:00',
+        title: 'Old Phuket Town Tour',
+        description: 'Explore colonial architecture, street art, and local markets',
+        type: 'cultural',
+        duration: '3 hours',
+        isCustomizable: true,
+        alternatives: ['Phuket Elephant Sanctuary', 'ATV Adventure']
+      },
+      {
+        day: 4,
+        time: '19:00',
+        title: 'Phuket FantaSea Show',
+        description: 'Cultural theme park with theatrical performance',
+        type: 'entertainment',
+        duration: '4 hours',
+        isCustomizable: true,
+        alternatives: ['Simon Cabaret Show', 'Patong Night Market']
+      },
+      {
+        day: 5,
+        time: '08:30',
+        title: 'James Bond Island Tour',
+        description: 'Canoe through limestone caves and visit Khao Phing Kan',
+        type: 'adventure',
+        duration: '7 hours',
+        isCustomizable: true,
+        alternatives: ['Coral Island Watersports', 'Similan Islands Diving']
+      },
+      {
+        day: 6,
+        time: '09:00',
+        title: 'Spa & Wellness Day',
+        description: 'Traditional Thai massage and spa treatments',
+        type: 'relaxation',
+        duration: '3 hours',
+        isCustomizable: true,
+        alternatives: ['Beach Yoga Session', 'Muay Thai Class']
+      },
+      {
+        day: 6,
+        time: '17:00',
+        title: 'Sunset Dinner Cruise',
+        description: 'Romantic cruise with dinner and entertainment',
+        type: 'dining',
+        duration: '3 hours',
+        isCustomizable: true,
+        alternatives: ['Beachfront Seafood Dinner', 'Rooftop Restaurant']
+      },
+      {
+        day: 7,
+        time: '10:00',
+        title: 'Last-Minute Shopping & Departure',
+        description: 'Souvenir shopping at Central Festival mall and airport transfer',
+        type: 'shopping',
+        duration: '3 hours',
+        isCustomizable: false,
+        alternatives: []
       }
     ],
     accommodations: [
@@ -96,6 +176,76 @@ export const mockTemplates: ItineraryTemplate[] = [
         duration: '3 hours',
         isCustomizable: false,
         alternatives: []
+      },
+      {
+        day: 2,
+        time: '09:00',
+        title: 'Universal Studios Singapore',
+        description: 'Full day at Southeast Asia\'s only Universal Studios theme park',
+        type: 'entertainment',
+        duration: '8 hours',
+        isCustomizable: true,
+        alternatives: ['Adventure Cove Waterpark', 'S.E.A. Aquarium']
+      },
+      {
+        day: 3,
+        time: '10:00',
+        title: 'Singapore Zoo Morning Safari',
+        description: 'World-renowned open-concept zoo with breakfast experience',
+        type: 'entertainment',
+        duration: '4 hours',
+        isCustomizable: true,
+        alternatives: ['Bird Paradise', 'River Wonders']
+      },
+      {
+        day: 3,
+        time: '15:00',
+        title: 'Little India & Arab Street',
+        description: 'Cultural neighborhoods with shopping and authentic cuisine',
+        type: 'cultural',
+        duration: '3 hours',
+        isCustomizable: true,
+        alternatives: ['Chinatown Heritage Centre', 'Kampong Glam Tour']
+      },
+      {
+        day: 4,
+        time: '09:30',
+        title: 'Sentosa Island Adventure',
+        description: 'Cable car ride, beaches, and island attractions',
+        type: 'adventure',
+        duration: '6 hours',
+        isCustomizable: true,
+        alternatives: ['Jurong Bird Park', 'Science Centre Singapore']
+      },
+      {
+        day: 4,
+        time: '19:00',
+        title: 'Clarke Quay River Cruise & Dinner',
+        description: 'Evening cruise along Singapore River with riverside dining',
+        type: 'dining',
+        duration: '3 hours',
+        isCustomizable: true,
+        alternatives: ['Hawker Centre Food Tour', 'Halal Fine Dining']
+      },
+      {
+        day: 5,
+        time: '10:00',
+        title: 'Orchard Road Shopping',
+        description: 'Premier shopping district with malls and boutiques',
+        type: 'shopping',
+        duration: '3 hours',
+        isCustomizable: true,
+        alternatives: ['VivoCity Mall', 'Bugis Street Market']
+      },
+      {
+        day: 5,
+        time: '15:00',
+        title: 'Merlion Park & Departure Prep',
+        description: 'Final photo ops at Singapore\'s iconic landmark and check-out',
+        type: 'sightseeing',
+        duration: '2 hours',
+        isCustomizable: false,
+        alternatives: []
       }
     ],
     accommodations: [
@@ -153,6 +303,116 @@ export const mockTemplates: ItineraryTemplate[] = [
         time: '15:00',
         title: 'Ubud Rice Terraces',
         description: 'Scenic walk through traditional rice paddies',
+        type: 'cultural',
+        duration: '2 hours',
+        isCustomizable: false,
+        alternatives: []
+      },
+      {
+        day: 2,
+        time: '08:00',
+        title: 'Tirta Empul Temple & Purification',
+        description: 'Sacred water temple with traditional cleansing ritual',
+        type: 'cultural',
+        duration: '3 hours',
+        isCustomizable: true,
+        alternatives: ['Besakih Temple Tour', 'Goa Gajah Cave']
+      },
+      {
+        day: 2,
+        time: '14:00',
+        title: 'Ubud Art Villages Tour',
+        description: 'Visit Celuk (silver), Batuan (painting), and Mas (wood carving)',
+        type: 'cultural',
+        duration: '4 hours',
+        isCustomizable: true,
+        alternatives: ['Ubud Art Market', 'Agung Rai Museum']
+      },
+      {
+        day: 3,
+        time: '09:00',
+        title: 'Silver Jewelry Making Workshop',
+        description: 'Hands-on experience creating traditional Balinese jewelry',
+        type: 'cultural',
+        duration: '3 hours',
+        isCustomizable: true,
+        alternatives: ['Batik Painting Class', 'Wood Carving Demo']
+      },
+      {
+        day: 3,
+        time: '15:00',
+        title: 'Monkey Forest Sanctuary',
+        description: 'Walk through sacred forest with hundreds of playful monkeys',
+        type: 'outdoor',
+        duration: '2 hours',
+        isCustomizable: false,
+        alternatives: []
+      },
+      {
+        day: 4,
+        time: '05:00',
+        title: 'Mount Batur Sunrise Trek',
+        description: 'Pre-dawn hike to volcanic summit for spectacular sunrise',
+        type: 'adventure',
+        duration: '6 hours',
+        isCustomizable: true,
+        alternatives: ['Bali Swing Experience', 'White Water Rafting']
+      },
+      {
+        day: 4,
+        time: '15:00',
+        title: 'Coffee Plantation Tour',
+        description: 'Learn about Bali coffee and taste the famous Luwak coffee',
+        type: 'cultural',
+        duration: '2 hours',
+        isCustomizable: true,
+        alternatives: ['Herbal Medicine Garden', 'Spice Farm Tour']
+      },
+      {
+        day: 5,
+        time: '09:00',
+        title: 'Tanah Lot Temple',
+        description: 'Iconic sea temple perched on a rock formation',
+        type: 'cultural',
+        duration: '3 hours',
+        isCustomizable: true,
+        alternatives: ['Uluwatu Temple', 'Taman Ayun Temple']
+      },
+      {
+        day: 5,
+        time: '14:00',
+        title: 'Traditional Balinese Massage',
+        description: 'Authentic spa treatment with local healing techniques',
+        type: 'relaxation',
+        duration: '2 hours',
+        isCustomizable: true,
+        alternatives: ['Yoga & Meditation Session', 'Hot Stone Therapy']
+      },
+      {
+        day: 5,
+        time: '19:00',
+        title: 'Kecak Fire Dance Performance',
+        description: 'Mesmerizing traditional dance at sunset',
+        type: 'entertainment',
+        duration: '2 hours',
+        isCustomizable: true,
+        alternatives: ['Legong Dance Show', 'Barong Dance']
+      },
+      {
+        day: 6,
+        time: '10:00',
+        title: 'Ubud Central Market Shopping',
+        description: 'Browse handicrafts, textiles, and souvenirs',
+        type: 'shopping',
+        duration: '2 hours',
+        isCustomizable: true,
+        alternatives: ['Sukawati Art Market', 'Seminyak Boutiques']
+      },
+      {
+        day: 6,
+        time: '14:00',
+        title: 'Departure & Blessing Ceremony',
+        description: 'Traditional farewell blessing and airport transfer',
         type: 'cultural',
         duration: '2 hours',
         isCustomizable: false,
