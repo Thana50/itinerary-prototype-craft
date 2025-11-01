@@ -98,6 +98,22 @@ export const itineraryService = {
     })) as Itinerary[];
   },
 
+  async getTravelerItineraries(travelerId: string) {
+    const { data, error } = await supabase
+      .from('itineraries')
+      .select('*')
+      .eq('traveler_id', travelerId)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    
+    return data.map(item => ({
+      ...item,
+      status: item.status as 'draft' | 'shared' | 'confirmed' | 'modified',
+      days: (item.days as any) || []
+    })) as Itinerary[];
+  },
+
   async shareItinerary(id: string, travelerEmail: string) {
     // Generate a secure share token
     const shareToken = crypto.randomUUID();

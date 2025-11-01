@@ -36,11 +36,7 @@ const ItineraryList: React.FC<ItineraryListProps> = ({ role }) => {
       if (role === "agent") {
         data = await itineraryService.getAgentItineraries(user.id);
       } else if (role === "traveler") {
-        // For travelers, we'd need a different service method to get shared itineraries
-        // For now, using agent itineraries as placeholder
-        data = await itineraryService.getAgentItineraries(user.id);
-        // Filter only shared itineraries for travelers
-        data = data.filter(itinerary => itinerary.status === 'shared' || itinerary.traveler_id === user.id);
+        data = await itineraryService.getTravelerItineraries(user.id);
       }
       
       setItineraries(data);
