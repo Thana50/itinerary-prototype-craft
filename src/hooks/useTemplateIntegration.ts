@@ -61,11 +61,25 @@ export const useTemplateIntegration = () => {
       const existingDay = acc.find(day => day.day === activity.day);
       if (existingDay) {
         existingDay.activities.push(`${activity.time}: ${activity.title} - ${activity.description}`);
+        // Store coordinates for mapping
+        if (activity.coordinates) {
+          existingDay.coordinates = existingDay.coordinates || [];
+          existingDay.coordinates.push({
+            name: activity.title,
+            coordinates: activity.coordinates,
+            type: activity.type
+          });
+        }
       } else {
         acc.push({
           day: activity.day,
           title: `Day ${activity.day}`,
-          activities: [`${activity.time}: ${activity.title} - ${activity.description}`]
+          activities: [`${activity.time}: ${activity.title} - ${activity.description}`],
+          coordinates: activity.coordinates ? [{
+            name: activity.title,
+            coordinates: activity.coordinates,
+            type: activity.type
+          }] : []
         });
       }
       return acc;

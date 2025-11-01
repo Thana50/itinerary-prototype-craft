@@ -24,7 +24,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'relaxation',
         duration: '4 hours',
         isCustomizable: false,
-        alternatives: []
+        alternatives: [],
+        coordinates: [98.2964, 7.8964]
       },
       {
         day: 2,
@@ -34,7 +35,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'adventure',
         duration: '8 hours',
         isCustomizable: true,
-        alternatives: ['James Bond Island Tour', 'Coral Island Tour']
+        alternatives: ['James Bond Island Tour', 'Coral Island Tour'],
+        coordinates: [98.7784, 7.7407]
       },
       {
         day: 3,
@@ -44,7 +46,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'cultural',
         duration: '4 hours',
         isCustomizable: true,
-        alternatives: ['Old Town Walking Tour', 'Thai Cooking Class']
+        alternatives: ['Old Town Walking Tour', 'Thai Cooking Class'],
+        coordinates: [98.3091, 7.8415]
       },
       {
         day: 3,
@@ -54,7 +57,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'relaxation',
         duration: '3 hours',
         isCustomizable: false,
-        alternatives: []
+        alternatives: [],
+        coordinates: [98.2892, 7.8380]
       },
       {
         day: 4,
@@ -64,7 +68,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'cultural',
         duration: '3 hours',
         isCustomizable: true,
-        alternatives: ['Phuket Elephant Sanctuary', 'ATV Adventure']
+        alternatives: ['Phuket Elephant Sanctuary', 'ATV Adventure'],
+        coordinates: [98.3879, 7.8804]
       },
       {
         day: 4,
@@ -74,7 +79,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'entertainment',
         duration: '4 hours',
         isCustomizable: true,
-        alternatives: ['Simon Cabaret Show', 'Patong Night Market']
+        alternatives: ['Simon Cabaret Show', 'Patong Night Market'],
+        coordinates: [98.3358, 8.0333]
       },
       {
         day: 5,
@@ -84,7 +90,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'adventure',
         duration: '7 hours',
         isCustomizable: true,
-        alternatives: ['Coral Island Watersports', 'Similan Islands Diving']
+        alternatives: ['Coral Island Watersports', 'Similan Islands Diving'],
+        coordinates: [98.5004, 8.2756]
       },
       {
         day: 6,
@@ -94,7 +101,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'relaxation',
         duration: '3 hours',
         isCustomizable: true,
-        alternatives: ['Beach Yoga Session', 'Muay Thai Class']
+        alternatives: ['Beach Yoga Session', 'Muay Thai Class'],
+        coordinates: [98.2964, 7.8964]
       },
       {
         day: 6,
@@ -104,7 +112,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'dining',
         duration: '3 hours',
         isCustomizable: true,
-        alternatives: ['Beachfront Seafood Dinner', 'Rooftop Restaurant']
+        alternatives: ['Beachfront Seafood Dinner', 'Rooftop Restaurant'],
+        coordinates: [98.3300, 7.9519]
       },
       {
         day: 7,
@@ -114,7 +123,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'shopping',
         duration: '3 hours',
         isCustomizable: false,
-        alternatives: []
+        alternatives: [],
+        coordinates: [98.3388, 7.8905]
       }
     ],
     accommodations: [
@@ -175,7 +185,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'sightseeing',
         duration: '3 hours',
         isCustomizable: false,
-        alternatives: []
+        alternatives: [],
+        coordinates: [103.8593, 1.2816]
       },
       {
         day: 2,
@@ -185,7 +196,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'entertainment',
         duration: '8 hours',
         isCustomizable: true,
-        alternatives: ['Adventure Cove Waterpark', 'S.E.A. Aquarium']
+        alternatives: ['Adventure Cove Waterpark', 'S.E.A. Aquarium'],
+        coordinates: [103.8238, 1.2540]
       },
       {
         day: 3,
@@ -195,7 +207,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'entertainment',
         duration: '4 hours',
         isCustomizable: true,
-        alternatives: ['Bird Paradise', 'River Wonders']
+        alternatives: ['Bird Paradise', 'River Wonders'],
+        coordinates: [103.7893, 1.4043]
       },
       {
         day: 3,
@@ -205,7 +218,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'cultural',
         duration: '3 hours',
         isCustomizable: true,
-        alternatives: ['Chinatown Heritage Centre', 'Kampong Glam Tour']
+        alternatives: ['Chinatown Heritage Centre', 'Kampong Glam Tour'],
+        coordinates: [103.8548, 1.3021]
       },
       {
         day: 4,
@@ -215,7 +229,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'adventure',
         duration: '6 hours',
         isCustomizable: true,
-        alternatives: ['Jurong Bird Park', 'Science Centre Singapore']
+        alternatives: ['Jurong Bird Park', 'Science Centre Singapore'],
+        coordinates: [103.8198, 1.2494]
       },
       {
         day: 4,
@@ -225,7 +240,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'dining',
         duration: '3 hours',
         isCustomizable: true,
-        alternatives: ['Hawker Centre Food Tour', 'Halal Fine Dining']
+        alternatives: ['Hawker Centre Food Tour', 'Halal Fine Dining'],
+        coordinates: [103.8467, 1.2897]
       },
       {
         day: 5,
@@ -235,7 +251,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'shopping',
         duration: '3 hours',
         isCustomizable: true,
-        alternatives: ['VivoCity Mall', 'Bugis Street Market']
+        alternatives: ['VivoCity Mall', 'Bugis Street Market'],
+        coordinates: [103.8320, 1.3048]
       },
       {
         day: 5,
@@ -245,7 +262,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'sightseeing',
         duration: '2 hours',
         isCustomizable: false,
-        alternatives: []
+        alternatives: [],
+        coordinates: [103.8545, 1.2868]
       }
     ],
     accommodations: [
@@ -306,7 +324,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'cultural',
         duration: '2 hours',
         isCustomizable: false,
-        alternatives: []
+        alternatives: [],
+        coordinates: [115.2624, -8.4337]
       },
       {
         day: 2,
@@ -316,7 +335,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'cultural',
         duration: '3 hours',
         isCustomizable: true,
-        alternatives: ['Besakih Temple Tour', 'Goa Gajah Cave']
+        alternatives: ['Besakih Temple Tour', 'Goa Gajah Cave'],
+        coordinates: [115.3152, -8.4154]
       },
       {
         day: 2,
@@ -326,7 +346,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'cultural',
         duration: '4 hours',
         isCustomizable: true,
-        alternatives: ['Ubud Art Market', 'Agung Rai Museum']
+        alternatives: ['Ubud Art Market', 'Agung Rai Museum'],
+        coordinates: [115.2809, -8.5833]
       },
       {
         day: 3,
@@ -336,7 +357,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'cultural',
         duration: '3 hours',
         isCustomizable: true,
-        alternatives: ['Batik Painting Class', 'Wood Carving Demo']
+        alternatives: ['Batik Painting Class', 'Wood Carving Demo'],
+        coordinates: [115.2809, -8.5833]
       },
       {
         day: 3,
@@ -346,7 +368,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'outdoor',
         duration: '2 hours',
         isCustomizable: false,
-        alternatives: []
+        alternatives: [],
+        coordinates: [115.2602, -8.5186]
       },
       {
         day: 4,
@@ -356,7 +379,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'adventure',
         duration: '6 hours',
         isCustomizable: true,
-        alternatives: ['Bali Swing Experience', 'White Water Rafting']
+        alternatives: ['Bali Swing Experience', 'White Water Rafting'],
+        coordinates: [115.3753, -8.2423]
       },
       {
         day: 4,
@@ -366,7 +390,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'cultural',
         duration: '2 hours',
         isCustomizable: true,
-        alternatives: ['Herbal Medicine Garden', 'Spice Farm Tour']
+        alternatives: ['Herbal Medicine Garden', 'Spice Farm Tour'],
+        coordinates: [115.3100, -8.4200]
       },
       {
         day: 5,
@@ -376,7 +401,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'cultural',
         duration: '3 hours',
         isCustomizable: true,
-        alternatives: ['Uluwatu Temple', 'Taman Ayun Temple']
+        alternatives: ['Uluwatu Temple', 'Taman Ayun Temple'],
+        coordinates: [115.0868, -8.6211]
       },
       {
         day: 5,
@@ -386,7 +412,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'relaxation',
         duration: '2 hours',
         isCustomizable: true,
-        alternatives: ['Yoga & Meditation Session', 'Hot Stone Therapy']
+        alternatives: ['Yoga & Meditation Session', 'Hot Stone Therapy'],
+        coordinates: [115.2624, -8.4337]
       },
       {
         day: 5,
@@ -396,7 +423,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'entertainment',
         duration: '2 hours',
         isCustomizable: true,
-        alternatives: ['Legong Dance Show', 'Barong Dance']
+        alternatives: ['Legong Dance Show', 'Barong Dance'],
+        coordinates: [115.0864, -8.8290]
       },
       {
         day: 6,
@@ -406,7 +434,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'shopping',
         duration: '2 hours',
         isCustomizable: true,
-        alternatives: ['Sukawati Art Market', 'Seminyak Boutiques']
+        alternatives: ['Sukawati Art Market', 'Seminyak Boutiques'],
+        coordinates: [115.2602, -8.5066]
       },
       {
         day: 6,
@@ -416,7 +445,8 @@ export const mockTemplates: ItineraryTemplate[] = [
         type: 'cultural',
         duration: '2 hours',
         isCustomizable: false,
-        alternatives: []
+        alternatives: [],
+        coordinates: [115.1671, -8.7486]
       }
     ],
     accommodations: [

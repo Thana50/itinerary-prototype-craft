@@ -38,22 +38,32 @@ const CreateItineraryContent: React.FC<CreateItineraryContentProps> = ({
     const activities: any[] = [];
     
     sampleItinerary.forEach(day => {
-      day.activities?.forEach((activity: string, index: number) => {
-        // Extract activity name (simplified - in real app you'd have coordinates stored)
-        const activityName = activity.split(':')[1]?.split('-')[0]?.trim() || activity;
-        
-        // Sample coordinates for demonstration (in real app, these would come from a geocoding service)
-        const sampleCoordinates = getSampleCoordinates(formData.destination, day.day, index);
-        
-        if (sampleCoordinates) {
+      // First, check if we have stored coordinates from template
+      if (day.coordinates && Array.isArray(day.coordinates)) {
+        day.coordinates.forEach((coord: any) => {
           activities.push({
-            name: activityName,
-            coordinates: sampleCoordinates,
+            name: coord.name,
+            coordinates: coord.coordinates,
             day: day.day,
-            type: getActivityType(activity)
+            type: coord.type
           });
-        }
-      });
+        });
+      } else {
+        // Fallback to generating sample coordinates
+        day.activities?.forEach((activity: string, index: number) => {
+          const activityName = activity.split(':')[1]?.split('-')[0]?.trim() || activity;
+          const sampleCoordinates = getSampleCoordinates(formData.destination, day.day, index);
+          
+          if (sampleCoordinates) {
+            activities.push({
+              name: activityName,
+              coordinates: sampleCoordinates,
+              day: day.day,
+              type: getActivityType(activity)
+            });
+          }
+        });
+      }
     });
     
     return activities;
