@@ -179,13 +179,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
+      // Use local scope to only clear local storage
+      // This prevents errors when the server session is already invalid
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      // Always clear local state regardless of server response
       setUser(null);
       setSession(null);
-    } catch (error) {
-      throw error;
     }
   };
 
