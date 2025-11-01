@@ -106,7 +106,7 @@ const CreateItinerary = () => {
         hasDestination={!!formData.destination}
       />
 
-      <div className="px-4 sm:px-6 lg:px-8 pb-8 relative z-10">
+      <div className="px-4 sm:px-6 lg:px-8 pb-8 pt-8 relative z-10">
         <CreateItineraryContent
           formData={formData}
           onFormChange={handleFormChange}
